@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Checkbox Example</title>
+</head>
+<body>
+<h1>Checkbox Example</h1>
+<div id="checkboxes">
+    <input type="checkbox" id="option1" name="options" value="option1">
+    <label for="option1">Option 1</label><br>
+
+    <input type="checkbox" id="option2" name="options" value="option2">
+    <label for="option2">Option 2</label><br>
+
+    <input type="checkbox" id="option3" name="options" value="option3" checked>
+    <label for="option3">Option 3</label><br>
+
+    <input type="checkbox" id="option4" name="options" value="option4">
+    <label for="option4">Option 4</label>
+</div>
+<p id="selected-values">Selected Values: Option 3</p>
+
+<script>
+    // 获取所有复选框和显示选中值的元素
+    const checkboxes = document.querySelectorAll('input[name="options"]');
+    const selectedValuesDisplay = document.getElementById('selected-values');
+
+    // 更新选中值的显示
+    const updateSelectedValues = () => {
+        const selectedValues = Array.from(checkboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+
+        selectedValuesDisplay.textContent = 'Selected Values: ' + selectedValues.join(', ');
+    };
+
+    // 页面加载时初始化选中值显示
+    updateSelectedValues();
+
+    // 为每个复选框添加事件监听器
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            // 当复选框状态改变时，更新显示的选中值
+            updateSelectedValues();
+        });
+    });
+</script>
+</body>
+</html>

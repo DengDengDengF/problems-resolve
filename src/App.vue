@@ -3,6 +3,7 @@
 <!--  <PdfDemo/>-->
 <!--  <PdfHeigh/>-->
 <!--  <FileSplit/>-->
+  <DynamicForm/>
 </template>
 
 <script>
@@ -14,9 +15,11 @@ import PdfDemo from "./pages/PdfDemo.vue";
 import PdfHeigh from "./pages/pdfHeigh.vue";
 //文件分批上传
 import FileSplit from "./pages/FileSplit.vue";
+//动态表单代码,不引用框架心血来潮写一下，css就先不写
+import DynamicForm from './pages/DynamicForm.vue'
 export default {
   name: 'App',
-  components: {DialogDemo, PdfDemo,PdfHeigh,FileSplit},
+  components: {DialogDemo, PdfDemo,PdfHeigh,FileSplit,DynamicForm},
   setup(props) {
 
   }

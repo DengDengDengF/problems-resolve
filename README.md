@@ -44,3 +44,23 @@ github地址：https://github.com/hymhub/pdf-vue3
 断点续传，就是检查文件的uploaded,对未上传的进行上传，最后进行合并
 ```
 
+### 4.动态表单
+
+```js
+只考虑功能实现，不考虑css。
+不显示、显示1个、显示多个，显示n个，
+设计成链表就可以。
+0--->null
+1---->a-b
+2---->{
+     1，
+     c-d
+}
+.......
+```
+
+<img src="https://s2.loli.net/2024/06/05/WwUcOydQqgGNSls.png" alt="image.png" style="zoom:50%;" />
+
+<img src="https://s2.loli.net/2024/06/05/SWmGw5jclX2hbfL.png" alt="image.png" style="zoom:50%;" />
+
+<img src="https://s2.loli.net/2024/06/05/skR7P6femMB2T1h.png" alt="image.png" style="zoom:50%;" />

@@ -71,3 +71,30 @@ github地址：https://github.com/hymhub/pdf-vue3
 自己调用自己，适用于高度耦合的对象，
 ```
 
+### 6.树形控件
+
+```js
+以下两种情况都要递归调用，结合vue3.0语法
+对每一个 父 打对勾，子要全部 打对勾。------>遍历当前父的每一个子
+每一个子 都 打对勾，父要全部 打对勾 ------->遍历当前子的父/父兄，做判定，
+```
+
+<img src="https://s2.loli.net/2024/06/06/RlTv6oOS9JfcVxq.png" alt="image.png"  /><img src="https://s2.loli.net/2024/06/06/eDJpwrT24UWlCyx.png" alt="image.png"  /><img src="https://s2.loli.net/2024/06/06/yH9AKRonvumNW6h.png" alt="image.png"  />
+
+### 7.分批多线程请求
+
+```js
+1.使用队列
+```
+
+<img src="https://s2.loli.net/2024/06/06/6hqvsBK9MjkNSXL.png" alt="image.png" style="zoom: 67%;" />
+
+```
+2.利用js的同步异步，虽然 队列的方式 也利用了同步异步
+```
+
+![image.png](https://s2.loli.net/2024/06/06/kIvrVEem549UYtH.png)
+
+ 
+
+**其实算法思想都一样，都是用的队列，不过第二种含蓄点**

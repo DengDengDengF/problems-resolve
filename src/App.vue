@@ -3,7 +3,8 @@
 <!--  <PdfDemo/>-->
 <!--  <PdfHeigh/>-->
 <!--  <FileSplit/>-->
-  <DynamicForm/>
+<!--  <DynamicForm/>-->
+<!--  <Recursive/>-->
 </template>
 
 <script>
@@ -17,9 +18,12 @@ import PdfHeigh from "./pages/pdfHeigh.vue";
 import FileSplit from "./pages/FileSplit.vue";
 //动态表单代码,不引用框架心血来潮写一下，css就先不写
 import DynamicForm from './pages/DynamicForm.vue'
+//递归组件
+import Recursive from "./pages/Recursive.vue";
+
 export default {
   name: 'App',
-  components: {DialogDemo, PdfDemo,PdfHeigh,FileSplit,DynamicForm},
+  components: {DialogDemo, PdfDemo,PdfHeigh,FileSplit,DynamicForm,Recursive},
   setup(props) {
 
   }

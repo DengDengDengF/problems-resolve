@@ -64,3 +64,10 @@ github地址：https://github.com/hymhub/pdf-vue3
 <img src="https://s2.loli.net/2024/06/05/SWmGw5jclX2hbfL.png" alt="image.png" style="zoom:50%;" />
 
 <img src="https://s2.loli.net/2024/06/05/skR7P6femMB2T1h.png" alt="image.png" style="zoom:50%;" />
+
+### 5.递归template
+
+```js
+自己调用自己，适用于高度耦合的对象，
+```
+

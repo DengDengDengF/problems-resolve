@@ -7,5 +7,4 @@ const app = createApp(App)
 
 app.use(ElementPlus)
 
-
 createApp(App).mount('#app')

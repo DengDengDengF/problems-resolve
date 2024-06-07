@@ -106,3 +106,13 @@ github地址：https://github.com/hymhub/pdf-vue3
 给了一个表单校验简单demo展示
 ```
 
+### 9.拖拽排序封装
+
+```js
+用到了drag的api，实现拖拽排序
+核心模块思路，删除原来位置，新位置之前插入，
+当然还涉及到一些封装思路。
+频繁的拖拽，还要写个防抖函数，略。
+```
+
+<img src="https://s2.loli.net/2024/06/07/8NcmhTS4bExiLJO.png" alt="image.png" style="zoom:50%;" />

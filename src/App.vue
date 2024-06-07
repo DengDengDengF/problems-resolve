@@ -8,6 +8,9 @@
   <!--  <TreeShow/>-->
   <!--  <AsyncRequest/>-->
 <!--  <StrategyLogin/>-->
+<!--  <DragSort/>-->
+<!--  <DragSortablejs/>-->
+
 </template>
 
 <script>
@@ -29,10 +32,24 @@ import TreeShow from "./pages/TreeShow.vue";
 import AsyncRequest from "./pages/AsyncRequest.vue";
 //策略模式-login
 import StrategyLogin from "./pages/StrategyLogin.vue";
-
+//拖拽排序、双列拖拽排序、以及调用现成的库
+import DragSort from "./pages/DragSort.vue";
+import DragSortablejs from "./pages/DragSortablejs.vue";
 export default {
   name: 'App',
-  components: {DialogDemo, PdfDemo, PdfHeigh, FileSplit, DynamicForm, Recursive, TreeShow, AsyncRequest, StrategyLogin},
+  components: {DialogDemo,
+    PdfDemo,
+    PdfHeigh,
+    FileSplit,
+    DynamicForm,
+    Recursive,
+    TreeShow,
+    AsyncRequest,
+    StrategyLogin,
+    DragSort,
+    DragSortablejs
+  },
+
   setup(props) {
 
   }

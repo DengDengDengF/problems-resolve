@@ -7,10 +7,10 @@
   <!--  <Recursive/>-->
   <!--  <TreeShow/>-->
   <!--  <AsyncRequest/>-->
-<!--  <StrategyLogin/>-->
-<!--  <DragSort/>-->
-<!--  <DragSortablejs/>-->
-
+  <!--  <StrategyLogin/>-->
+  <!--  <DragSort/>-->
+  <!--  <DragSortablejs/>-->
+  <!--      <MemoryLeak/>-->
 </template>
 
 <script>
@@ -35,9 +35,13 @@ import StrategyLogin from "./pages/StrategyLogin.vue";
 //拖拽排序、双列拖拽排序、以及调用现成的库
 import DragSort from "./pages/DragSort.vue";
 import DragSortablejs from "./pages/DragSortablejs.vue";
+//内存泄漏
+import MemoryLeak from "./pages/MemoryLeak.vue";
+
 export default {
   name: 'App',
-  components: {DialogDemo,
+  components: {
+    DialogDemo,
     PdfDemo,
     PdfHeigh,
     FileSplit,
@@ -47,7 +51,8 @@ export default {
     AsyncRequest,
     StrategyLogin,
     DragSort,
-    DragSortablejs
+    DragSortablejs,
+    MemoryLeak
   },
 
   setup(props) {

@@ -116,3 +116,10 @@ github地址：https://github.com/hymhub/pdf-vue3
 ```
 
 <img src="https://s2.loli.net/2024/06/07/8NcmhTS4bExiLJO.png" alt="image.png" style="zoom:50%;" />
+
+### 10.内存泄露
+
+```js
+闭包、循环引用、dom引用等
+```
+

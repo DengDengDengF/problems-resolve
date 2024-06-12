@@ -123,3 +123,10 @@ github地址：https://github.com/hymhub/pdf-vue3
 闭包、循环引用、dom引用等
 ```
 
+### 11.自定义hooks
+
+```
+调接口、计数器、布尔切换、窗口size
+都是提取的公共逻辑，做的封装。
+```
+

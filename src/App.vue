@@ -10,7 +10,8 @@
   <!--  <StrategyLogin/>-->
   <!--  <DragSort/>-->
   <!--  <DragSortablejs/>-->
-  <!--      <MemoryLeak/>-->
+  <!--  <MemoryLeak/>-->
+<!--  <HooksDemo/>-->
 </template>
 
 <script>
@@ -37,6 +38,8 @@ import DragSort from "./pages/DragSort.vue";
 import DragSortablejs from "./pages/DragSortablejs.vue";
 //内存泄漏
 import MemoryLeak from "./pages/MemoryLeak.vue";
+//vue3.0自定义hooks
+import HooksDemo from "./pages/HooksDemo.vue";
 
 export default {
   name: 'App',
@@ -52,7 +55,8 @@ export default {
     StrategyLogin,
     DragSort,
     DragSortablejs,
-    MemoryLeak
+    MemoryLeak,
+    HooksDemo
   },
 
   setup(props) {

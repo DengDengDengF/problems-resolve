@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'vue';
+import {ref} from 'vue';
 
 export function useWindowSize() {
     const width = ref(window.innerWidth);
@@ -6,6 +6,6 @@ export function useWindowSize() {
 
     width.value = window.innerWidth;
     height.value = window.innerHeight;
-    console.log(width.value,height.value)
-    return { width, height };
+    console.log(width.value, height.value)
+    return {width, height};
 }

@@ -57,6 +57,8 @@ github地址：https://github.com/hymhub/pdf-vue3
      c-d
 }
 .......
+
+后台传递过来数据，根据后台的数据，前台实现逻辑
 ```
 
 <img src="https://s2.loli.net/2024/06/05/WwUcOydQqgGNSls.png" alt="image.png" style="zoom:50%;" />
@@ -81,16 +83,22 @@ github地址：https://github.com/hymhub/pdf-vue3
 
 <img src="https://s2.loli.net/2024/06/06/RlTv6oOS9JfcVxq.png" alt="image.png"  /><img src="https://s2.loli.net/2024/06/06/eDJpwrT24UWlCyx.png" alt="image.png"  /><img src="https://s2.loli.net/2024/06/06/yH9AKRonvumNW6h.png" alt="image.png"  />
 
-### 7.分批多线程请求
+### 7.分批多线程请求、分批但是要求批次的顺序、不分批逐个上传
 
 ```js
-1.使用队列
+1.分批多线程---不要求调用顺序----使用队列，
+
+利用执行栈中的顺序，先同步后异步,维护并发队列的长度
+出队列之前，队列长度--；
+有回调结果后，队列长度++，进行下一个任务；
+适用于，没有要求调用顺序的。文件分批上传只要，我们把哈希值、分割文件的index、传给后台即可。
+但是如果要求调用顺序呢？
 ```
 
 <img src="https://s2.loli.net/2024/06/06/6hqvsBK9MjkNSXL.png" alt="image.png" style="zoom: 67%;" />
 
 ```
-2.利用js的同步异步，虽然 队列的方式 也利用了同步异步
+2.分批多线程---不要求调用顺序----利用js的同步异步，虽然 队列的方式 也利用了同步异步
 ```
 
 ![image.png](https://s2.loli.net/2024/06/06/kIvrVEem549UYtH.png)
@@ -98,6 +106,26 @@ github地址：https://github.com/hymhub/pdf-vue3
  
 
 **其实算法思想都一样，都是用的队列，不过第二种含蓄点**
+
+
+
+```js
+3.分批，但是要求批次的顺序。
+使用promise.all([....promise请求]).then((allData)=>{
+       //递归调用,下一个批次请求
+   }).catch((err)=>{
+       //抛出错误,throwError(err)
+   })
+```
+
+```js
+4.逐个上传
+callback(arr.shift()).then((result)=>{
+    //递归调用,下一个请求
+})
+```
+
+
 
 ### 8.策略模式
 
@@ -130,3 +158,21 @@ github地址：https://github.com/hymhub/pdf-vue3
 都是提取的公共逻辑，做的封装。
 ```
 
+### 12.虚拟列表
+
+```js
+虚拟列表其实是按需显示的一种实现，即只对可见区域进行渲染，对非可见区域中的数据不渲染或部分渲染的技术，从而达到极高的渲染性能；
+1.计算外层可视化容量：itemHeight静态Math.ceil(containerHeight / itemHeightRef)
+                  itemHeight动态就从fromIndex累加
+2.计算列表数据对于container的偏移数量（offset),同上
+3.计算在container区域内可显示的数据个数（calculateRange）。start: offset - overscan；end: offset + visibleCount + overscan。overscan为可允许溢出container范围的最大个数；
+4.计算wrapper所有item总体的高度；可以用计算属性
+5.列表距container的高度（distanceTop）
+6.设置wrapper的高度和偏移量.
+7.设置wrapper展示dom；
+8.监听scroll事件，动态计算显示区域个数、显示区域范围、已经滚动的高度、wrapper的高度以及mariginTop
+
+经过测试99*10^4个dom节点都不在话下
+```
+
+<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5ad0709233d94ab58eb9a7d5e7d095b1~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="png" style="zoom:50%;" />

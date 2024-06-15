@@ -6,12 +6,13 @@
   <!--  <DynamicForm/>-->
   <!--  <Recursive/>-->
   <!--  <TreeShow/>-->
-  <!--  <AsyncRequest/>-->
+<!--    <AsyncRequest/>-->
   <!--  <StrategyLogin/>-->
   <!--  <DragSort/>-->
   <!--  <DragSortablejs/>-->
   <!--  <MemoryLeak/>-->
-<!--  <HooksDemo/>-->
+<!--   <HooksDemo/>-->
+  <Virtualized/>
 </template>
 
 <script>
@@ -40,7 +41,8 @@ import DragSortablejs from "./pages/DragSortablejs.vue";
 import MemoryLeak from "./pages/MemoryLeak.vue";
 //vue3.0自定义hooks
 import HooksDemo from "./pages/HooksDemo.vue";
-
+//虚拟列表
+import Virtualized from "./pages/VirtualizedList.vue";
 export default {
   name: 'App',
   components: {
@@ -56,7 +58,8 @@ export default {
     DragSort,
     DragSortablejs,
     MemoryLeak,
-    HooksDemo
+    HooksDemo,
+    Virtualized
   },
 
   setup(props) {

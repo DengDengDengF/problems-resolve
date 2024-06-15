@@ -11,7 +11,7 @@
   <!--  <DragSort/>-->
   <!--  <DragSortablejs/>-->
   <!--  <MemoryLeak/>-->
-   <HooksDemo/>
+<!--   <HooksDemo/>-->
 <!--  <Virtualized/>-->
 </template>
 

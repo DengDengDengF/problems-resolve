@@ -13,7 +13,8 @@
   <!--  <MemoryLeak/>-->
   <!--   <HooksDemo/>-->
   <!--  <Virtualized/>-->
-<!-- <TimeSlicing/>-->
+  <!--  <TimeSlicing/>-->
+  <!--  <AxiosDemo/>-->
 </template>
 
 <script>
@@ -46,6 +47,8 @@ import HooksDemo from "./pages/HooksDemo.vue";
 import Virtualized from "./pages/VirtualizedList.vue";
 //时间分片
 import TimeSlicing from "./pages/TimeSlicing.vue";
+//axios封装
+import AxiosDemo from "./pages/AxiosDemo.vue";
 
 export default {
   name: 'App',
@@ -64,7 +67,8 @@ export default {
     MemoryLeak,
     HooksDemo,
     Virtualized,
-    TimeSlicing
+    TimeSlicing,
+    AxiosDemo
   },
 
   setup(props) {

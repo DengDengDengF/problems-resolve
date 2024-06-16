@@ -204,3 +204,19 @@ callback(arr.shift()).then((result)=>{
 ```
 
 ![png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a3201ed33ea4defa32b21f2ae31117c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+### 14.axios封装
+
+```js
+基础配置文件暴露 请求基础地址(baseURL)、是否开启token认证(useTokenAuthorization)
+
+axios 请求拦截中
+1.若开启token认证,headers['Authorization'] =localStorage.getItem("token")
+2.若没有设置请求头(!config.headers["Content-Type"])，并且是post请求，
+  则headers["Content-Type"] = "application/x-www-form-urlencoded";
+    data = qs.stringify(config.data);//序列化
+3.headers["Content-Type"]默认是 "application/json"; 
+
+axios相应拦截，就是设定不同状态返回。
+```
+

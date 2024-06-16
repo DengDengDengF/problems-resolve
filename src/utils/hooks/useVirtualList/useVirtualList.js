@@ -4,13 +4,21 @@ import {useSize} from "./useSize.js";
 import {useLatest} from "./useLatest.js";
 
 /**
- * @param {Object} options {最外层容器、原始数据、溢出、包裹容器的动态样式}*/
+ * @param {Object} options {最外层容器、原始数据、溢出、包裹容器的动态样式}
+ * @return {Object}  截取的数据*/
 export const useVirtualList = (options) => {
     const {containerTarget, originalList, overscan, wrapperStyle} = options;
     let targetList = ref([]);//截取后的数据
-    const itemHeight = (i) => (i % 2 === 0 ? 42 + 8 : 42 + 8);//动态高度,
+    /**
+     * 模拟动态高度
+     * @param {number} i
+     * @return {number}
+     * */
+    const itemHeight = (i) => (i % 2 === 0 ? 42 + 8 : 42 + 8);
     const itemHeightRef = useLatest(itemHeight);
-    // 列表总体高度
+    /**
+     * 用计算属性计算列表总体高度,避免重复运算
+     * @return {number}*/
     const totalHeight = computed(() => {
         if (isNumber(itemHeightRef)) {
             return originalList.length * itemHeightRef;
@@ -22,14 +30,21 @@ export const useVirtualList = (options) => {
         return sum;
     });
 
-    //修改包裹容器样式
+    /**
+     * 修改包裹容器样式
+     * @param {String} height
+     * @param {String} marginTop
+     * @return {void}*/
     const setWrapperStyle = (height, marginTop) => {
         wrapperStyle.height = height;
         wrapperStyle.marginTop = marginTop;
         wrapperStyle.border = '1px solid red';
-        document.title='高='+ height + ' 距顶=' + marginTop
+        document.title = '高=' + height + ' 距顶=' + marginTop
     }
-    //设置截取的数据
+    /**
+     * 设置截取的数据
+     * @param {Array} arr 截取后的数据
+     * @return {void}*/
     const setTargetList = (arr) => {
         targetList.value = arr;
         // console.log(targetList.value)
@@ -95,7 +110,9 @@ export const useVirtualList = (options) => {
         return height;
     };
 
-
+    /**
+     * 主要程序调入
+     * @return {void}*/
     const calculateRange = () => {
         // 获取外部容器
         const container = containerTarget.value;
@@ -120,7 +137,9 @@ export const useVirtualList = (options) => {
 
         }
     };
-
+    /**
+     *
+     * @returns*/
     const resize = (e) => {
         e.preventDefault();
         calculateRange();
@@ -133,14 +152,16 @@ export const useVirtualList = (options) => {
         if (containerTarget && originalList.length > 0 && width > 0 && height > 0) {
             calculateRange();
             containerTarget.value.addEventListener("scroll", resize);
-            window.addEventListener('resize', resize)
+            window.addEventListener('resize', resize);
         }
+
     })
     onUnmounted(() => {
-        if (containerTarget.value) {
-            containerTarget.value.removeEventListener("scroll", resize)
+        if (containerTarget.value && originalList.length > 0 && width > 0 && height > 0) {
+            containerTarget.value.removeEventListener("scroll", resize);
+            window.removeEventListener("resize", resize);
         }
-        window.removeEventListener("resize", resize);
+
     })
 
     return {targetList};

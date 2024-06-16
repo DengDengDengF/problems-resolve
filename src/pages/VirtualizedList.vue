@@ -16,17 +16,20 @@
 
 <script>
 
-import {ref, reactive, watch} from "vue";
+import {ref, reactive} from "vue";
 import {useVirtualList} from "../utils/hooks/useVirtualList/useVirtualList.js";
 
 export default {
   name: "virtualized",
   setup() {
     const containerTarget = ref(null);//最外层容器
-    const originalList = Array.from(Array(200000).keys()); //生成9999个demo
+    const originalList = Array.from(Array(900000).keys()); //生成9999个demo
     const overscan = 5;//可允许溢出container范围的最大个数；
     let list = ref([]);//截取后的数据
-    const wrapperStyle = reactive({});//包裹容器的样式;
+    const wrapperStyle = reactive({
+        // 'max-height':'1000000px',
+        // 'overflow':'hidden'
+    });//包裹容器的样式;
 
     list = useVirtualList({containerTarget, originalList, overscan, wrapperStyle}).targetList;
 

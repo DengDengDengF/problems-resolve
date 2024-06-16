@@ -13,6 +13,7 @@
   <!--  <MemoryLeak/>-->
   <!--   <HooksDemo/>-->
   <!--  <Virtualized/>-->
+<!-- <TimeSlicing/>-->
 </template>
 
 <script>
@@ -43,6 +44,8 @@ import MemoryLeak from "./pages/MemoryLeak.vue";
 import HooksDemo from "./pages/HooksDemo.vue";
 //虚拟列表
 import Virtualized from "./pages/VirtualizedList.vue";
+//时间分片
+import TimeSlicing from "./pages/TimeSlicing.vue";
 
 export default {
   name: 'App',
@@ -60,7 +63,8 @@ export default {
     DragSortablejs,
     MemoryLeak,
     HooksDemo,
-    Virtualized
+    Virtualized,
+    TimeSlicing
   },
 
   setup(props) {

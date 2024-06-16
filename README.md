@@ -172,7 +172,35 @@ callback(arr.shift()).then((result)=>{
 7.设置wrapper展示dom；
 8.监听scroll事件，动态计算显示区域个数、显示区域范围、已经滚动的高度、wrapper的高度以及mariginTop
 
+虚拟列表适用于渲染大量数据项的长列表场景。
 经过测试99*10^4个dom节点都不在话下
 ```
 
 <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5ad0709233d94ab58eb9a7d5e7d095b1~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="png" style="zoom:50%;" />
+
+### 13.时间分片
+
+```js
+把长时间运行的任务，分成多个小任务，穿插在空闲时间(用requestIdleCallback)，以便让浏览器有时间进行渲染和响应用户输入。这种技术使得应用在执行繁重计算任务时，仍然能够保持界面的流畅性和响应性。
+//第一种做法：固定eachRenderNum
+1.计算时间片，一次性渲染多少个(eachRenderNum )，总数据(originalList)除以，得到总共渲染多少次(times)。
+2.开始渲染数据，通过 index > times 判断渲染完成，如果没有渲染完成，那么通过 requestIdleCallback 浏览器空闲执行下一帧渲染
+3.通过 renderList 把已经渲染的 element 缓存起来.
+
+//第二种：动态eachRenderNum
+1.每个时间片允许的最大执行时间(maxAllowedTime)16（毫秒）
+2.初始任务量(initialTaskSize)500
+3.记录开始时间(start)
+4.持续时间(performance.now() - startTime) >maxAllowedTime,
+  任务量减半;
+  持续时间(performance.now() - startTime) <maxAllowedTime/2,
+  任务量加半
+5.根据任务量，往响应式数组中添加数据
+6.还有未完成的任务就继续调度
+使用场景：需要处理大量计算任务且需要保持UI流畅的场景。
+
+
+在完成一帧中的输入处理、渲染和合成之后，线程会进入空闲时期（idle period），直到下一帧开始，或者队列中的任务被激活，又或者收到了用户新的输入。requestIdleCallback 定义的回调就是在这段空闲时期执行：
+```
+
+![png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a3201ed33ea4defa32b21f2ae31117c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)

@@ -42,7 +42,6 @@ export function useTimeSlicing(originalList, list, styles) {
                 styles.overflow = 'auto';
             }
         }
-
         // 开始任务调度
         requestIdleCallback(processChunk);
     })

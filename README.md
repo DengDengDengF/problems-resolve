@@ -188,17 +188,9 @@ callback(arr.shift()).then((result)=>{
 3.通过 renderList 把已经渲染的 element 缓存起来.
 
 //第二种：动态eachRenderNum
-1.每个时间片允许的最大执行时间(maxAllowedTime)16（毫秒）
-2.初始任务量(initialTaskSize)500
-3.记录开始时间(start)
-4.持续时间(performance.now() - startTime) >maxAllowedTime,
-  任务量减半;
-  持续时间(performance.now() - startTime) <maxAllowedTime/2,
-  任务量加半
-5.根据任务量，往响应式数组中添加数据
-6.还有未完成的任务就继续调度
-使用场景：需要处理大量计算任务且需要保持UI流畅的场景。
-
+1.空闲时间剩余 deadline.timeRemaining()
+2.持续时间 performance.now() - startTime
+3.若最大允许持续时间为16
 
 在完成一帧中的输入处理、渲染和合成之后，线程会进入空闲时期（idle period），直到下一帧开始，或者队列中的任务被激活，又或者收到了用户新的输入。requestIdleCallback 定义的回调就是在这段空闲时期执行：
 ```

@@ -212,3 +212,15 @@ axios 请求拦截中
 axios相应拦截，就是设定不同状态返回。
 ```
 
+### 15.ref封装
+
+```js
+ref本质也用了proxy,
+通过ref文件，可以完成数据的修改，均可被get、set监听到。
+
+get中 if(activeWatcher){//有watcher
+      dep.depend(activeWatcher)//收集依赖
+}
+set中就通知更新dep.notify()
+```
+

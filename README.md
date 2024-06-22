@@ -224,3 +224,11 @@ get中 if(activeWatcher){//有watcher
 set中就通知更新dep.notify()
 ```
 
+### 16.图片懒加载
+
+```js
+通过判断图片是否在视口内部，决定是否加载图片，
+const {top,right,bottom,left,} = element.getBoundingClientRect();拿到视口位置
+在视口内部，就取消lazy类，并src=data-src
+```
+

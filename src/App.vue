@@ -14,8 +14,9 @@
   <!--   <HooksDemo/>-->
   <!--  <Virtualized/>-->
   <!--  <TimeSlicing/>-->
-<!--    <AxiosDemo/>-->
-  <Templates/>
+  <!--    <AxiosDemo/>-->
+  <!--  <Templates/>-->
+  <!--  <PicLazy/>-->
 </template>
 
 <script>
@@ -52,6 +53,9 @@ import TimeSlicing from "./pages/TimeSlicing.vue";
 import AxiosDemo from "./pages/AxiosDemo.vue";
 //vue3.0 简易版双向绑定
 import Templates from "./pages/Templates.vue";
+//图片懒加载
+import PicLazy from "./pages/PicLazy.vue";
+
 export default {
   name: 'App',
   components: {
@@ -71,7 +75,8 @@ export default {
     Virtualized,
     TimeSlicing,
     AxiosDemo,
-    Templates
+    Templates,
+    PicLazy
   },
 
   setup(props) {

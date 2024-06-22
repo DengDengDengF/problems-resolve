@@ -261,3 +261,12 @@ const {top,right,bottom,left,} = element.getBoundingClientRect();拿到视口位
 4.重置函数，调用form表单的重置方法，并把form表单v-model绑定的值设定为空对象。
 ```
 
+### 18.分页封装
+
+```js
+分页用的是 <el-pagination></el-pagination>
+只要是table，就要用到分页，因此可以进行以下封装
+1.传入当前页、一页显示多少条、总的数据量、等数据给封装后的组件
+2.当前页改变，通知父组件修改数据
+```
+

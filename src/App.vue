@@ -18,6 +18,7 @@
   <!--  <Templates/>-->
   <!--  <PicLazy/>-->
   <!--  <FormElementUI/>-->
+  <!--  <PageDemo/>-->
 </template>
 
 <script>
@@ -58,6 +59,8 @@ import Templates from "./pages/Templates.vue";
 import PicLazy from "./pages/PicLazy.vue";
 //表单封装
 import FormElementUI from "./pages/FormElementUI.vue";
+//分页组件
+import PageDemo from "./pages/PageDemo.vue";
 
 export default {
   name: 'App',
@@ -80,7 +83,8 @@ export default {
     AxiosDemo,
     Templates,
     PicLazy,
-    FormElementUI
+    FormElementUI,
+    PageDemo
   },
 
   setup(props) {

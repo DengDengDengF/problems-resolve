@@ -232,3 +232,32 @@ const {top,right,bottom,left,} = element.getBoundingClientRect();拿到视口位
 在视口内部，就取消lazy类，并src=data-src
 ```
 
+### 17.表单封装
+
+```html
+因为不同模块的表单，内容上、逻辑上均高度相似，于是对表单做了封装
+父组件的输入：
+{
+    itemType:text/number/textarea/select,//输入框类型
+    labelName:'xxx'//输入框label
+    propName:'xxx'//输入框字段
+    isRequired:'true'//是否必填
+    placeHolder:'',
+    optionsArr:[...]//如果输入框类型是select要有
+}
+子组件，格式类似下面进行嵌套，根据itemType去回显
+<el-form v-for="(item,index) in formHeader">
+     </el-form-item  v-if="item.itemType == 'text'/'number'/'textarea'">
+            <el-input></el-input>
+     </el-form-item>
+     </el-form-item v-if="item.itemType == 'select'">
+            <el-select></el-select>
+     </el-form-item>
+</el-form>
+然后就是，绑定change事件、写校验函数、确定、重置等
+1.change事件里面，可以用正则表达式进行判断，判断不通过，对应的value为null,
+2.校验函数，发现value为null,就可以根根据itemType，抛出错误。
+3.提交函数，调用校验函数，进行校验，，校验成功，通过emit发送事件通知父组件
+4.重置函数，调用form表单的重置方法，并把form表单v-model绑定的值设定为空对象。
+```
+

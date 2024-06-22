@@ -17,6 +17,7 @@
   <!--    <AxiosDemo/>-->
   <!--  <Templates/>-->
   <!--  <PicLazy/>-->
+  <!--  <FormElementUI/>-->
 </template>
 
 <script>
@@ -55,6 +56,8 @@ import AxiosDemo from "./pages/AxiosDemo.vue";
 import Templates from "./pages/Templates.vue";
 //图片懒加载
 import PicLazy from "./pages/PicLazy.vue";
+//表单封装
+import FormElementUI from "./pages/FormElementUI.vue";
 
 export default {
   name: 'App',
@@ -76,7 +79,8 @@ export default {
     TimeSlicing,
     AxiosDemo,
     Templates,
-    PicLazy
+    PicLazy,
+    FormElementUI
   },
 
   setup(props) {

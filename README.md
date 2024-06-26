@@ -1,3 +1,7 @@
+[TOC]
+
+
+
 # Vue 3 + Vite
 
 This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
@@ -275,5 +279,49 @@ const {top,right,bottom,left,} = element.getBoundingClientRect();拿到视口位
 ```js
 https://juejin.cn/post/7283422522535673856
 变量、计算、混入、函数、通过函数动态计算、导入、继承
+```
+
+### 20.SSE(Server-Sent-Events)，实现chatgpt一个字一个字跳出来
+
+```js
+//前端vue
+ const message = ref('');
+ const eventSource = new EventSource('http://localhost:5000/stream');
+ eventSource.onmessage = (event) => {
+      message.value += event.data;
+ }
+```
+
+### 21.websocket
+
+```js
+  //前端value
+    const message = ref('');
+    const messages = ref([]);
+    let socket = null;
+    //接口返回
+    const connectWebSocket = () => {
+      socket = new WebSocket('ws://localhost:5001/');
+      socket.onmessage = (event) => {
+        messages.value.push( "server value:"+event.data);
+      };
+    };
+    //输入框输入后，
+    const sendMessage = () => {
+      if (message.value.trim() !== '') {
+        socket.send(message.value);
+        messages.value.push(`You: ${message.value}`);
+        message.value = '';
+      }
+    };
+    // Connect WebSocket when component is mounted
+    connectWebSocket();
+```
+
+### 22.SSE 和 WebSocket的不同
+
+```
+1.SSE 是比较适合单向数据传递的场景，尤其是当不需要从客户端频繁地向服务器发送数据时。SSE 可以用标准 HTTP 服务实现，对于服务器的改造相对较小。
+2.WebSocket 比 SSE 更为强大，适用于需要快速、双向通信的应用。WebSocket 更复杂，需要专门的服务器和客户端支持。然而，它们提供了更低的延迟和更灵活的通信能力。
 ```
 

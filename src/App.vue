@@ -16,10 +16,12 @@
   <!--  <TimeSlicing/>-->
   <!--    <AxiosDemo/>-->
   <!--  <Templates/>-->
-  <!--  <PicLazy/>-->
+<!--    <PicLazy/>-->
   <!--  <FormElementUI/>-->
   <!--  <PageDemo/>-->
-  <!--    <StyleDemo/>-->
+  <!--  <StyleDemo/>-->
+<!--  <SSE/>-->
+<!--  <WebSocket/>-->
 </template>
 
 <script>
@@ -64,8 +66,10 @@ import FormElementUI from "./pages/FormElementUI.vue";
 import PageDemo from "./pages/PageDemo.vue";
 //css预处理器使用
 import StyleDemo from './pages/StyleDemo.vue';
-
-
+//chatgpt 流传输 一个字一个字蹦出来
+import SSE from './pages/SSE.vue';
+//websocket
+import WebSocket from "./pages/WebSocket.vue";
 export default {
   name: 'App',
   components: {
@@ -89,7 +93,9 @@ export default {
     PicLazy,
     FormElementUI,
     PageDemo,
-    StyleDemo
+    StyleDemo,
+    SSE,
+    WebSocket
   },
 
   setup(props) {

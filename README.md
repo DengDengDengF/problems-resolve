@@ -43,7 +43,7 @@ github地址：https://github.com/hymhub/pdf-vue3
 ### 3.文件上传、断点续传
 
 ```js
-按照指定大小对文件进行拆分，要求每片文件都有hash、name、uploaded(是否上传)等信息
+按照指定大小对文件进行拆分，要求每片文件都有file、filehash、uploaded(是否上传)、chunkIndex等信息
 上传每片文件、合并这些文件
 断点续传，就是检查文件的uploaded,对未上传的进行上传，最后进行合并
 ```
@@ -278,7 +278,7 @@ const {top,right,bottom,left,} = element.getBoundingClientRect();拿到视口位
 
 ```js
 https://juejin.cn/post/7283422522535673856
-变量、计算、混入、函数、通过函数动态计算、导入、继承
+变量、计算、混入、函数、通过函数动态计算、导入、继承、	嵌套
 ```
 
 ### 20.SSE(Server-Sent-Events)，实现chatgpt一个字一个字跳出来
@@ -323,5 +323,14 @@ https://juejin.cn/post/7283422522535673856
 ```
 1.SSE 是比较适合单向数据传递的场景，尤其是当不需要从客户端频繁地向服务器发送数据时。SSE 可以用标准 HTTP 服务实现，对于服务器的改造相对较小。
 2.WebSocket 比 SSE 更为强大，适用于需要快速、双向通信的应用。WebSocket 更复杂，需要专门的服务器和客户端支持。然而，它们提供了更低的延迟和更灵活的通信能力。
+```
+
+### 23.在线视频、直播
+
+```js
+在线视频使用,vue3-video-play
+在线直播使用,LivePlayer
+
+livePlayer直播的时候可以隐藏滚动条，vue3-video-play配置起来更简单
 ```
 

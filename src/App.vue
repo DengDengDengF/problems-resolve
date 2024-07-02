@@ -16,12 +16,14 @@
   <!--  <TimeSlicing/>-->
   <!--    <AxiosDemo/>-->
   <!--  <Templates/>-->
-<!--    <PicLazy/>-->
+  <!--    <PicLazy/>-->
   <!--  <FormElementUI/>-->
   <!--  <PageDemo/>-->
   <!--  <StyleDemo/>-->
-<!--  <SSE/>-->
-<!--  <WebSocket/>-->
+  <!--  <SSE/>-->
+  <!--  <WebSocket/>-->
+  <!--  <Live/>-->
+  <!--  <Live2/>-->
 </template>
 
 <script>
@@ -70,6 +72,11 @@ import StyleDemo from './pages/StyleDemo.vue';
 import SSE from './pages/SSE.vue';
 //websocket
 import WebSocket from "./pages/WebSocket.vue";
+//在线播放
+import Live from './pages/Live.vue';
+//在线直播
+import Live2 from "./pages/Live2.vue";
+
 export default {
   name: 'App',
   components: {
@@ -95,7 +102,9 @@ export default {
     PageDemo,
     StyleDemo,
     SSE,
-    WebSocket
+    WebSocket,
+    Live,
+    Live2
   },
 
   setup(props) {

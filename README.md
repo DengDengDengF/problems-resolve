@@ -334,3 +334,16 @@ https://juejin.cn/post/7283422522535673856
 livePlayer直播的时候可以隐藏滚动条，vue3-video-play配置起来更简单
 ```
 
+### 24.路由
+
+```js
+实现简易的 vue-router-hash
+1.写个路由对象
+2.监听hashChange事件，得到hash改变后的url
+window.addEventListener('hashchange', () => {
+  currentPath.value = window.location.hash
+})
+3.判断url是否在路由对象内，jue'ding
+
+```
+

@@ -22,8 +22,9 @@
   <!--  <StyleDemo/>-->
   <!--  <SSE/>-->
   <!--  <WebSocket/>-->
-  <!--  <Live/>-->
-  <!--  <Live2/>-->
+  <!--    <Live/>-->
+  <!--     <Live2/>-->
+  <RouterDemo/>
 </template>
 
 <script>
@@ -76,7 +77,8 @@ import WebSocket from "./pages/WebSocket.vue";
 import Live from './pages/Live.vue';
 //在线直播
 import Live2 from "./pages/Live2.vue";
-
+//路由实现
+import RouterDemo from "./pages/RouterDemo.vue";
 export default {
   name: 'App',
   components: {
@@ -104,9 +106,9 @@ export default {
     SSE,
     WebSocket,
     Live,
-    Live2
+    Live2,
+    RouterDemo
   },
-
   setup(props) {
 
   }

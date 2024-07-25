@@ -3,7 +3,9 @@
     <LivePlayer
         style="width: 50%;height: 50%;"
         @message="message"
-        videoUrl="https://livedoc.cgtn.com/500d/prog_index.m3u8" fluent autoplay live stretch></LivePlayer>
+        alt="无信号"
+        video-title="demo test"
+        videoUrl="http://liveru.cgtn.com/1000r/prog_index.m3u8" fluent autoplay live stretch></LivePlayer>
   </div>
 </template>
 
@@ -17,8 +19,9 @@ export default {
     LivePlayer
   },
   setup() {
+
     const message = () => {
-         console.log('ss')
+
     };
     return {message}
   }

@@ -30,15 +30,16 @@ function getDomain() {
 }
 
 async function handleRedirect() {
+    //共享全局登录状态的token
     const token = getCookie('token');
     if (!token) {
         // 如果没有token，重定向到登录页面
         window.location.href = '/login';
         return;
     }
-    //用token换取code.
+    //用token换取code.code授权码可以后续用来换令牌(refreshToken、accessToken等)
     const code = await fetchCode(token);
-    //code为啥可以是空？
+    //code为啥可以是空？因为有可能共享全局状态的token失效了。
     if (!code) {
         // 如果code为空，清除cookie并重定向到登录页面
         document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
@@ -71,7 +72,7 @@ document.getElementById('loginButton').addEventListener('click', async () => {
     try {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        //输入用户名，输入密码，登录成功可以拿到token.
+        //输入用户名，输入密码，登录成功可以拿到token,这里的token只是为了共享登录状态
         await loginUser(username, password);
         handleRedirect();
     } catch (error) {

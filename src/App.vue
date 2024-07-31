@@ -25,7 +25,7 @@
   <!--    <Live/>-->
   <!--     <Live2/>-->
   <!--  <RouterDemo/>-->
-  <SingleSignOn/>
+  <!--  <SingleSignOn/>-->
 </template>
 
 <script>
@@ -82,6 +82,8 @@ import Live2 from "./pages/Live2.vue";
 import RouterDemo from "./pages/RouterDemo.vue";
 //单点登录
 import SingleSignOn from "./pages/SingleSignOn.vue";
+//动态路由demo
+import {res} from "./utils/RouteTest.js";
 
 export default {
   name: 'App',
@@ -115,7 +117,7 @@ export default {
     SingleSignOn,
   },
   setup(props) {
-
+    // console.log(res);  //动态路由，这里就不调接口了。
   }
 }
 </script>

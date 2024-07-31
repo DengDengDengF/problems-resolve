@@ -369,3 +369,39 @@ tips:这里的token，是用来共享用户的登录状态。
 后续，访问受保护的内容，可以用code(授权码)换取访问令牌（access token）、刷新令牌（refresh token）、会话令牌（session token）等。
 ```
 
+### 26.动态路由
+
+```js
+// 引入vue-router、挂载在App.vue上等太麻烦了，就直接说理解了。
+1.后台直接拼接好模板了。
+import Vue from 'vue';
+import Router from 'vue-router';
+import App from './App.vue';
+
+Vue.use(Router);
+
+async function fetchRoutes() {
+  try {
+    const response = await fetch('/api/routes'); // 从后台获取路由配置
+    const routes = await response.json();
+
+    // 创建 Router 实例时提供所有路由配置
+    const router = new Router({
+      routes
+    });
+
+    new Vue({
+      render: h => h(App),
+      router
+    }).$mount('#app');
+  } catch (error) {
+    console.error('Failed to fetch routes:', error);
+  }
+}
+
+fetchRoutes();
+
+2.后台没拼接好模板，主要就是嵌套路由引入组件部分。
+```
+
+<img src="https://s2.loli.net/2024/08/01/sPc7BlNaSkpEVRL.png" alt="image.png" style="zoom:50%;" />

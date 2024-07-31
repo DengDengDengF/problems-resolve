@@ -67,15 +67,20 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
+
 // 登录按钮点击事件
-document.getElementById('loginButton').addEventListener('click', async () => {
-    try {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        //输入用户名，输入密码，登录成功可以拿到token,这里的token只是为了共享登录状态
-        await loginUser(username, password);
-        handleRedirect();
-    } catch (error) {
-        console.error('登录过程出错:', error);
-    }
-});
+function login() {
+    document.getElementById('loginButton').addEventListener('click', async () => {
+        try {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            //输入用户名，输入密码，登录成功可以拿到token,这里的token只是为了共享登录状态
+            await loginUser(username, password);
+            handleRedirect();
+        } catch (error) {
+            console.error('登录过程出错:', error);
+        }
+    });
+}
+
+export {login};

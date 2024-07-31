@@ -347,3 +347,25 @@ window.addEventListener('hashchange', () => {
 
 ```
 
+### 25.单点登录
+
+```js
+//参考https://juejin.cn/post/7088978055737114638
+1.同域 用cookie设置主域，所有的子域都可以访问到主域的cookie.
+2.不同域,部署SSO(Single Sign On)认证中心
+    1.输入用户名、密码进行登录。登录成功获取token。存储在cookie中。
+    2.从cookie中获取token,
+       token不存在跳转到登录页。
+       token存在，用token换取code。
+       code不存在，清除cookie,跳转登录页。
+       code存在，同域，直接将redirectUrl返回，,无需携带code接口返回的值，然后跳转。
+       code存在，不同域，也就是第三方系统，redirecturl 拼接 code 后重定向到redirecturl.
+    3.用户退出后，
+       调用注销Api,
+       清除cookie
+       重定向到登录页。
+
+tips:这里的token，是用来共享用户的登录状态。
+后续，访问受保护的内容，可以用code(授权码)换取访问令牌（access token）、刷新令牌（refresh token）、会话令牌（session token）等。
+```
+

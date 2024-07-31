@@ -8,7 +8,7 @@
   <!--  <TreeShow/>-->
   <!--  <AsyncRequest/>-->
   <!--  <StrategyLogin/>-->
-  <!--  <DragSort/>-->
+  <!--    <DragSort/>-->
   <!--  <DragSortablejs/>-->
   <!--  <MemoryLeak/>-->
   <!--   <HooksDemo/>-->
@@ -24,7 +24,8 @@
   <!--  <WebSocket/>-->
   <!--    <Live/>-->
   <!--     <Live2/>-->
-  <RouterDemo/>
+  <!--  <RouterDemo/>-->
+  <SingleSignOn/>
 </template>
 
 <script>
@@ -79,6 +80,9 @@ import Live from './pages/Live.vue';
 import Live2 from "./pages/Live2.vue";
 //路由实现
 import RouterDemo from "./pages/RouterDemo.vue";
+//单点登录
+import SingleSignOn from "./pages/SingleSignOn.vue";
+
 export default {
   name: 'App',
   components: {
@@ -107,7 +111,8 @@ export default {
     WebSocket,
     Live,
     Live2,
-    RouterDemo
+    RouterDemo,
+    SingleSignOn,
   },
   setup(props) {
 

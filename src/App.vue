@@ -8,24 +8,25 @@
   <!--  <TreeShow/>-->
   <!--  <AsyncRequest/>-->
   <!--  <StrategyLogin/>-->
-  <!--    <DragSort/>-->
+  <!--  <DragSort/>-->
   <!--  <DragSortablejs/>-->
   <!--  <MemoryLeak/>-->
-  <!--   <HooksDemo/>-->
+  <!--  <HooksDemo/>-->
   <!--  <Virtualized/>-->
   <!--  <TimeSlicing/>-->
-  <!--    <AxiosDemo/>-->
+  <!--  <AxiosDemo/>-->
   <!--  <Templates/>-->
-  <!--    <PicLazy/>-->
+  <!--  <PicLazy/>-->
   <!--  <FormElementUI/>-->
   <!--  <PageDemo/>-->
   <!--  <StyleDemo/>-->
   <!--  <SSE/>-->
   <!--  <WebSocket/>-->
-  <!--    <Live/>-->
-  <!--     <Live2/>-->
+  <!--  <Live/>-->
+  <!--  <Live2/>-->
   <!--  <RouterDemo/>-->
   <!--  <SingleSignOn/>-->
+  <VueSend/>
 </template>
 
 <script>
@@ -84,7 +85,8 @@ import RouterDemo from "./pages/RouterDemo.vue";
 import SingleSignOn from "./pages/SingleSignOn.vue";
 //动态路由demo
 import {res} from "./utils/RouteTest.js";
-
+//vue3.0 组件传值
+import VueSend from "./pages/VueSend.vue";
 export default {
   name: 'App',
   components: {
@@ -115,9 +117,11 @@ export default {
     Live2,
     RouterDemo,
     SingleSignOn,
+    VueSend,
   },
   setup(props) {
     // console.log(res);  //动态路由，这里就不调接口了。
+
   }
 }
 </script>

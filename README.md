@@ -405,3 +405,12 @@ fetchRoutes();
 ```
 
 <img src="https://s2.loli.net/2024/08/01/sPc7BlNaSkpEVRL.png" alt="image.png" style="zoom:50%;" />
+
+### 27.vue3.0组件传值
+
+```js
+父子传值：父传子props,子传父emit
+跨层级传输：provide inject
+复杂组件：vuex;
+```
+

@@ -28,6 +28,8 @@ npm run dev
 vue文件:通过props传入参数，依据参数进行显示，编写css
 js文件：调取vue文件，传入必要参数，利用vue的unmount去卸载组件
 调取js文件传入参数，参数以props的形式流动
+
+这里可以结合dom闭包卸载
 ```
 
 ### 2.pdf封装
@@ -372,36 +374,16 @@ tips:这里的token，是用来共享用户的登录状态。
 ### 26.动态路由
 
 ```js
-// 引入vue-router、挂载在App.vue上等太麻烦了，就直接说理解了。
-1.后台直接拼接好模板了。
-import Vue from 'vue';
-import Router from 'vue-router';
-import App from './App.vue';
-
-Vue.use(Router);
-
-async function fetchRoutes() {
-  try {
-    const response = await fetch('/api/routes'); // 从后台获取路由配置
-    const routes = await response.json();
-
-    // 创建 Router 实例时提供所有路由配置
-    const router = new Router({
-      routes
-    });
-
-    new Vue({
-      render: h => h(App),
-      router
-    }).$mount('#app');
-  } catch (error) {
-    console.error('Failed to fetch routes:', error);
-  }
-}
-
-fetchRoutes();
-
-2.后台没拼接好模板，主要就是嵌套路由引入组件部分。
+//https://blog.csdn.net/lzfengquan/article/details/122918158
+beforeEach路由拦截
+      if(本地没有路由数据){
+          1.axios后台获取路由
+          2.使用递归对路由 componets组件拼接
+          3.使用addRoutes添加路由
+          4.拿到路由后再next()
+      }else{
+          next();
+      }
 ```
 
 <img src="https://s2.loli.net/2024/08/01/sPc7BlNaSkpEVRL.png" alt="image.png" style="zoom:50%;" />

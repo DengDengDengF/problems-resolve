@@ -10,15 +10,15 @@
 <script>
 import {onMounted, onUnmounted, ref, watch} from "vue";
 //调接口
-import {useFetch} from "../utils/hooks/useFetch.js";
+import {useFetch} from "../../utils/hooks/useFetch.js";
 //计数器
-import {useCounter} from "../utils/hooks/useCounter.js";
+import {useCounter} from "../../utils/hooks/useCounter.js";
 //布尔切换
-import {useToggle} from "../utils/hooks/useToggle.js";
+import {useToggle} from "../../utils/hooks/useToggle.js";
 //改变窗口size
-import {useWindowSize} from "../utils/hooks/useWindowSize.js";
+import {useWindowSize} from "../../utils/hooks/useWindowSize.js";
 //测试自定义hooks中使用  生命周期以及watch
-import {useTest} from "../utils/hooks/useTest.js";
+import {useTest} from "../../utils/hooks/useTest.js";
 
 export default {
   name: "HooksDemo",

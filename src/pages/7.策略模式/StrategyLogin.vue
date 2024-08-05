@@ -17,7 +17,7 @@
 
 <script>
 import {onMounted} from "vue";
-import {strategies} from "../utils/strategies.js";
+import {strategies} from "../../utils/strategies.js";
 
 export default {
   name: "StrategyLogin",

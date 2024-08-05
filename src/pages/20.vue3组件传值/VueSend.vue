@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import received from '../components/receivedValue/received.vue';
-import received2 from "../components/receivedValue/received2.vue";
+import received from '../../components/receivedValue/received.vue';
+import received2 from "../../components/receivedValue/received2.vue";
 import {ref,provide} from "vue";
 
 export default {

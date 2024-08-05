@@ -17,7 +17,7 @@
 <script>
 
 import {ref, reactive} from "vue";
-import {useVirtualList} from "../utils/hooks/useVirtualList/useVirtualList.js";
+import {useVirtualList} from "../../utils/hooks/useVirtualList/useVirtualList.js";
 
 export default {
   name: "virtualized",

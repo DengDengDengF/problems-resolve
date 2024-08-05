@@ -6,7 +6,7 @@
 
 
 <script>
-import cascader from "../components/cascader.vue";
+import cascader from "../../components/cascader.vue";
 import {reactive} from "vue";
 
 export default {

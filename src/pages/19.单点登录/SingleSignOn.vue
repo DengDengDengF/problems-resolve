@@ -14,11 +14,11 @@
 
 <script>
 //cookie跨域测试
-import {createCookies} from "../utils/sso/sso-cookie.js";
-import  "../utils/sso/sso-center.js";
+import {createCookies} from "../../utils/sso/sso-cookie.js";
+import  "../../utils/sso/sso-center.js";
 //这里引入两个页面测试
-import page1 from "../components/cookieorigin/page1.vue";
-import page2 from "../components/cookieorigin/page2.vue";
+import page1 from "../../components/cookieorigin/page1.vue";
+import page2 from "../../components/cookieorigin/page2.vue";
 
 export default {
   name: "SingleSignOn",

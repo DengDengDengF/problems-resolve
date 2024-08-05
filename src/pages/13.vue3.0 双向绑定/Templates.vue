@@ -10,7 +10,7 @@
 
 <script>
 //https://segmentfault.com/a/1190000044769265
-import {ref} from '../utils/vue3/Observe.js';
+import {ref} from '../../utils/vue3/Observe.js';
 export default {
   name: "templates",
   setup() {

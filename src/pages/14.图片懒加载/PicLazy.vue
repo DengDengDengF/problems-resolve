@@ -19,7 +19,7 @@
  * const {top,right,bottom,left,} = element.getBoundingClientRect();拿到视口位置
  * 在视口内部，就取消lazy类，并src=data-src
  * */
-import picBounding from "../utils/piclazy/picBounding.js";
+import picBounding from "../../utils/piclazy/picBounding.js";
 import {onMounted, onUnmounted, ref} from "vue";
 
 export default {

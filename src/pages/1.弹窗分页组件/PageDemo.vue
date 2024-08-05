@@ -11,7 +11,7 @@
 
 <script>
 import {ref} from 'vue';
-import MyPage from "../components/MyPage.vue";
+import MyPage from "../../components/MyPage.vue";
 
 export default {
   components: {

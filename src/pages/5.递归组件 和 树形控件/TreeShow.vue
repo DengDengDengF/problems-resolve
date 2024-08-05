@@ -6,7 +6,7 @@
 
 
 <script>
-import Tree from '../components/Tree.vue';
+import Tree from '../../components/Tree.vue';
 import {reactive} from "vue";
 
 export default {

@@ -8,9 +8,9 @@
 
 
 <script>
-import '../utils/spark-md5.js';
+import '../../utils/spark-md5.js';
 import {ref} from "vue";
-import Dialog from '../utils/Dialog.js'
+import Dialog from '../../utils/Dialog.js'
 
 export default {
   name: "FileSplit",

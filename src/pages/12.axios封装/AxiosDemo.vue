@@ -18,10 +18,10 @@
 
 
 <script>
-import {add, echo} from "../http/api/test.js";
+import {add, echo} from "../../http/api/test.js";
 import {nextTick, ref} from "vue";
 //父子传参 vue3.0
-import demoTest from "../components/demoTest.vue";
+import demoTest from "../../components/demoTest.vue";
 export default {
   name: "AxiosDemo",
   components:{demoTest},

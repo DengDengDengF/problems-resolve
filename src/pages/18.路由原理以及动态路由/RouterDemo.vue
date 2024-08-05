@@ -1,8 +1,8 @@
 <script setup>
 import {ref, computed} from 'vue'
-import Home from '../components/RouterDemo/Home.vue'
-import About from '../components/RouterDemo/About.vue'
-import NotFound from '../components/RouterDemo/NotFound.vue'
+import Home from '../../components/RouterDemo/Home.vue'
+import About from '../../components/RouterDemo/About.vue'
+import NotFound from '../../components/RouterDemo/NotFound.vue'
 
 const routes = {
   '/': Home,

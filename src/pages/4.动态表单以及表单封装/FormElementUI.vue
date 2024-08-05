@@ -24,7 +24,7 @@
 
 <script>
 //封装后的表单
-import MyForm from "../components/MyForm.vue";
+import MyForm from "../../components/MyForm.vue";
 import {reactive, onMounted, ref} from "vue";
 
 export default {

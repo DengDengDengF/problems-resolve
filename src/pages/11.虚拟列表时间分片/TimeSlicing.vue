@@ -14,7 +14,7 @@
 <script>
 
 import {ref, reactive} from "vue";
-import {useTimeSlicing} from "../utils/hooks/useTimeSlicing/useTimeSlicing.js";
+import {useTimeSlicing} from "../../utils/hooks/useTimeSlicing/useTimeSlicing.js";
 
 export default {
   name: "TimeSlicing",

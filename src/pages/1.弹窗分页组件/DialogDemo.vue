@@ -1,5 +1,5 @@
 <script>
-import Dialog from '../utils/Dialog.js';
+import Dialog from '../../utils/Dialog.js';
 export default {
   name: "DialogDemo",
   setup(props) {

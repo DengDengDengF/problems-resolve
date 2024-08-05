@@ -14,7 +14,7 @@
 
 
 <script>
-import {concurrencyRequest, TaskQueue, sortRequest, byRequest} from '../utils/concurrencyRequest.js'
+import {concurrencyRequest, TaskQueue, sortRequest, byRequest} from '../../utils/concurrencyRequest.js'
 //10个请求，1次并发5个, 模式在我写的READEME.md中有详细过程。
 export default {
   name: "AsyncRequest",

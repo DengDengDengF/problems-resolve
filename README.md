@@ -45,9 +45,28 @@ github地址：https://github.com/hymhub/pdf-vue3
 ### 3.文件上传、断点续传
 
 ```js
-按照指定大小对文件进行拆分，要求每片文件都有file、filehash、uploaded(是否上传)、chunkIndex等信息
+按照指定大小对文件进行拆分，要求每片文件都有file、filehash、uploaded(是否上传)、chunkIndex等信息。
+1.文件切片的流程，就是通过记录切片位置和一次性切片大小，进行分割文件。
+2.获取哈希的流程，就是读取流，然后用SparkMD5获取文件哈希。
+3.涉及到分批后批量上传，使用基于队列的文件分批上传
+4.上传成功后uploaded是true,否则为false
+5.断点续传就是对uploaded是false的进行上传
+
 上传每片文件、合并这些文件
-断点续传，就是检查文件的uploaded,对未上传的进行上传，最后进行合并
+
+
+tips: 
+//读取blob，用于获取文件哈希等
+const fileReader = new FileReader();
+fileReader.readAsArrayBuffer(file);
+//blob流转base64，用于图片转base64
+const reader = new FileReader();
+reader.readAsDataURL(file);
+//文件发送
+let fd = new FormData();//要发送的表单数据
+fd.append('file', chunk.file);
+fd.append('fileHash', chunk.fileHash);
+fd.append('chunkIndex', chunk.chunkIndex);
 ```
 
 ### 4.动态表单

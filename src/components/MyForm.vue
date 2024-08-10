@@ -281,7 +281,6 @@ export default {
       //   console.log("callback", callback);
       //   console.log("校验某一项的规则对象", rule);
       //   console.log("用户输入的值", value);
-
       // 对输入框类型的校验,如果通过了
       if (value) {
         if ((value + "").length > 0) {

@@ -58,7 +58,6 @@ export default {
       return chunks;
     }
 
-
     // 单个文件上传
     const uploadHandler = (chunk) => {
       return new Promise(async (resolve, reject) => {

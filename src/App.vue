@@ -3,7 +3,7 @@
   <!--  <PdfDemo/>-->
   <!--  <PdfHeigh/>-->
   <!--  <FileSplit/>-->
-  <!--  <DynamicForm/>-->
+<!--    <DynamicForm/>-->
   <!--  <Recursive/>-->
   <!--  <TreeShow/>-->
   <!--  <AsyncRequest/>-->
@@ -17,16 +17,16 @@
   <!--  <AxiosDemo/>-->
   <!--  <Templates/>-->
   <!--  <PicLazy/>-->
-  <!--  <FormElementUI/>-->
-  <!--  <PageDemo/>-->
-  <!--  <StyleDemo/>-->
+<!--    <FormElementUI/>-->
+<!--    <PageDemo/>-->
+    <StyleDemo/>
   <!--  <SSE/>-->
   <!--  <WebSocket/>-->
   <!--  <Live/>-->
-<!--    <Live2/>-->
+ <!--   <Live2/>-->
   <!--  <RouterDemo/>-->
   <!--  <SingleSignOn/>-->
-<!--  <VueSend/>-->
+<!--    <VueSend/>-->
 </template>
 
 <script>

@@ -28,8 +28,6 @@
 
 <script>
 import {onMounted, reactive, ref} from "vue";
-
-
 export default {
   name: "DynamicForm",
   setup(props) {

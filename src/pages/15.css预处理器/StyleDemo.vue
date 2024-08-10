@@ -2,6 +2,7 @@
   <div>
     <div id="var"><span>变量</span></div>
     <div id="test">test</div>
+    <div id="module">module</div>
   </div>
 </template>
 
@@ -14,6 +15,9 @@ export default {
 
 
 <style scoped lang="less">
+@import "src/assets/modules/mixns.less";
+@import "src/assets/modules/variables.less";
+
 //导入
 //@import '';
 // 变量使用
@@ -63,6 +67,14 @@ export default {
   .calcWidth();
   width: @width;
   border: 1px solid red;
+}
+
+//使用module
+#module {
+  color: @primary-color;
+  font-size: @font-size;
+  .border-radius(10px);
+  border: solid black;
 }
 
 /**

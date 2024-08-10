@@ -300,6 +300,10 @@ const {top,right,bottom,left,} = element.getBoundingClientRect();拿到视口位
 ```js
 https://juejin.cn/post/7283422522535673856
 变量、计算、混入、函数、通过函数动态计算、导入、继承、	嵌套
+
+less 和 sass区别
+sass有复杂的控制结构和函数支持 @if @for @each @while
+sass解决了命名冲突问题 @use
 ```
 
 ### 20.SSE(Server-Sent-Events)，实现chatgpt一个字一个字跳出来

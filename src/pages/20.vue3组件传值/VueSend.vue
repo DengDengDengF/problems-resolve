@@ -7,23 +7,30 @@
   </div>
   <br/>
   <div style="border: 1px solid black;height: 100px">
-       <received2/>
+    <received2/>
+  </div>
+  <br/>
+  <div style="border: 1px solid black;height: 100px">
+    <received3 v-model="res"/>
+    {{res}}
   </div>
 </template>
 
 <script>
 import received from '../../components/receivedValue/received.vue';
 import received2 from "../../components/receivedValue/received2.vue";
-import {ref,provide} from "vue";
+import received3 from "../../components/receivedValue/received3.vue";
+import {ref, provide} from "vue";
 
 export default {
   name: "VueSend",
   components: {
-    received, received2,
+    received, received2,received3
   },
   setup(props, context) {
     const message = ref(1);
-    const data=ref('Hello World');
+    const data = ref('Hello World');
+    const res=ref('res');
     //接受子传过来的值
     const reset = (val) => {
       message.value = val;
@@ -32,6 +39,7 @@ export default {
     return {
       message,
       reset,
+      res,
     }
   }
 }

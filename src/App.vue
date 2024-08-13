@@ -1,7 +1,7 @@
 <template>
   <!--  <DialogDemo/>-->
-  <!--  <PdfDemo/>-->
-  <!--  <PdfHeigh/>-->
+<!--    <PdfDemo/>-->
+<!--    <PdfHeigh/>-->
   <!--  <FileSplit/>-->
 <!--    <DynamicForm/>-->
   <!--  <Recursive/>-->
@@ -19,14 +19,14 @@
   <!--  <PicLazy/>-->
 <!--    <FormElementUI/>-->
 <!--    <PageDemo/>-->
-    <StyleDemo/>
+<!--    <StyleDemo/>-->
   <!--  <SSE/>-->
   <!--  <WebSocket/>-->
   <!--  <Live/>-->
  <!--   <Live2/>-->
   <!--  <RouterDemo/>-->
   <!--  <SingleSignOn/>-->
-<!--    <VueSend/>-->
+    <VueSend/>
 </template>
 
 <script>

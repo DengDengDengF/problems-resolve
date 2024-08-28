@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import {getCurrentInstance} from "vue";
+
 export default {
   name: "received",
   //接受父传过来的值
@@ -17,9 +19,19 @@ export default {
     }
   },
   setup(props, context) {
+
+    //探索this
+    // 获取当前组件实例
+    const instance = getCurrentInstance();
+    // 获取当前组件的上下文，下面两种方式都能获取到组件的上下文。
+    const { ctx }  = getCurrentInstance();  //  方式一，这种方式只能在开发环境下使用，生产环境下的ctx将访问不到
+    const { proxy }  = getCurrentInstance();  //  方式二，此方法在开发环境以及生产环境下都能放到组件上下文对象（推荐）
+
+
     const reset = () => {
       //向父传值
-      context.emit('reset', 1);
+      // context.emit('reset', 1);
+      instance.proxy.$emit('reset',100);
     }
     return {reset,};
   }

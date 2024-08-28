@@ -22,6 +22,8 @@ import received2 from "../../components/receivedValue/received2.vue";
 import received3 from "../../components/receivedValue/received3.vue";
 import {ref, provide} from "vue";
 
+
+
 export default {
   name: "VueSend",
   components: {

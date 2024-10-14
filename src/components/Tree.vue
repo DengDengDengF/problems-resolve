@@ -13,8 +13,8 @@
   </div>
 </template>
 
-
 <script>
+
 import {defineComponent, getCurrentInstance} from 'vue';
 
 export default defineComponent({

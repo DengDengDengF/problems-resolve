@@ -1,5 +1,5 @@
 <template>
-  <!--  <DialogDemo/>-->
+<!--    <DialogDemo/>-->
 <!--    <PdfDemo/>-->
 <!--    <PdfHeigh/>-->
   <!--  <FileSplit/>-->
@@ -27,6 +27,8 @@
   <!--  <RouterDemo/>-->
   <!--  <SingleSignOn/>-->
   <!--  <VueSend/>-->
+  <FormDrag/>
+<!--  <WebScene/>-->
 </template>
 
 <script>
@@ -87,6 +89,10 @@ import SingleSignOn from "./pages/19.单点登录/SingleSignOn.vue";
 import {res} from "./utils/RouteTest.js";
 //vue3.0 组件传值
 import VueSend from "./pages/20.vue3组件传值/VueSend.vue";
+//前端场景题
+import WebScene from "./pages/21.场景题/WebScene.vue";
+//form拖拽
+import FormDrag from "./pages/8.拖拽排序/FormDrag.vue"
 export default {
   name: 'App',
   components: {
@@ -118,6 +124,7 @@ export default {
     RouterDemo,
     SingleSignOn,
     VueSend,
+    WebScene,FormDrag
   },
   setup(props) {
     // console.log(res);  //动态路由，这里就不调接口了。

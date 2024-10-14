@@ -28,7 +28,6 @@
   <!--  <SingleSignOn/>-->
   <!--  <VueSend/>-->
   <FormDrag/>
-<!--  <WebScene/>-->
 </template>
 
 <script>

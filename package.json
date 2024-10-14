@@ -18,6 +18,7 @@
     "pdfjs-dist": "^4.3.136",
     "qs": "^6.12.1",
     "rollup-plugin-copy": "^3.5.0",
+    "sass-embedded": "^1.79.4",
     "sortablejs": "^1.15.2",
     "vue": "^3.4.21",
     "vue-pdf-embed": "^2.0.4",

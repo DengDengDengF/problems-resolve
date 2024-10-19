@@ -28,7 +28,10 @@
   <!--  <SingleSignOn/>-->
   <!--  <VueSend/>-->
 <!--  <FormDrag/>-->
-  <ElCas/>
+<!--  <ElCas/>-->
+<!--  <ElTree/>-->
+<!--  <ElTreeEdit/>-->
+  <CascaderComplex/>
 </template>
 
 <script>
@@ -95,6 +98,10 @@ import WebScene from "./pages/21.场景题/WebScene.vue";
 import FormDrag from "./pages/8.拖拽排序/FormDrag.vue"
 //cascader
 import ElCas from "./pages/5.递归组件 和 树形控件/ElCascader.vue"
+//抽象树
+import ElTree from "./pages/5.递归组件 和 树形控件/El-Tree-Add.vue"
+import ElTreeEdit from "./pages/5.递归组件 和 树形控件/EL-Tree-Edit.vue"
+import CascaderComplex from "./pages/5.递归组件 和 树形控件/Cascader-complex.vue";
 export default {
   name: 'App',
   components: {
@@ -126,7 +133,7 @@ export default {
     RouterDemo,
     SingleSignOn,
     VueSend,
-    WebScene,FormDrag,ElCas
+    WebScene,FormDrag,ElCas,ElTree,ElTreeEdit,CascaderComplex
   },
   setup(props) {
     // console.log(res);  //动态路由，这里就不调接口了。

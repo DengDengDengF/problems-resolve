@@ -31,7 +31,8 @@
 <!--  <ElCas/>-->
 <!--  <ElTree/>-->
 <!--  <ElTreeEdit/>-->
-  <CascaderComplex/>
+<!--  <CascaderComplex/>-->
+  <MultiFormCheck/>
 </template>
 
 <script>
@@ -102,6 +103,8 @@ import ElCas from "./pages/5.递归组件 和 树形控件/ElCascader.vue"
 import ElTree from "./pages/5.递归组件 和 树形控件/El-Tree-Add.vue"
 import ElTreeEdit from "./pages/5.递归组件 和 树形控件/EL-Tree-Edit.vue"
 import CascaderComplex from "./pages/5.递归组件 和 树形控件/Cascader-complex.vue";
+//form表单 复杂校验
+import MultiFormCheck from "./pages/5.递归组件 和 树形控件/MutilFormCheck.vue"
 export default {
   name: 'App',
   components: {
@@ -133,7 +136,8 @@ export default {
     RouterDemo,
     SingleSignOn,
     VueSend,
-    WebScene,FormDrag,ElCas,ElTree,ElTreeEdit,CascaderComplex
+    WebScene,FormDrag,ElCas,ElTree,ElTreeEdit,CascaderComplex,
+    MultiFormCheck
   },
   setup(props) {
     // console.log(res);  //动态路由，这里就不调接口了。

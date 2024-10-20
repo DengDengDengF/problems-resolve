@@ -1,18 +1,14 @@
 <template>
-
   <div>
     <el-form :model="form" :rules="formRules" ref="formRef">
-      <!-- 使用 draggable 包裹表单项实现拖动 -->
-      <draggable v-model="formItems" @end="onDragEnd" handle=".drag-handle">
+      <draggable v-model="formItems" @end="onDragEnd" handle=".drag-handle" animation="300" item-key="key">
         <template #item="{ element, index }">
           <div :key="element.key">
-            <el-form-item  :prop="element.key">
-              <!-- 拖动句柄 -->
+            <el-form-item :prop="element.key">
               <span class="drag-handle" style="cursor: grab;">&#x2630;</span>
-              <el-input v-model="form[element.key]"   style="width: 240px;padding: 10px" placeholder="Please input"/>
+              <el-input v-model="form[element.key]" style="width: 240px;padding: 10px" placeholder="Please input" />
               <el-button type="danger" @click="removeFormItem(index)">移除</el-button>
             </el-form-item>
-
           </div>
         </template>
       </draggable>
@@ -24,7 +20,6 @@
 </template>
 
 <script setup lang="ts">
-//npm i -S vuedraggable@next
 import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import draggable from 'vuedraggable';
@@ -38,24 +33,36 @@ let uniqueId = 1;
 
 // 添加表单项
 const addFormItem = () => {
-  const key = `prop${uniqueId++}`; // 使用自增变量生成唯一的 key
+  const key = `prop${uniqueId++}`;
   formItems.value.push({ key });
-  form.value[key] = ''; // 初始化该字段的值
-  formRules.value[key] = [{ required: true, message: `字段 ${key} 不能为空`, trigger: 'blur' }]; // 添加校验规则
+  form.value[key] = '';
+  formRules.value[key] = [{ required: true, message: `字段 ${key} 不能为空`, trigger: 'blur' }];
 };
 
 // 移除表单项
 const removeFormItem = (index: number) => {
   const key = formItems.value[index].key;
   formItems.value.splice(index, 1);
-  delete form.value[key]; // 删除对应的值
-  delete formRules.value[key]; // 删除对应的校验规则
+  delete form.value[key];
+  delete formRules.value[key];
+  updateFormRules(); // 更新校验规则
 };
 
-// 拖动结束后触发的事件（可选）
+// 拖动结束后触发的事件
 const onDragEnd = () => {
-  console.log('拖动结束，当前顺序：', formItems.value);
+  // console.log('拖动结束，当前顺序：', formItems.value);
+  updateFormRules(); // 更新校验规则
 };
+
+// 更新校验规则
+const updateFormRules = () => {
+  const newRules: Record<string, any> = {};
+  formItems.value.forEach(item => {
+    newRules[item.key] = [{ required: true, message: `字段 ${item.key} 不能为空`, trigger: 'blur' }];
+  });
+  formRules.value = newRules;
+};
+
 const formRef = ref<any>();
 // 校验表单
 const validateForm = () => {

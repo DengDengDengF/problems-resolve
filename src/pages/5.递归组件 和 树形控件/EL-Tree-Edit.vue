@@ -11,7 +11,7 @@
     >
       <template #default="{ node, data }">
         <span class="custom-tree-node">
-          <span>{{ data.title }}</span>
+          <span>{{ data.title }} + {{data.mode}}</span>
           <span v-if="data.mode == 'all' &&  data.children.length==0" >
             <a  :style="{color:data.method.indexOf('post') != -1?'red':'black'}" @click.stop="methodClick(data,'post')"> 编辑 </a>
             <a :style="{color:data.method.indexOf('put') != -1?'red':'black',marginLeft:'8px'}"  @click.stop="methodClick(data,'put')"> 新增 </a>
@@ -74,16 +74,25 @@ function updateModeForChildren(node,pattern) {
 function updateModeForParent(node) {
   if (!node.parent) return; // 如果没有父节点，停止递归
   let noneNum=0;
+  let halfNum=0;
   let children=node.parent.children
   for(let i=0;i<children.length;i++){
+    if(children[i].mode == "half"){
+         halfNum=1;
+         break;
+    }
     if(children[i].mode == "none") noneNum++;
   }
-  if (noneNum==0) {
-    node.parent.mode = 'all';
-  } else if (noneNum < children.length) {
+  if(halfNum > 0){
     node.parent.mode = 'half';
   }else{
-    node.parent.mode = 'none';
+    if (noneNum==0) {
+      node.parent.mode = 'all';
+    } else if (noneNum < children.length) {
+      node.parent.mode = 'half';
+    }else{
+      node.parent.mode = 'none';
+    }
   }
   // 继续向上递归检查父节点
   updateModeForParent(node.parent);

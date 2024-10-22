@@ -30,9 +30,9 @@
 <!--  <FormDrag/>-->
 <!--  <ElCas/>-->
 <!--  <ElTree/>-->
-<!--  <ElTreeEdit/>-->
+  <ElTreeEdit/>
 <!--  <CascaderComplex/>-->
-  <MultiFormCheck/>
+<!--  <MultiFormCheck/>-->
 </template>
 
 <script>

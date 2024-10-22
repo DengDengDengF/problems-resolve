@@ -28,7 +28,6 @@
 import {onMounted, reactive, ref} from 'vue'
 import {dataList} from './menu'
 
-
 const dataSource=ref(null);
 const defaultChecked=reactive([])
 //用哈希 存储 菜单 id当key
@@ -70,29 +69,38 @@ function updateModeForChildren(node,pattern) {
     });
   }
 }
-// 递归函数：向上遍历并更新父节点的 mode
+/**
+ * 递归函数：向上遍历并更新父节点的 mode
+ * 当前节点是 all 父节点"可能"是 half 或者 all,"绝对不可能"是none
+ * 当前节点是 half 父节点"一定"是 half,"绝对不可能"是all或者none
+ * 当前节点是 none  父节点"可能"是 half 或者 none,"绝对不可能"是all
+
+  优化的点，就在这个   “一定”是
+ * */
 function updateModeForParent(node) {
   if (!node.parent) return; // 如果没有父节点，停止递归
+  if(node.mode == "half"){ //当前节点是 half 节点，拿它的父节点、祖父节点、祖祖父节点...都是half节点
+    node.parent.mode="half";
+    updateModeForParent(node.parent);
+    return
+  }
   let noneNum=0;
-  let halfNum=0;
   let children=node.parent.children
   for(let i=0;i<children.length;i++){
-    if(children[i].mode == "half"){
-         halfNum=1;
-         break;
+    if(children[i].mode == "half"){//当前节点兄弟节点有一个是 half 节点，拿它的父节点、祖父节点、祖祖父节点...都是half节点
+      node.parent.mode="half";
+      updateModeForParent(node.parent);
+      return
     }
     if(children[i].mode == "none") noneNum++;
   }
-  if(halfNum > 0){
+  //当前节点的兄弟节点里，没有一个 half 节点，可以通过 none 节点数量判断父节点
+  if (noneNum==0) {
+    node.parent.mode = 'all';
+  } else if (noneNum < children.length) {
     node.parent.mode = 'half';
   }else{
-    if (noneNum==0) {
-      node.parent.mode = 'all';
-    } else if (noneNum < children.length) {
-      node.parent.mode = 'half';
-    }else{
-      node.parent.mode = 'none';
-    }
+    node.parent.mode = 'none';
   }
   // 继续向上递归检查父节点
   updateModeForParent(node.parent);

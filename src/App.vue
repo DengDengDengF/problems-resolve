@@ -33,6 +33,7 @@
 <!--  <ElTreeEdit/>-->
 <!--  <CascaderComplex/>-->
 <!--  <MultiFormCheck/>-->
+  <videoScript/>
 </template>
 
 <script>
@@ -105,6 +106,8 @@ import ElTreeEdit from "./pages/5.递归组件 和 树形控件/EL-Tree-Edit.vue
 import CascaderComplex from "./pages/5.递归组件 和 树形控件/Cascader-complex.vue";
 //form表单 复杂校验
 import MultiFormCheck from "./pages/5.递归组件 和 树形控件/MutilFormCheck.vue"
+//脚本模板
+import videoScript from "./pages/5.递归组件 和 树形控件/video-script/video-script.vue"
 export default {
   name: 'App',
   components: {
@@ -137,7 +140,8 @@ export default {
     SingleSignOn,
     VueSend,
     WebScene,FormDrag,ElCas,ElTree,ElTreeEdit,CascaderComplex,
-    MultiFormCheck
+    MultiFormCheck,
+    videoScript
   },
   setup(props) {
     // console.log(res);  //动态路由，这里就不调接口了。

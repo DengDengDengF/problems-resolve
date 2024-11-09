@@ -34,7 +34,8 @@
 <!--  <CascaderComplex/>-->
 <!--  <MultiFormCheck/>-->
 <!--  <videoScript/>-->
-  <CheckAll/>
+<!--  <CheckAll/>-->
+  <TableHead/>
 </template>
 
 <script>
@@ -110,6 +111,7 @@ import MultiFormCheck from "./pages/5.递归组件 和 树形控件/MutilFormChe
 //脚本模板
 import videoScript from "./pages/5.递归组件 和 树形控件/video-script/video-script.vue"
 import CheckAll from "./pages/4.动态表单以及表单封装/CheckAll.vue"
+import TableHead from "./pages/5.递归组件 和 树形控件/TableHead.vue"
 export default {
   name: 'App',
   components: {
@@ -144,7 +146,8 @@ export default {
     WebScene,FormDrag,ElCas,ElTree,ElTreeEdit,CascaderComplex,
     MultiFormCheck,
     videoScript,
-    CheckAll
+    CheckAll,
+    TableHead
   },
   setup(props) {
     // console.log(res);  //动态路由，这里就不调接口了。

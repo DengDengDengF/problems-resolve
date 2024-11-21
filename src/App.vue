@@ -35,10 +35,11 @@
 <!--  <MultiFormCheck/>-->
 <!--  <videoScript/>-->
 <!--  <CheckAll/>-->
-  <TableHead/>
+<!--  <TableHead/>-->
+  <uploadDemo/>
 </template>
 
-<script>
+<script setup>
 //封装弹窗
 import DialogDemo from "./pages/1.弹窗分页组件/DialogDemo.vue";
 //pdf  传入的方式不是二进制流，比较模糊  参考掘金 https://juejin.cn/post/7105933034771185701
@@ -112,48 +113,8 @@ import MultiFormCheck from "./pages/5.递归组件 和 树形控件/MutilFormChe
 import videoScript from "./pages/5.递归组件 和 树形控件/video-script/video-script.vue"
 import CheckAll from "./pages/4.动态表单以及表单封装/CheckAll.vue"
 import TableHead from "./pages/5.递归组件 和 树形控件/TableHead.vue"
-export default {
-  name: 'App',
-  components: {
-    DialogDemo,
-    PdfDemo,
-    PdfHeigh,
-    FileSplit,
-    DynamicForm,
-    Recursive,
-    TreeShow,
-    AsyncRequest,
-    StrategyLogin,
-    DragSort,
-    DragSortablejs,
-    MemoryLeak,
-    HooksDemo,
-    Virtualized,
-    TimeSlicing,
-    AxiosDemo,
-    Templates,
-    PicLazy,
-    FormElementUI,
-    PageDemo,
-    StyleDemo,
-    SSE,
-    WebSocket,
-    Live,
-    Live2,
-    RouterDemo,
-    SingleSignOn,
-    VueSend,
-    WebScene,FormDrag,ElCas,ElTree,ElTreeEdit,CascaderComplex,
-    MultiFormCheck,
-    videoScript,
-    CheckAll,
-    TableHead
-  },
-  setup(props) {
-    // console.log(res);  //动态路由，这里就不调接口了。
+import uploadDemo from "./pages/5.递归组件 和 树形控件/uploadDemo.vue"
 
-  }
-}
 </script>
 
 <style>

@@ -36,7 +36,8 @@
 <!--  <videoScript/>-->
 <!--  <CheckAll/>-->
 <!--  <TableHead/>-->
-  <uploadDemo/>
+<!--  <uploadDemo/>-->
+  <columnDemo/>
 </template>
 
 <script setup>
@@ -114,7 +115,7 @@ import videoScript from "./pages/5.递归组件 和 树形控件/video-script/vi
 import CheckAll from "./pages/4.动态表单以及表单封装/CheckAll.vue"
 import TableHead from "./pages/5.递归组件 和 树形控件/TableHead.vue"
 import uploadDemo from "./pages/5.递归组件 和 树形控件/uploadDemo.vue"
-
+import columnDemo from "./pages/5.递归组件 和 树形控件/columnDemo.vue"
 </script>
 
 <style>

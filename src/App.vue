@@ -37,7 +37,7 @@
 <!--  <CheckAll/>-->
 <!--  <TableHead/>-->
 <!--  <uploadDemo/>-->
-  <columnDemo/>
+  <columnDemo1/>
 </template>
 
 <script setup>

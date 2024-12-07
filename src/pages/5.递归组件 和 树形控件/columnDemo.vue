@@ -27,7 +27,7 @@ import "element-plus/es/components/table/style/css";
 import "element-plus/es/components/table-column/style/css";
 
 const originData = ref([
-  { type: "选择题", num: "5题", average: "3分/题" },
+  { type: "选择题", num: "6题", average: "3分/题" },
   { type: "填空题", num: "5题", average: "3分/题" },
   { type: "选择题", num: "2题", average: "10分/题" },
 ]);

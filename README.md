@@ -444,3 +444,6 @@ beforeEach路由拦截
 难点不在算法，在于实际业务工程化，反推
 ```
 
+### 30.cookie 搭桥
+
+<img src="https://s2.loli.net/2024/12/12/7ksxPAO8EQawq2S.png" alt="a67957a00836749139bb34e8ba754ee.png" style="zoom:50%;" />

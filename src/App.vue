@@ -37,7 +37,8 @@
 <!--  <CheckAll/>-->
 <!--  <TableHead/>-->
 <!--  <uploadDemo/>-->
-  <columnDemo/>
+<!--  <columnDemo/>-->
+<BlobPic/>
 </template>
 
 <script setup>
@@ -116,6 +117,8 @@ import CheckAll from "./pages/4.动态表单以及表单封装/CheckAll.vue"
 import TableHead from "./pages/5.递归组件 和 树形控件/TableHead.vue"
 import uploadDemo from "./pages/5.递归组件 和 树形控件/uploadDemo.vue"
 import columnDemo from "./pages/5.递归组件 和 树形控件/columnDemo.vue"
+//blob图片
+import BlobPic from "./pages/14.图片懒加载/BlobPic.vue";
 </script>
 
 <style>

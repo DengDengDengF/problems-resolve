@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { nextTick,watch,ref} from 'vue';
+import {nextTick, watch, ref, onMounted} from 'vue';
 const role=ref("")
 const name=ref("")
 
@@ -61,6 +61,7 @@ const handleHeaderClick = (column) => {
       // 判断是"角色"列
       if (column.property === 'users_role.title' && th.innerText.includes('角色')) {
         const filterButton = th.querySelector('.el-table__column-filter-trigger');
+        console.log(filterButton)
         toggleFilterPanel(filterButton, 'role-filter-panel');
         return; // 只处理当前点击的列，其他列忽略
       }
@@ -78,6 +79,7 @@ const handleHeaderClick = (column) => {
 const toggleFilterPanel = (filterButton, filterClassName) => {
   // 根据filterClassName查找对应的filter面板
   const popper = document.querySelector(`.el-popper.${filterClassName}`);
+  console.log(document.querySelector('.el-popper.role-filter-panel'))
   const isVisible = popper && window.getComputedStyle(popper).display !== 'none';
 
   // 如果当前过滤器面板是打开的并且是当前列，返回不做任何操作
@@ -121,4 +123,21 @@ const filterChange=(column)=>{
 //     }
 //   });
 // };
+onMounted(() => {
+  // nextTick(() => {
+  //   // 延时等待面板渲染完成
+  //   setTimeout(() => {
+  //     const filterPanel = document.querySelector('.el-popper.role-filter-panel .el-table-filter__list');
+  //     if (filterPanel) {
+  //       filterPanel.style.maxHeight = '200px'; // 设置自定义高度
+  //       filterPanel.style.overflowY = 'auto';   // 添加垂直滚动条
+  //     } else {
+  //       console.warn('Filter panel not found');
+  //     }
+  //   }, 100); // 调整时间以确保元素加载
+  // });
+});
 </script>
+<style scoped>
+
+</style>

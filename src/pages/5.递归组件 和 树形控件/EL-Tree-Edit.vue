@@ -43,7 +43,7 @@ function createLinkedListFromArray(dataArray, parent = null) {
       mode: "none", // 默认为 none
       parent: parent,
       method:[],
-      children: [],
+      children: []
     };
     if(hashHell.hasOwnProperty(node.id)){
         node.mode=hashHell[node.id].mode

@@ -38,7 +38,7 @@
 <!--  <TableHead/>-->
 <!--  <uploadDemo/>-->
 <!--  <columnDemo/>-->
-<!--<BlobPic/>-->
+<BlobPic/>
 </template>
 
 <script setup>
@@ -134,7 +134,7 @@ import BestDownload from "./pages/23.大文件下载/BestDownload.vue";
 //脚本导出word
 import ScriptExportWord from "./pages/24.脚本导出word/ScriptExportWord.vue";
 //blob图片
-// import BlobPic from "./pages/14.图片懒加载/BlobPic.vue";
+import BlobPic from "./pages/14.图片懒加载/BlobPic.vue";
 //剪切板
 import Clip from "./pages/25.读取剪切板/clip.vue";
 </script>

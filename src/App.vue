@@ -4,8 +4,8 @@
 <!--    <PdfHeigh/>-->
   <!--  <FileSplit/>-->
   <!--  <DynamicForm/>-->
-  <!--  <Recursive/>-->
-  <!--  <TreeShow/>-->
+<!--    <Recursive/>-->
+    <TreeShow/>
   <!--  <AsyncRequest/>-->
   <!--  <StrategyLogin/>-->
   <!--  <DragSort/>-->

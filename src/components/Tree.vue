@@ -6,7 +6,7 @@
         <button @click="select(item)" :class="item.select=='1'?'active':item.select=='2'?'actives':''"></button>
         <div>{{ item.label }}</div>
       </div>
-      <div class="children" v-show="item.children && item.open">
+      <div class="children" v-if="item.children && item.open">
         <Tree :data='item.children'/>
       </div>
     </div>

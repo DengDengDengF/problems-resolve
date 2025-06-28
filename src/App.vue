@@ -5,7 +5,7 @@
   <!--  <FileSplit/>-->
   <!--  <DynamicForm/>-->
 <!--    <Recursive/>-->
-    <TreeShow/>
+<!--    <TreeShow/>-->
   <!--  <AsyncRequest/>-->
   <!--  <StrategyLogin/>-->
   <!--  <DragSort/>-->
@@ -48,6 +48,7 @@
 <!--  <TableSort/>-->
 <!--  <uploadFiles/>-->
 <!--  <BestMultityUpload/>-->
+  <InfinateScroll/>
 </template>
 
 <script setup>
@@ -146,6 +147,8 @@ import ScriptExportWord from "./pages/24.脚本导出word/ScriptExportWord.vue";
 import BlobPic from "./pages/14.图片懒加载/BlobPic.vue";
 //剪切板
 import Clip from "./pages/25.读取剪切板/clip.vue";
+//无限滚动
+import InfinateScroll from "./pages/26.无限滚动分页/infinateScroll.vue";
 </script>
 
 <style>

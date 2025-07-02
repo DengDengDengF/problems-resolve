@@ -39,7 +39,7 @@
 <!--  <uploadDemo/>-->
 <!--  <columnDemo/>-->
 <!--<BlobPic/>-->
-<!--  <ScriptExportWord/>-->
+  <ScriptExportWord/>
 <!--  <Clip/>-->
 <!--  <BestDownload/>-->
 <!--  <WebScene/>-->
@@ -48,7 +48,7 @@
 <!--  <TableSort/>-->
 <!--  <uploadFiles/>-->
 <!--  <BestMultityUpload/>-->
-  <InfinateScroll/>
+<!--  <InfinateScroll/>-->
 </template>
 
 <script setup>

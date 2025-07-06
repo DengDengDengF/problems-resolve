@@ -39,7 +39,7 @@
 <!--  <uploadDemo/>-->
 <!--  <columnDemo/>-->
 <!--<BlobPic/>-->
-<!--  <ScriptExportWord/>-->
+  <ScriptExportWord/>
 <!--  <Clip/>-->
 <!--  <BestDownload/>-->
 <!--  <WebScene/>-->

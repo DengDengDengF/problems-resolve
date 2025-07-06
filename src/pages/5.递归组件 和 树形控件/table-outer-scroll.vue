@@ -22,6 +22,7 @@
 </template>
 
 <script setup>
+//TODO 在实际项目中，遇到了 外层容器 嵌套el-table 在某些比例下 滚动不流畅的问题
 import { ref } from 'vue'
 
 const tableData = ref(

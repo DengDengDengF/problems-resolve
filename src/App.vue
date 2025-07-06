@@ -48,7 +48,7 @@
 <!--  <TableSort/>-->
 <!--  <uploadFiles/>-->
 <!--  <BestMultityUpload/>-->
-  <InfinateScroll/>
+<!--  <InfinateScroll/>-->
 </template>
 
 <script setup>

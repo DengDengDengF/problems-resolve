@@ -39,7 +39,7 @@
 <!--  <uploadDemo/>-->
 <!--  <columnDemo/>-->
 <!--<BlobPic/>-->
-  <ScriptExportWord/>
+<!--  <ScriptExportWord/>-->
 <!--  <Clip/>-->
 <!--  <BestDownload/>-->
 <!--  <WebScene/>-->
@@ -49,6 +49,7 @@
 <!--  <uploadFiles/>-->
 <!--  <BestMultityUpload/>-->
 <!--  <InfinateScroll/>-->
+  <TableBar/>
 </template>
 
 <script setup>
@@ -149,6 +150,8 @@ import BlobPic from "./pages/14.图片懒加载/BlobPic.vue";
 import Clip from "./pages/25.读取剪切板/clip.vue";
 //无限滚动
 import InfinateScroll from "./pages/26.无限滚动分页/infinateScroll.vue";
+//tabel吸顶底部
+import TableBar from "./pages/27.table/table-bar.vue";
 </script>
 
 <style>

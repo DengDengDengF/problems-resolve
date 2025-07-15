@@ -21,7 +21,11 @@
           />
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="姓名" />
+      <el-table-column prop="name" label="姓名" >
+         <template #default="{row}">
+             <span>{{row.name}} {{console.log('fada')}}</span>
+         </template>
+      </el-table-column>>
       <el-table-column prop="age" label="年龄" />
     </el-table>
   </div>

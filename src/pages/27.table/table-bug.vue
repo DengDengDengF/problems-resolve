@@ -1,73 +1,137 @@
 <template>
-  <div>
-    <el-button @click="toggleSelection">全选 / 取消全选</el-button>
-
+  <div  class="material-table-list">
     <el-table
-        ref="tableRef"
+        class="el-table"
         :data="tableData"
+        stripe
         border
-        style="width: 100%; margin-top: 20px"
+        v-loading="loading"
         @selection-change="handleSelectionChange"
-        @select="handleSelect"
-        @select-all="handleSelectAll"
     >
-      <el-table-column type="selection" width="55" />
-      <el-table-column prop="name" label="姓名">
-        <template #default="{row}">
-           <span>{{row.name}} {{console.log('dfadfa')}}</span>
+      <el-table-column type="selection" width="55" fixed="left" />
+      <el-table-column label="类目" show-overflow-tooltip>
+        <template #default="{ row }">
+          {{console.log('dafafadfa')}}
+          <span>{{ row.category_name }}</span>
         </template>
-      </el-table-column>>
-      <el-table-column prop="age" label="年龄" />
+      </el-table-column>
     </el-table>
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-
-const tableRef = ref()
-const selectedRows = ref([])
-
-const tableData = ref([
-  { id: 1, name: '张三', age: 25 },
-  { id: 2, name: '李四', age: 30 },
-  { id: 3, name: '王五', age: 22 },
-  { id: 4, name: '赵六', age: 28 }
-])
-
-// 原生事件：选中项变化
-function handleSelectionChange(val) {
-  selectedRows.value = val
-  console.log('当前选中：', val)
+<script setup lang="ts">
+import debounce from 'lodash/debounce'
+const props = withDefaults(
+    defineProps<{
+      videoList: any[]
+      loading: boolean
+      isTaskPage?: boolean // 是否是任务页面
+      taskId?: number // 任务id，在任务页面此参数有效
+    }>(),
+    {
+      isTaskPage: false
+    }
+)
+const tableData=[]
+for(let i=0;i<400;i++){
+  tableData.push({id:++i,category_name:1234+i},)
 }
+//多选
+const handleSelectionChange = debounce((selection: any[]) => {
 
-// 原生事件：单个选中
-function handleSelect(selection, row) {
-  console.log('单行选中变化：', selection, row)
-}
+}, 100)
 
-// 原生事件：全选/全不选
-function handleSelectAll(selection) {
-  console.log('全选变化：', selection)
-}
-
-// 切换全选/取消
-function toggleSelection() {
-  const table = tableRef.value
-  if (selectedRows.value.length < tableData.value.length) {
-    // 全选
-    tableData.value.forEach(row => {
-      table.toggleRowSelection(row, true)
-    })
-  } else {
-    // 取消全选
-    table.clearSelection()
-  }
-}
 </script>
 
-<style scoped>
-.el-button {
-  margin-bottom: 10px;
+<style scoped lang="scss">
+.material-table-list {
+  width: 100%;
+
+  .el-table {
+    .operation {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      color: gray;
+      span {
+        margin-right: 10px;
+        cursor: pointer;
+        &:hover {
+          color: #409eff;
+        }
+      }
+      .more-icon {
+        transform: rotate(-90deg);
+        cursor: pointer;
+        &:hover {
+          color: #409eff;
+        }
+      }
+    }
+    .video-info-container {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      width: 100%;
+      cursor: pointer;
+      .cover {
+        width: 80px;
+        border-radius: 10px;
+        background: #f4f4f5;
+        min-height: 80px;
+        //border:1px solid red;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        :deep(.el-image) {
+          width: 60%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .none-image {
+          text-align: center;
+          font-size: 12px;
+        }
+        .image-slot {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          width: 100%;
+          height: 100%;
+          background: rgb(245, 247, 250);
+          color: rgb(169, 172, 178);
+          font-size: 12px;
+          .tips {
+            margin-top: 6px;
+          }
+        }
+      }
+      .render-detail {
+        flex: 1;
+        margin-left: 10px;
+        .detail-name {
+          font-size: 14px;
+          color: #606266;
+          white-space: normal;
+          word-break: break-all;
+        }
+        .detail-id {
+          font-size: 12px;
+          color: gray;
+        }
+      }
+      &:hover {
+        .render-detail {
+          .detail-name {
+            color: #409eff;
+          }
+          .detail-id {
+            color: rgb(159.5, 206.5, 255);
+          }
+        }
+      }
+    }
+  }
 }
 </style>

@@ -21,6 +21,13 @@
 
 <script setup lang="ts">
 import debounce from 'lodash/debounce'
+/**
+ *  公司项目里的，每个双向绑定的checkBox更新都会渲染整个table，table插槽中有很多复杂的布局，渲染几百条直接卡死。
+ *  优化思路：
+ *  1.自己写checkBox,用原生dom去判断全选/半选/未选中
+ *  2.用requestAnimationFrame,批量一次50条，确保不会阻塞主线程
+ *  3.几百条更新完毕后，用requestIdleCallback去执行其他同事写的时间复杂度相对高的逻辑。
+ * */
 const props = withDefaults(
     defineProps<{
       videoList: any[]

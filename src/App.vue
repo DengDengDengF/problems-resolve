@@ -52,7 +52,7 @@
 <!--  <TableOuterScroll/>-->
 <!--  <TableBar/>-->
 <!--  <TableSelect/>-->
-  <TableBug/>
+  <SelectDate/>
 </template>
 
 <script setup>
@@ -158,7 +158,7 @@ import TableOuterScroll from "./pages/5.递归组件 和 树形控件/table-oute
 import TableBar from "./pages/27.table/table-bar.vue";
 //用原生select解决全选卡顿 项目出现了全选卡顿 重复渲染问题
 import TableSelect from "./pages/27.table/table-select.vue";
-import TableBug from "./pages/27.table/table-bug.vue";
+import SelectDate from "./pages/27.table/selec-date.vue";
 </script>
 
 <style>

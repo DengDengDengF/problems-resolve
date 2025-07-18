@@ -13,5 +13,8 @@ export default defineConfig({
                 {src: 'node_modules/@liveqing/liveplayer-v3/dist/component/liveplayer-lib.min.js', dest: 'public/js'},
             ]
         })
-    ]
+    ],
+    server: {
+        port: 9999
+    }
 })

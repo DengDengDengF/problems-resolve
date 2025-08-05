@@ -4,18 +4,19 @@ import {useSize} from "./useSize.js";
 import {useLatest} from "./useLatest.js";
 
 /**
- * @param {Object} options {最外层容器、原始数据、溢出、包裹容器的动态样式}
- * @return {Object}  截取的数据*/
+ * @param options.containerTarget 最外层容器 body/...
+ * @param options.originalList 原始数据
+ * @param options.overScan 溢出个数
+ * @param options.wrapperStyle 虚拟滚动区域的样式
+ * @param options.topArea 虚拟滚动区域的上部占用的空间*
+ * @return {Object}截取的数据*/
 export const useVirtualList = (options) => {
-    const {containerTarget, originalList, overscan, wrapperStyle} = options;
+    const {containerTarget, originalList, overscan, wrapperStyle,topArea,constHeight} = options;
     let targetList = ref([]);//截取后的数据
-    /**
-     * 模拟动态高度
-     * @param {number} i
-     * @return {number}
-     * */
+    let topDistance=0
+    //动态高度模拟
     const itemHeight = (i) => (i % 2 === 0 ? 42 + 8 : 42 + 8);
-    const itemHeightRef = useLatest(itemHeight);
+    const itemHeightRef = useLatest(constHeight??itemHeight);
     /**
      * 用计算属性计算列表总体高度,避免重复运算
      * @return {number}*/
@@ -118,14 +119,13 @@ export const useVirtualList = (options) => {
         const container = containerTarget.value;
         if (container) {
             const {scrollTop, clientHeight} = container;
-            const offset = getOffset(scrollTop);
+            const offset = getOffset(scrollTop-topDistance);
             const visibleCount = getVisibleCount(clientHeight, offset);
             const start = Math.max(0, offset - overscan);
             const end = Math.min(originalList.length, offset + visibleCount + overscan);
             const offsetTop = getDistanceTop(start);
             // 设置wrapper的高度和偏移量
             setWrapperStyle(totalHeight.value - offsetTop + "px", offsetTop + "px");
-
 
             // 设置wrapper展示dom
             setTargetList(
@@ -149,16 +149,27 @@ export const useVirtualList = (options) => {
     })
     onMounted(() => {
         const {width, height} = useSize(containerTarget.value);
+        if(topArea){
+            topDistance=topArea.value?.offsetHeight??0
+        }
         if (containerTarget && originalList.length > 0 && width > 0 && height > 0) {
             calculateRange();
-            containerTarget.value.addEventListener("scroll", resize);
+            if(containerTarget.value === document.documentElement){
+                window.addEventListener('scroll', resize);
+            }else{
+                containerTarget.value.addEventListener("scroll", resize);
+            }
             window.addEventListener('resize', resize);
         }
 
     })
     onUnmounted(() => {
         if (containerTarget.value && originalList.length > 0 && width > 0 && height > 0) {
-            containerTarget.value.removeEventListener("scroll", resize);
+            if(containerTarget.value === document.documentElement){
+                window.removeEventListener('scroll', resize);
+            }else{
+                containerTarget.value.removeEventListener("scroll", resize);
+            }
             window.removeEventListener("resize", resize);
         }
 

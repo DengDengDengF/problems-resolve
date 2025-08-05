@@ -12,7 +12,8 @@
   <!--  <DragSortablejs/>-->
   <!--  <MemoryLeak/>-->
   <!--  <HooksDemo/>-->
-  <!--  <Virtualized/>-->
+<!--    <Virtualized/>-->
+    <VirtualizedListUseBody/>
   <!--  <TimeSlicing/>-->
   <!--  <AxiosDemo/>-->
   <!--  <Templates/>-->
@@ -52,7 +53,8 @@
 <!--  <TableOuterScroll/>-->
 <!--  <TableBar/>-->
 <!--  <TableSelect/>-->
-  <SelectDate/>
+<!--  <SelectDate/>-->
+<!--  <WrapperTable/>-->
 </template>
 
 <script setup>
@@ -81,8 +83,10 @@ import DragSortablejs from "./pages/8.拖拽排序/DragSortablejs.vue";
 import MemoryLeak from "./pages/9.内存泄漏/MemoryLeak.vue";
 //vue3.0自定义hooks
 import HooksDemo from "./pages/10.hooks案例/HooksDemo.vue";
-//虚拟列表
+//虚拟列表-内层容器-内层滚动条
 import Virtualized from "./pages/11.虚拟列表时间分片/VirtualizedList.vue";
+//虚拟列表-外层容器-外层滚动条
+import VirtualizedListUseBody from "./pages/11.虚拟列表时间分片/VirtualizedListUseBody.vue";
 //时间分片
 import TimeSlicing from "./pages/11.虚拟列表时间分片/TimeSlicing.vue";
 //axios封装
@@ -159,6 +163,8 @@ import TableBar from "./pages/27.table/table-bar.vue";
 //用原生select解决全选卡顿 项目出现了全选卡顿 重复渲染问题
 import TableSelect from "./pages/27.table/table-select.vue";
 import SelectDate from "./pages/27.table/selec-date.vue";
+//调用库 做的 尝试  table虚拟复杂情况-垃圾东西 还没自己写的好用 垃圾！！！！！
+import WrapperTable from "./pages/27.table/complex/WrapperTable.vue";
 </script>
 
 <style>

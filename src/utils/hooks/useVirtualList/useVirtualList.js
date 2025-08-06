@@ -7,11 +7,10 @@ import {useLatest} from "./useLatest.js";
  * @param options.containerTarget 最外层容器 body/...
  * @param options.originalList 原始数据
  * @param options.overScan 溢出个数
- * @param options.wrapperStyle 虚拟滚动区域的样式
- * @param options.topArea 虚拟滚动区域的上部占用的空间*
+ * @param options.wrapperArea 虚拟滚动区域的引用*
  * @return {Object}截取的数据*/
 export const useVirtualList = (options) => {
-    const {containerTarget, originalList, overscan, wrapperStyle,topArea,constHeight} = options;
+    const {containerTarget, originalList, overscan,wrapperArea,constHeight} = options;
     let targetList = ref([]);//截取后的数据
     let topDistance=0
     //动态高度模拟
@@ -22,10 +21,10 @@ export const useVirtualList = (options) => {
      * @return {number}*/
     const totalHeight = computed(() => {
         if (isNumber(itemHeightRef)) {
-            return originalList.length * itemHeightRef;
+            return originalList.value.length * itemHeightRef;
         }
         let sum = 0;
-        for (let i = 0; i < originalList.length; i++) {
+        for (let i = 0; i < originalList.value.length; i++) {
             sum += itemHeightRef(i);
         }
         return sum;
@@ -37,10 +36,11 @@ export const useVirtualList = (options) => {
      * @param {String} marginTop
      * @return {void}*/
     const setWrapperStyle = (height, marginTop) => {
-        wrapperStyle.height = height;
-        wrapperStyle.marginTop = marginTop;
-        wrapperStyle.border = '1px solid red';
-        document.title = '高=' + height + ' 距顶=' + marginTop
+        if(!wrapperArea.value)return
+        wrapperArea.value.style.height=height
+        wrapperArea.value.style.marginTop=marginTop
+        wrapperArea.value.style.border='1px solid red'
+        // document.title = '高=' + height + ' 距顶=' + marginTop
     }
     /**
      * 设置截取的数据
@@ -48,7 +48,6 @@ export const useVirtualList = (options) => {
      * @return {void}*/
     const setTargetList = (arr) => {
         targetList.value = arr;
-        // console.log(targetList.value)
     }
     /**
      * 计算对于container偏移量
@@ -61,8 +60,8 @@ export const useVirtualList = (options) => {
         }
         let sum = 0;
         let offset = 0;
-        for (let i = 0; i < originalList.length; i++) {
-            const height = itemHeightRef(i, originalList[i]);
+        for (let i = 0; i < originalList.value.length; i++) {
+            const height = itemHeightRef(i, originalList.value[i]);
             sum += height;
             if (sum >= scrollTop) {
                 offset = i;
@@ -84,8 +83,8 @@ export const useVirtualList = (options) => {
 
         let sum = 0;
         let endIndex = 0;
-        for (let i = fromIndex; i < originalList.length; i++) {
-            const height = itemHeightRef(i, originalList[i]);
+        for (let i = fromIndex; i < originalList.value.length; i++) {
+            const height = itemHeightRef(i, originalList.value[i]);
             sum += height;
             endIndex = i;
             if (sum >= containerHeight) {
@@ -105,9 +104,9 @@ export const useVirtualList = (options) => {
             const height = index * itemHeightRef;
             return height;
         }
-        const height = originalList
+        const height = originalList.value
             .slice(0, index)
-            .reduce((sum, _, i) => sum + itemHeightRef(i, originalList[i]), 0);
+            .reduce((sum, _, i) => sum + itemHeightRef(i, originalList.value[i]), 0);
         return height;
     };
 
@@ -122,14 +121,13 @@ export const useVirtualList = (options) => {
             const offset = getOffset(scrollTop-topDistance);
             const visibleCount = getVisibleCount(clientHeight, offset);
             const start = Math.max(0, offset - overscan);
-            const end = Math.min(originalList.length, offset + visibleCount + overscan);
+            const end = Math.min(originalList.value.length, offset + visibleCount + overscan);
             const offsetTop = getDistanceTop(start);
             // 设置wrapper的高度和偏移量
             setWrapperStyle(totalHeight.value - offsetTop + "px", offsetTop + "px");
-
             // 设置wrapper展示dom
             setTargetList(
-                originalList.slice(start, end).map((ele, index) => ({
+                originalList.value.slice(start, end).map((ele, index) => ({
                     data: ele,
                     index: index + start,
                 }))
@@ -141,18 +139,26 @@ export const useVirtualList = (options) => {
      *
      * @returns*/
     const resize = (e) => {
-        e.preventDefault();
+        e?.preventDefault();
         calculateRange();
     };
-    watch(() => originalList, () => {
+
+    const initScroll=(newLength,oldLength)=>{
+        if(newLength >= oldLength)return
+        containerTarget.value.scrollTop=0
+    }
+
+    watch(() => originalList.value, (newVal,oldVal) => {
+        initScroll(newVal.length,oldVal.length)
         resize();
     })
     onMounted(() => {
-        const {width, height} = useSize(containerTarget.value);
-        if(topArea){
-            topDistance=topArea.value?.offsetHeight??0
+        if(wrapperArea?.value){
+            const rect = wrapperArea.value.getBoundingClientRect()
+            const distanceFromTop = rect.top + window.scrollY
+            topDistance=distanceFromTop??0
         }
-        if (containerTarget && originalList.length > 0 && width > 0 && height > 0) {
+        if (containerTarget && originalList.value.length > 0) {
             calculateRange();
             if(containerTarget.value === document.documentElement){
                 window.addEventListener('scroll', resize);
@@ -161,10 +167,12 @@ export const useVirtualList = (options) => {
             }
             window.addEventListener('resize', resize);
         }
-
+        window.addEventListener('resize',()=>{
+            console.log('fffffffffffffff')
+        })
     })
     onUnmounted(() => {
-        if (containerTarget.value && originalList.length > 0 && width > 0 && height > 0) {
+        if (containerTarget.value && originalList.value.length > 0) {
             if(containerTarget.value === document.documentElement){
                 window.removeEventListener('scroll', resize);
             }else{

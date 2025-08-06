@@ -12,7 +12,7 @@
   <!--  <DragSortablejs/>-->
   <!--  <MemoryLeak/>-->
   <!--  <HooksDemo/>-->
-<!--    <Virtualized/>-->
+    <Virtualized/>
     <VirtualizedListUseBody/>
   <!--  <TimeSlicing/>-->
   <!--  <AxiosDemo/>-->

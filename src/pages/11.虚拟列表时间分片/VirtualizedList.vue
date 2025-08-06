@@ -1,31 +1,26 @@
 <template>
-
   <div
       ref="containerTarget"
-      style="overflow: auto;border: 1px solid;width: 100%;height: calc(100vh - 20px)"
+      class="container"
   >
-    <div ref="topArea">
-      <div style="border: 1px solid red;width: 100%;height:200px;box-sizing: border-box"/>
-      <div style="border: 1px solid black;width: 100%;height:200px;box-sizing: border-box"/>
+    <div>
+      <div class="container_item"/>
+      <div class="container_item"/>
     </div>
-    <div :style="wrapperStyle" >
+    <div ref="wrapperArea">
       <!--底部留白是因为，我模拟数据，用的是动态高度，这里是静态-->
-      <div v-for="(item,index) in list" :key="index" :style="{height:constHeight + 'px'}" style="display: flex;justify-content: center;align-items: center;
-        border: 1px solid #e8e8e8;box-sizing: border-box;">
-        <div style="width: 20%;height: 100%;border: 1px solid red"> Row:{{ item }}</div>
-        <div style="width: 20%;height: 100%;border: 1px solid orange">视频</div>
-        <div style="width: 20%;height: 100%;border: 1px solid yellow">操作</div>
-        <div style="width: 20%;height: 100%;border: 1px solid green">状态</div>
-        <div style="width: 20%;height: 100%;border: 1px solid blue">剪辑师</div>
+      <div v-for="(item,index) in list" :key="index" :style="{height:constHeight + 'px'}" class="cycle">
+        <div class="cycle_item"> Row:{{ item }}</div>
+        <div class="cycle_item">视频</div>
+        <div class="cycle_item">操作</div>
+        <div class="cycle_item">状态</div>
+        <div class="cycle_item">剪辑师</div>
       </div>
     </div>
-    <div  style="border: 1px solid red;height: 200px;width: 100%;box-sizing: border-box">
+    <div style="border: 1px solid red;height: 200px;width: 100%;box-sizing: border-box">
       fffff
     </div>
   </div>
-
-
-
 </template>
 
 <script setup>
@@ -33,12 +28,20 @@ import {ref, reactive} from "vue";
 import {useVirtualList} from "../../utils/hooks/useVirtualList/useVirtualList.js";
 
 const containerTarget = ref();//最外层容器
-const originalList = Array.from(Array(800).keys()); //生成9999个demo
+const originalList = ref(Array.from(Array(200).keys())); //生成9999个demo
 const overscan = 5;//可允许溢出container范围的最大个数；
-const topArea=ref()
-const constHeight=120
-let list=ref([]);
-const wrapperStyle = reactive({});
+
+const wrapperArea = ref()
+const constHeight = 120
+let list = ref([]);
+
+//以下代码用于测试
+setTimeout(() => {
+  originalList.value = Array.from(Array(100).keys())
+}, 4000)
+setTimeout(() => {
+  originalList.value = Array.from(Array(800).keys())
+}, 8000)
 
 /**
  * @param containerTarget 最外层容器 body/...
@@ -46,8 +49,34 @@ const wrapperStyle = reactive({});
  * @param overScan 溢出个数
  * @param wrapperStyle 虚拟滚动区域的样式
  * @param topArea 虚拟滚动区域的上部占用的空间*/
-list = useVirtualList({containerTarget, originalList, overscan, wrapperStyle,topArea,constHeight}).targetList
+list = useVirtualList({containerTarget, originalList, overscan, wrapperArea, constHeight}).targetList
 </script>
-<style scoped>
+<style scoped lang="scss">
+.container {
+  overflow: auto;
+  border: 1px solid;
+  width: 100%;
+  height: calc(100vh - 20px);
 
+  .container_item {
+    border: 1px solid red;
+    width: 100%;
+    height: 200px;
+    box-sizing: border-box
+  }
+
+  .cycle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e8e8e8;
+    box-sizing: border-box;
+
+    .cycle_item {
+      width: 20%;
+      height: 100%;
+      border: 1px solid blue
+    }
+  }
+}
 </style>

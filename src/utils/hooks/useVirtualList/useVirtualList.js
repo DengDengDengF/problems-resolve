@@ -10,12 +10,12 @@ import {useLatest} from "./useLatest.js";
  * @param options.wrapperArea 虚拟滚动区域的引用*
  * @return {Object}截取的数据*/
 export const useVirtualList = (options) => {
-    const {containerTarget, originalList, overscan,wrapperArea,constHeight} = options;
+    const {containerTarget, originalList, overscan, wrapperArea, constHeight, renderArea} = options;
     let targetList = ref([]);//截取后的数据
-    let topDistance=0
+    let topDistance = 0
     //动态高度模拟
     const itemHeight = (i) => (i % 2 === 0 ? 42 + 8 : 42 + 8);
-    const itemHeightRef = useLatest(constHeight??itemHeight);
+    const itemHeightRef = useLatest(constHeight ?? itemHeight);
     /**
      * 用计算属性计算列表总体高度,避免重复运算
      * @return {number}*/
@@ -36,10 +36,11 @@ export const useVirtualList = (options) => {
      * @param {String} marginTop
      * @return {void}*/
     const setWrapperStyle = (height, marginTop) => {
-        if(!wrapperArea.value)return
-        wrapperArea.value.style.height=height
-        wrapperArea.value.style.marginTop=marginTop
-        wrapperArea.value.style.border='1px solid red'
+        if (!wrapperArea.value) return
+        if (!renderArea.value) return
+        renderArea.value.style.transform = `translateY(${marginTop})`;
+        renderArea.value.style.willChange = 'transform';
+        wrapperArea.value.style.border = '1px solid red'
         // document.title = '高=' + height + ' 距顶=' + marginTop
     }
     /**
@@ -118,13 +119,13 @@ export const useVirtualList = (options) => {
         const container = containerTarget.value;
         if (container) {
             const {scrollTop, clientHeight} = container;
-            const offset = getOffset(scrollTop-topDistance);
+            const offset = getOffset(scrollTop - topDistance);
             const visibleCount = getVisibleCount(clientHeight, offset);
             const start = Math.max(0, offset - overscan);
             const end = Math.min(originalList.value.length, offset + visibleCount + overscan);
             const offsetTop = getDistanceTop(start);
             // 设置wrapper的高度和偏移量
-            setWrapperStyle(totalHeight.value - offsetTop + "px", offsetTop + "px");
+            setWrapperStyle(totalHeight.value + "px", offsetTop + "px");
             // 设置wrapper展示dom
             setTargetList(
                 originalList.value.slice(start, end).map((ele, index) => ({
@@ -143,39 +144,40 @@ export const useVirtualList = (options) => {
         calculateRange();
     };
 
-    const initScroll=(newLength,oldLength)=>{
-        if(newLength >= oldLength)return
-        containerTarget.value.scrollTop=0
+    const initScroll = (newLength, oldLength) => {
+        if (newLength >= oldLength) return
+        containerTarget.value.scrollTop = 0
     }
 
-    watch(() => originalList.value, (newVal,oldVal) => {
-        initScroll(newVal.length,oldVal.length)
+    watch(() => originalList.value, (newVal, oldVal) => {
+        initScroll(newVal.length, oldVal.length)
         resize();
     })
     onMounted(() => {
-        if(wrapperArea?.value){
+        if (wrapperArea?.value) {
             const rect = wrapperArea.value.getBoundingClientRect()
             const distanceFromTop = rect.top + window.scrollY
-            topDistance=distanceFromTop??0
+            topDistance = distanceFromTop ?? 0
+            wrapperArea.value.style.height = totalHeight.value + 'px';
         }
         if (containerTarget && originalList.value.length > 0) {
             calculateRange();
-            if(containerTarget.value === document.documentElement){
+            if (containerTarget.value === document.documentElement) {
                 window.addEventListener('scroll', resize);
-            }else{
+            } else {
                 containerTarget.value.addEventListener("scroll", resize);
             }
             window.addEventListener('resize', resize);
         }
-        window.addEventListener('resize',()=>{
+        window.addEventListener('resize', () => {
             console.log('fffffffffffffff')
         })
     })
     onUnmounted(() => {
         if (containerTarget.value && originalList.value.length > 0) {
-            if(containerTarget.value === document.documentElement){
+            if (containerTarget.value === document.documentElement) {
                 window.removeEventListener('scroll', resize);
-            }else{
+            } else {
                 containerTarget.value.removeEventListener("scroll", resize);
             }
             window.removeEventListener("resize", resize);

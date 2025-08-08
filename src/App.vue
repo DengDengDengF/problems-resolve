@@ -12,8 +12,8 @@
   <!--  <DragSortablejs/>-->
   <!--  <MemoryLeak/>-->
   <!--  <HooksDemo/>-->
-  <!--    <Virtualized/>-->
-<!--  <VirtualizedListUseBody/>-->
+<!--      <Virtualized/>-->
+  <VirtualizedListUseBody/>
   <!--  <TimeSlicing/>-->
   <!--  <AxiosDemo/>-->
   <!--  <Templates/>-->
@@ -55,7 +55,7 @@
   <!--  <TableSelect/>-->
   <!--  <SelectDate/>-->
   <!--  <WrapperTable/>-->
-  <CssFuck/>
+<!--  <CssFuck/>-->
 </template>
 
 <script setup>

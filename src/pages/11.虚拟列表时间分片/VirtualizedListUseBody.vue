@@ -3,19 +3,24 @@
     <div class="top_item"/>
     <div class="top_item"/>
     <div class="top_item"/>
+    <div class="top_item"/>
+    <div class="top_item"/>
+    <div class="top_item"/>
   </div>
   <div
       class="container"
   >
     <div  ref="wrapperArea" >
-      <!--底部留白是因为，我模拟数据，用的是动态高度，这里是静态-->
-      <div  v-for="(item,index) in list" :key="index" :style="{height:constHeight + 'px'}" class="cycle">
-        <div class="cycle_item"> Row:{{ item }}</div>
-        <div class="cycle_item">视频</div>
-        <div class="cycle_item">操作</div>
-        <div class="cycle_item">状态</div>
-        <div class="cycle_item">剪辑师</div>
+      <div ref="renderArea">
+        <div  v-for="(item,index) in list" :key="index" :style="{height:constHeight + 'px'}" class="cycle">
+          <div class="cycle_item"> Row:{{ item }}</div>
+          <div class="cycle_item">视频</div>
+          <div class="cycle_item">操作</div>
+          <div class="cycle_item">状态</div>
+          <div class="cycle_item">剪辑师</div>
+        </div>
       </div>
+      <!--底部留白是因为，我模拟数据，用的是动态高度，这里是静态-->å
     </div>
   </div>
   <div style="border: 1px solid red;height: 200px;width: 100%;box-sizing: border-box">
@@ -31,22 +36,24 @@ const containerTarget = ref(document.documentElement);//最外层容器
 const originalList = ref(Array.from(Array(200).keys())); //生成9999个demo
 const overscan = 5;//可允许溢出container范围的最大个数；
 
+const renderArea=ref()
 const wrapperArea=ref()
 const constHeight = 120
 let list = ref([]);
-setTimeout(() => {
-  originalList.value = Array.from(Array(100).keys())
-}, 4000)
-setTimeout(() => {
-  originalList.value = Array.from(Array(800).keys())
-}, 8000)
+// setTimeout(() => {
+//   originalList.value = Array.from(Array(100).keys())
+// }, 4000)
+// setTimeout(() => {
+//   originalList.value = Array.from(Array(800).keys())
+// }, 8000)
 /**
+ * @param renderArea  transform渲染区域
  * @param containerTarget 最外层容器 body/...
  * @param originalList 原始数据
  * @param overScan 溢出个数
- * @param wrapperArea 包裹区域
- * @param constHeight 每个item的固定高度*/
-list = useVirtualList({containerTarget, originalList, overscan, wrapperArea, constHeight}).targetList
+ * @param wrapperArea 虚拟滚动区域
+ * @param constHeight 固定高度*/
+list = useVirtualList({renderArea,containerTarget, originalList, overscan, wrapperArea, constHeight}).targetList
 </script>
 <style scoped lang="scss">
 .top_area{

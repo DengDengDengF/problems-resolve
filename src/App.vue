@@ -1,19 +1,19 @@
 <template>
-<!--    <DialogDemo/>-->
-<!--    <PdfDemo/>-->
-<!--    <PdfHeigh/>-->
+  <!--    <DialogDemo/>-->
+  <!--    <PdfDemo/>-->
+  <!--    <PdfHeigh/>-->
   <!--  <FileSplit/>-->
   <!--  <DynamicForm/>-->
-<!--    <Recursive/>-->
-<!--    <TreeShow/>-->
+  <!--    <Recursive/>-->
+  <!--    <TreeShow/>-->
   <!--  <AsyncRequest/>-->
   <!--  <StrategyLogin/>-->
   <!--  <DragSort/>-->
   <!--  <DragSortablejs/>-->
   <!--  <MemoryLeak/>-->
   <!--  <HooksDemo/>-->
-    <Virtualized/>
-    <VirtualizedListUseBody/>
+  <!--    <Virtualized/>-->
+<!--  <VirtualizedListUseBody/>-->
   <!--  <TimeSlicing/>-->
   <!--  <AxiosDemo/>-->
   <!--  <Templates/>-->
@@ -28,33 +28,34 @@
   <!--  <RouterDemo/>-->
   <!--  <SingleSignOn/>-->
   <!--  <VueSend/>-->
-<!--  <FormDrag/>-->
-<!--  <ElCas/>-->
-<!--  <ElTree/>-->
-<!--  <ElTreeEdit/>-->
-<!--  <CascaderComplex/>-->
-<!--  <MultiFormCheck/>-->
-<!--  <videoScript/>-->
-<!--  <CheckAll/>-->
-<!--  <TableHead/>-->
-<!--  <uploadDemo/>-->
-<!--  <columnDemo/>-->
-<!--<BlobPic/>-->
-<!--  <ScriptExportWord/>-->
-<!--  <Clip/>-->
-<!--  <BestDownload/>-->
-<!--  <WebScene/>-->
-<!--  <ElCascaderSingleMulti/>-->
-<!--  <FuckElCascader/>-->
-<!--  <TableSort/>-->
-<!--  <uploadFiles/>-->
-<!--  <BestMultityUpload/>-->
-<!--  <InfinateScroll/>-->
-<!--  <TableOuterScroll/>-->
-<!--  <TableBar/>-->
-<!--  <TableSelect/>-->
-<!--  <SelectDate/>-->
-<!--  <WrapperTable/>-->
+  <!--  <FormDrag/>-->
+  <!--  <ElCas/>-->
+  <!--  <ElTree/>-->
+  <!--  <ElTreeEdit/>-->
+  <!--  <CascaderComplex/>-->
+  <!--  <MultiFormCheck/>-->
+  <!--  <videoScript/>-->
+  <!--  <CheckAll/>-->
+  <!--  <TableHead/>-->
+  <!--  <uploadDemo/>-->
+  <!--  <columnDemo/>-->
+  <!--<BlobPic/>-->
+  <!--  <ScriptExportWord/>-->
+  <!--  <Clip/>-->
+  <!--  <BestDownload/>-->
+  <!--  <WebScene/>-->
+  <!--  <ElCascaderSingleMulti/>-->
+  <!--  <FuckElCascader/>-->
+  <!--  <TableSort/>-->
+  <!--  <uploadFiles/>-->
+  <!--  <BestMultityUpload/>-->
+  <!--  <InfinateScroll/>-->
+  <!--  <TableOuterScroll/>-->
+  <!--  <TableBar/>-->
+  <!--  <TableSelect/>-->
+  <!--  <SelectDate/>-->
+  <!--  <WrapperTable/>-->
+  <CssFuck/>
 </template>
 
 <script setup>
@@ -165,6 +166,8 @@ import TableSelect from "./pages/27.table/table-select.vue";
 import SelectDate from "./pages/27.table/selec-date.vue";
 //调用库 做的 尝试  table虚拟复杂情况-垃圾东西 还没自己写的好用 垃圾！！！！！
 import WrapperTable from "./pages/27.table/complex/WrapperTable.vue";
+//因为用table封装虚拟列表 样式问题
+import CssFuck from "./pages/27.table/css布局/css-fuck.vue";
 </script>
 
 <style>

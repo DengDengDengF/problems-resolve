@@ -46,22 +46,21 @@ let list = ref([]);
 //   originalList.value = Array.from(Array(800).keys())
 // }, 8000)
 
-/**
- * @param renderArea  transform渲染区域
- * @param containerTarget 最外层容器 body/...
- * @param originalList 原始数据
- * @param overScan 溢出个数
- * @param wrapperArea 虚拟滚动区域
- * @param constHeight 固定高度*/
-list = useVirtualList({renderArea,containerTarget, originalList, overscan, wrapperArea, constHeight}).targetList
+list = useVirtualList({
+  renderArea,
+  containerTarget,
+  originalList,
+  overscan,
+  wrapperArea,
+  whatHeightMode:constHeight
+}).targetList
 </script>
 <style scoped lang="scss">
 .container {
   overflow: auto;
   border: 1px solid;
   width: 100%;
-  height: calc(100vh - 20px);
-
+  height: 800px;
   .container_item {
     border: 1px solid red;
     width: 100%;

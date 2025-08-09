@@ -1,189 +1,199 @@
-import {onMounted, ref, computed, watch, onUnmounted} from "vue";
-import {isNumber} from './useNumber.js'
-import {useSize} from "./useSize.js";
-import {useLatest} from "./useLatest.js";
+import { onMounted, ref, computed, watch, onUnmounted, nextTick } from 'vue'
+import { throttle } from 'lodash'
 
-/**
- * @param options.containerTarget 最外层容器 body/...
- * @param options.originalList 原始数据
- * @param options.overScan 溢出个数
- * @param options.wrapperArea 虚拟滚动区域的引用*
- * @return {Object}截取的数据*/
 export const useVirtualList = (options) => {
-    const {containerTarget, originalList, overscan, wrapperArea, constHeight, renderArea} = options;
-    let targetList = ref([]);//截取后的数据
-    let topDistance = 0
-    //动态高度模拟
-    const itemHeight = (i) => (i % 2 === 0 ? 42 + 8 : 42 + 8);
-    const itemHeightRef = useLatest(constHeight ?? itemHeight);
     /**
-     * 用计算属性计算列表总体高度,避免重复运算
-     * @return {number}*/
+     * @param containerTarget 最最最外层容器 body/...
+     * @param originalList 原始数据
+     * @param overscan 溢出个数
+     * @param wrapperArea 撑起高度的容器
+     * @param whatHeightMode 虚拟滚动区域item采用固定高度/动态高度
+     * @param renderArea 负载transform滚动容器
+     * */
+    const { containerTarget, originalList, overscan, wrapperArea, whatHeightMode, renderArea } =
+        options
+    let targetList = ref([]) //截取后的数据
+    //number类型检测
+    const isNumber = (value) => {
+        return typeof value === 'number' && !isNaN(value)
+    }
+    //获取最新的值
+    const itemLatest = (value) => {
+        const latestValue = ref(value)
+        latestValue.value = value
+        return latestValue.value
+    }
+    //仅仅用做动态高度模拟
+    const itemHeight = (i) => (i % 2 === 0 ? 42 + 8 : 42 + 8)
+    const itemHeightRef = itemLatest(whatHeightMode ?? itemHeight)
+    //用计算属性计算列表总体高度,避免重复运算
     const totalHeight = computed(() => {
         if (isNumber(itemHeightRef)) {
-            return originalList.value.length * itemHeightRef;
+            return originalList.value.length * itemHeightRef
         }
-        let sum = 0;
+        let sum = 0
         for (let i = 0; i < originalList.value.length; i++) {
-            sum += itemHeightRef(i);
+            sum += itemHeightRef(i, originalList.value[i])
         }
-        return sum;
-    });
+        return sum
+    })
 
     /**
      * 修改包裹容器样式
-     * @param {String} height
-     * @param {String} marginTop
-     * @return {void}*/
+     * @param height 容器的高度
+     * @param marginTop 容器距离顶部距离
+     */
     const setWrapperStyle = (height, marginTop) => {
-        if (!wrapperArea.value) return
-        if (!renderArea.value) return
-        renderArea.value.style.transform = `translateY(${marginTop})`;
-        renderArea.value.style.willChange = 'transform';
-        wrapperArea.value.style.border = '1px solid red'
+        if (!wrapperArea.value || !renderArea.value) return
+        const computedStyle = window.getComputedStyle(wrapperArea.value)
+        if (computedStyle.height != height) {
+            wrapperArea.value.style.height = height
+        }
+        renderArea.value.style.transform = `translateY(${marginTop})`
+        renderArea.value.style.willChange = 'transform'
+        // wrapperArea.value.style.border = '1px solid orange'
         // document.title = '高=' + height + ' 距顶=' + marginTop
     }
     /**
      * 设置截取的数据
-     * @param {Array} arr 截取后的数据
-     * @return {void}*/
+     * @param  arr 截取后的数据
+     */
     const setTargetList = (arr) => {
-        targetList.value = arr;
+        // console.log('fff',arr,JSON.parse(JSON.stringify(originalList.value)))
+        targetList.value = arr
     }
     /**
      * 计算对于container偏移量
-     * @param {number} scrollTop
-     * @returns
+     * @param scrollTop 偏移
      */
     const getOffset = (scrollTop) => {
         if (isNumber(itemHeightRef)) {
-            return Math.floor(scrollTop / itemHeightRef);
+            return Math.floor(scrollTop / itemHeightRef)
         }
-        let sum = 0;
-        let offset = 0;
+        let sum = 0
+        let offset = 0
         for (let i = 0; i < originalList.value.length; i++) {
-            const height = itemHeightRef(i, originalList.value[i]);
-            sum += height;
+            const height = itemHeightRef(i, originalList.value[i])
+            sum += height
             if (sum >= scrollTop) {
-                offset = i;
-                break;
+                offset = i
+                break
             }
         }
-        return offset + 1;
-    };
+        return offset + 1
+    }
     /**
      * 计算可视数量
-     * @param {number} containerHeight
-     * @param {number} fromIndex
-     * @returns
+     * @param containerHeight container容器的高度
+     * @param fromIndex 从下标开始计算
      */
     const getVisibleCount = (containerHeight, fromIndex) => {
         if (isNumber(itemHeightRef)) {
-            return Math.ceil(containerHeight / itemHeightRef);
+            return Math.ceil(containerHeight / itemHeightRef)
         }
 
-        let sum = 0;
-        let endIndex = 0;
+        let sum = 0
+        let endIndex = 0
         for (let i = fromIndex; i < originalList.value.length; i++) {
-            const height = itemHeightRef(i, originalList.value[i]);
-            sum += height;
-            endIndex = i;
+            const height = itemHeightRef(i, originalList.value[i])
+            sum += height
+            endIndex = i
             if (sum >= containerHeight) {
-                break;
+                break
             }
         }
-        return endIndex - fromIndex;
-    };
+        return endIndex - fromIndex
+    }
 
     /**
      * 获取距离顶部距离
-     * @param {number} index
-     * @returns
+     * @param  index 下标
      */
     const getDistanceTop = (index) => {
         if (isNumber(itemHeightRef)) {
-            const height = index * itemHeightRef;
-            return height;
+            const height = index * itemHeightRef
+            return height
         }
+
         const height = originalList.value
             .slice(0, index)
-            .reduce((sum, _, i) => sum + itemHeightRef(i, originalList.value[i]), 0);
-        return height;
-    };
-
-    /**
-     * 主要程序调入
-     * @return {void}*/
+            .reduce(
+                (sum, _, i) => sum + itemHeightRef(i, originalList.value[i]),
+                0
+            )
+        return height
+    }
+    //校正绝对位置
+    const getInitTop = () => {
+        if (!wrapperArea.value || !renderArea.value) return 0
+        const wrapperStyle = window.getComputedStyle(wrapperArea.value);
+        const paddingTop = parseFloat(wrapperStyle.paddingTop);
+        return renderArea.value.offsetTop - paddingTop;
+    }
+    //主程序调用
     const calculateRange = () => {
         // 获取外部容器
-        const container = containerTarget.value;
+        const container = containerTarget.value
         if (container) {
-            const {scrollTop, clientHeight} = container;
-            const offset = getOffset(scrollTop - topDistance);
-            const visibleCount = getVisibleCount(clientHeight, offset);
-            const start = Math.max(0, offset - overscan);
-            const end = Math.min(originalList.value.length, offset + visibleCount + overscan);
-            const offsetTop = getDistanceTop(start);
+            const { scrollTop, clientHeight } = container
+            const topDistance = getInitTop()
+
+            const offset = Math.max(0, getOffset(scrollTop - topDistance))
+            const visibleCount = getVisibleCount(clientHeight, offset)
+            const start = Math.max(0, offset - overscan)
+            const end = Math.min(originalList.value.length, offset + visibleCount + overscan)
+            const offsetTop = getDistanceTop(start)
+            console.log(topDistance,start,end)
             // 设置wrapper的高度和偏移量
-            setWrapperStyle(totalHeight.value + "px", offsetTop + "px");
+            setWrapperStyle(totalHeight.value + 'px', offsetTop + 'px')
             // 设置wrapper展示dom
-            setTargetList(
-                originalList.value.slice(start, end).map((ele, index) => ({
-                    data: ele,
-                    index: index + start,
-                }))
-            );
-
+            setTargetList(originalList.value.slice(start, end))
         }
-    };
+    }
+    //窗口改变
+    const resize = throttle((e) => {
+        e?.preventDefault()
+        requestAnimationFrame(() => {
+            calculateRange()
+        })
+    }, 16)
     /**
-     *
-     * @returns*/
-    const resize = (e) => {
-        e?.preventDefault();
-        calculateRange();
-    };
-
+     * 初始设置滚动
+     * @param newLength 原始数据改变后的长度
+     * @param oldLength 原始数据改变前的长度*/
     const initScroll = (newLength, oldLength) => {
         if (newLength >= oldLength) return
         containerTarget.value.scrollTop = 0
     }
-
-    watch(() => originalList.value, (newVal, oldVal) => {
-        initScroll(newVal.length, oldVal.length)
-        resize();
-    })
-    onMounted(() => {
-        if (wrapperArea?.value) {
-            const rect = wrapperArea.value.getBoundingClientRect()
-            const distanceFromTop = rect.top + window.scrollY
-            topDistance = distanceFromTop ?? 0
-            wrapperArea.value.style.height = totalHeight.value + 'px';
+    watch(
+        () => originalList.value,
+        (newVal, oldVal) => {
+            initScroll(newVal?.length ?? 0, oldVal?.length ?? 0)
+            resize()
         }
-        if (containerTarget && originalList.value.length > 0) {
-            calculateRange();
+    )
+    onMounted(async () => {
+        await nextTick()
+        if (containerTarget) {
+            calculateRange()
             if (containerTarget.value === document.documentElement) {
-                window.addEventListener('scroll', resize);
+                window.addEventListener('scroll', resize)
             } else {
-                containerTarget.value.addEventListener("scroll", resize);
+                containerTarget.value.addEventListener('scroll', resize)
             }
-            window.addEventListener('resize', resize);
+            window.addEventListener('resize', resize)
         }
-        window.addEventListener('resize', () => {
-            console.log('fffffffffffffff')
-        })
     })
     onUnmounted(() => {
-        if (containerTarget.value && originalList.value.length > 0) {
+        if (containerTarget.value) {
             if (containerTarget.value === document.documentElement) {
-                window.removeEventListener('scroll', resize);
+                window.removeEventListener('scroll', resize)
             } else {
-                containerTarget.value.removeEventListener("scroll", resize);
+                containerTarget.value.removeEventListener('scroll', resize)
             }
-            window.removeEventListener("resize", resize);
+            window.removeEventListener('resize', resize)
         }
-
     })
 
-    return {targetList};
+    return { targetList }
 }

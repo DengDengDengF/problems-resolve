@@ -123,12 +123,14 @@ export const useVirtualList = (options) => {
             )
         return height
     }
-    //校正绝对位置
+    //校正绝对位置。1.全局滚动：直接用差值  2.局部滚动：用当前 rect 与 scrollTop 的关系计算，不受 transform 影响
     const getInitTop = () => {
-        if (!wrapperArea.value || !renderArea.value) return 0
-        const wrapperStyle = window.getComputedStyle(wrapperArea.value);
-        const paddingTop = parseFloat(wrapperStyle.paddingTop);
-        return renderArea.value.offsetTop - paddingTop;
+        if (!wrapperArea.value || !containerTarget.value) return 0
+        const wrapperRect = wrapperArea.value.getBoundingClientRect()
+        const containerRect = containerTarget.value.getBoundingClientRect()
+        const fix=wrapperRect.top - containerRect.top
+        console.log(containerTarget.value === document.documentElement?fix : fix + containerTarget.value.scrollTop)
+        return containerTarget.value === document.documentElement?fix : fix + containerTarget.value.scrollTop
     }
     //主程序调用
     const calculateRange = () => {
@@ -137,13 +139,11 @@ export const useVirtualList = (options) => {
         if (container) {
             const { scrollTop, clientHeight } = container
             const topDistance = getInitTop()
-
             const offset = Math.max(0, getOffset(scrollTop - topDistance))
             const visibleCount = getVisibleCount(clientHeight, offset)
             const start = Math.max(0, offset - overscan)
             const end = Math.min(originalList.value.length, offset + visibleCount + overscan)
             const offsetTop = getDistanceTop(start)
-            console.log(topDistance,start,end)
             // 设置wrapper的高度和偏移量
             setWrapperStyle(totalHeight.value + 'px', offsetTop + 'px')
             // 设置wrapper展示dom

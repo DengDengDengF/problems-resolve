@@ -13,7 +13,7 @@
   <!--  <MemoryLeak/>-->
   <!--  <HooksDemo/>-->
 <!--      <Virtualized/>-->
-  <VirtualizedListUseBody/>
+<!--  <VirtualizedListUseBody/>-->
   <!--  <TimeSlicing/>-->
   <!--  <AxiosDemo/>-->
   <!--  <Templates/>-->
@@ -54,7 +54,7 @@
   <!--  <TableBar/>-->
   <!--  <TableSelect/>-->
   <!--  <SelectDate/>-->
-  <!--  <WrapperTable/>-->
+    <WrapperTable/>
 <!--  <CssFuck/>-->
 </template>
 

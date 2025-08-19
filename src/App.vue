@@ -54,8 +54,9 @@
   <!--  <TableBar/>-->
   <!--  <TableSelect/>-->
   <!--  <SelectDate/>-->
-    <WrapperTable/>
+<!--    <WrapperTable/>-->
 <!--  <CssFuck/>-->
+  <ElSelectV2Page/>
 </template>
 
 <script setup>
@@ -168,6 +169,7 @@ import SelectDate from "./pages/27.table/selec-date.vue";
 import WrapperTable from "./pages/27.table/complex/WrapperTable.vue";
 //因为用table封装虚拟列表 样式问题
 import CssFuck from "./pages/27.table/css布局/css-fuck.vue";
+import ElSelectV2Page from "./pages/5.递归组件 和 树形控件/el-select-v2-page.vue";
 </script>
 
 <style>

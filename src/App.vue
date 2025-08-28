@@ -56,7 +56,8 @@
   <!--  <SelectDate/>-->
 <!--    <WrapperTable/>-->
 <!--  <CssFuck/>-->
-  <ElSelectV2Page/>
+<!--  <ElSelectV2Page/>-->
+  <ClipUpload/>
 </template>
 
 <script setup>
@@ -170,6 +171,7 @@ import WrapperTable from "./pages/27.table/complex/WrapperTable.vue";
 //因为用table封装虚拟列表 样式问题
 import CssFuck from "./pages/27.table/css布局/css-fuck.vue";
 import ElSelectV2Page from "./pages/5.递归组件 和 树形控件/el-select-v2-page.vue";
+import ClipUpload from "./pages/25.读取剪切板/clipUpload.vue";
 </script>
 
 <style>

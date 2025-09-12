@@ -152,6 +152,7 @@ export const useVirtualList = (options) => {
     }
     //窗口改变
     const resize = throttle((e) => {
+        console.log('dafdsf')
         e?.preventDefault()
         requestAnimationFrame(() => {
             calculateRange()
@@ -177,6 +178,7 @@ export const useVirtualList = (options) => {
         if (containerTarget) {
             calculateRange()
             if (containerTarget.value === document.documentElement) {
+                console.log('document')
                 window.addEventListener('scroll', resize)
             } else {
                 containerTarget.value.addEventListener('scroll', resize)

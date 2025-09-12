@@ -13,6 +13,7 @@
   <!--  <MemoryLeak/>-->
   <!--  <HooksDemo/>-->
 <!--      <Virtualized/>-->
+      <Drawer/>
 <!--  <VirtualizedListUseBody/>-->
   <!--  <TimeSlicing/>-->
   <!--  <AxiosDemo/>-->
@@ -56,7 +57,7 @@
   <!--  <SelectDate/>-->
 <!--    <WrapperTable/>-->
 <!--  <CssFuck/>-->
-  <ElSelectV2Page/>
+<!--  <ElSelectV2Page/>-->
 </template>
 
 <script setup>
@@ -87,6 +88,7 @@ import MemoryLeak from "./pages/9.内存泄漏/MemoryLeak.vue";
 import HooksDemo from "./pages/10.hooks案例/HooksDemo.vue";
 //虚拟列表-内层容器-内层滚动条
 import Virtualized from "./pages/11.虚拟列表时间分片/VirtualizedList.vue";
+import Drawer from "./pages/11.虚拟列表时间分片/Drawer.vue";
 //虚拟列表-外层容器-外层滚动条
 import VirtualizedListUseBody from "./pages/11.虚拟列表时间分片/VirtualizedListUseBody.vue";
 //时间分片

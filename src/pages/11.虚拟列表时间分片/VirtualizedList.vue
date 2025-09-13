@@ -60,7 +60,7 @@ list = useVirtualList({
   overflow: auto;
   border: 1px solid;
   width: 100%;
-  height: 800px;
+  height: 500px;
   .container_item {
     border: 1px solid red;
     width: 100%;

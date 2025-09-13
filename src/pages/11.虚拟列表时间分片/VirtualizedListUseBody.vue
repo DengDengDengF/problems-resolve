@@ -31,11 +31,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {ref} from "vue";
 import {useVirtualList} from "../../utils/hooks/useVirtualList/useVirtualList.js";
 
-const containerTarget = ref(document.documentElement);//最外层容器
+const props = defineProps<{
+  containerTarget?: HTMLElement | null
+}>()
+const containerTarget = ref(props.containerTarget??document.documentElement);//最外层容器
 const originalList = ref(Array.from(Array(200).keys())); //生成9999个demo
 const overscan = 5;//可允许溢出container范围的最大个数；
 
@@ -43,12 +46,6 @@ const renderArea=ref()
 const wrapperArea=ref()
 const constHeight = 120
 let list = ref([]);
-// setTimeout(() => {
-//   originalList.value = Array.from(Array(100).keys())
-// }, 4000)
-setTimeout(() => {
-  originalList.value = Array.from(Array(800).keys())
-}, 8000)
 list = useVirtualList({
   renderArea,
   containerTarget,

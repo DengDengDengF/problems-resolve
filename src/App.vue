@@ -12,7 +12,7 @@
   <!--  <DragSortablejs/>-->
   <!--  <MemoryLeak/>-->
   <!--  <HooksDemo/>-->
-<!--      <Virtualized/>-->
+      <Virtualized/>
 <!--  <VirtualizedListUseBody/>-->
   <!--  <TimeSlicing/>-->
   <!--  <AxiosDemo/>-->
@@ -57,7 +57,7 @@
 <!--    <WrapperTable/>-->
 <!--  <CssFuck/>-->
 <!--  <ElSelectV2Page/>-->
-  <ClipUpload/>
+<!--  <ClipUpload/>-->
 </template>
 
 <script setup>

@@ -61,6 +61,8 @@
 <!--  <ElSelectV2Page/>-->
 <!--  <ClipUpload/>-->
 <!--  <DialogFixed/>-->
+<!--  <VisualRouter/>-->
+  <WhatTimer/>
 </template>
 
 <script setup>
@@ -178,6 +180,10 @@ import ElSelectV2Page from "./pages/5.递归组件 和 树形控件/el-select-v2
 import ClipUpload from "./pages/25.读取剪切板/clipUpload.vue";
 //弹窗固定四周
 import DialogFixed from "./pages/4.动态表单以及表单封装/DialogFixed.vue";
+//可视路由
+import VisualRouter from "./pages/18.路由原理以及动态路由/VisualRouter.vue";
+//时间间隔联动
+import WhatTimer from "./pages/28.时间联动/WhatTimer.vue";
 </script>
 
 <style>

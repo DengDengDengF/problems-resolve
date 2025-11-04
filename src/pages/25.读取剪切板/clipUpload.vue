@@ -6,6 +6,7 @@
         :key="index"
         class="upload-wrapper"
         @paste="(e) => onPaste(e, index)"
+        @keydown="(e) => onKeyDown(e, index)"
         tabindex="0"
         :style="`border: 2px solid ${uploader.borderColor}; padding: 20px; width: 400px; position: relative; outline: none; margin-bottom: 20px;`"
     >
@@ -42,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, onMounted, onUnmounted } from "vue"
 import { ElMessage } from 'element-plus'
 
 // 定义2个上传器配置
@@ -119,6 +120,143 @@ const triggerFileUpload = (file: File, uploaderIndex: number) => {
     uploadInput.dispatchEvent(new Event('change', { bubbles: true }))
   }
 }
+
+// 方式1: 键盘事件 + Clipboard API (现代浏览器)
+const onKeyDown = async (event: KeyboardEvent, uploaderIndex: number) => {
+  if (event.ctrlKey && event.key.toLowerCase() === 'v') {
+    console.log(`⌨️ 方式1: 键盘事件检测到 Ctrl+V`)
+    event.preventDefault()
+    
+    try {
+      // 使用现代 Clipboard API
+      if (navigator.clipboard && navigator.clipboard.read) {
+        const clipboardItems = await navigator.clipboard.read()
+        
+        for (const item of clipboardItems) {
+          for (const type of item.types) {
+            if (type.startsWith('image/') || type.startsWith('application/')) {
+              const blob = await item.getType(type)
+              const file = new File([blob], `clipboard-${Date.now()}.${type.split('/')[1]}`, { type })
+              console.log(`📁 Clipboard API 获取文件:`, file)
+              triggerFileUpload(file, uploaderIndex)
+              return
+            }
+          }
+        }
+        ElMessage.warning('剪贴板中没有支持的文件')
+      } else {
+        // 方式2: 降级到传统方法
+        await handleCtrlVFallback(uploaderIndex)
+      }
+    } catch (error) {
+      console.error('Clipboard API 失败:', error)
+      ElMessage.warning('无法访问剪贴板，请尝试右键粘贴')
+    }
+  }
+}
+
+// 方式2: 降级方案 - 创建隐藏的 textarea 来捕获粘贴
+const handleCtrlVFallback = (uploaderIndex: number): Promise<void> => {
+  return new Promise((resolve) => {
+    console.log(`⌨️ 方式2: 使用降级方案处理 Ctrl+V`)
+    
+    // 创建隐藏的 textarea
+    const textarea = document.createElement('textarea')
+    textarea.style.position = 'fixed'
+    textarea.style.left = '-9999px'
+    textarea.style.opacity = '0'
+    document.body.appendChild(textarea)
+    
+    // 聚焦到 textarea
+    textarea.focus()
+    
+    // 监听粘贴事件
+    const handlePaste = (e: ClipboardEvent) => {
+      e.preventDefault()
+      console.log(`📋 降级方案捕获到粘贴事件`)
+      
+      const items = e.clipboardData?.items
+      if (items) {
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i]
+          if (item.kind === 'file') {
+            const file = item.getAsFile()
+            if (file) {
+              console.log(`📁 降级方案获取文件:`, file)
+              triggerFileUpload(file, uploaderIndex)
+            }
+          }
+        }
+      }
+      
+      // 清理
+      textarea.removeEventListener('paste', handlePaste)
+      document.body.removeChild(textarea)
+      resolve()
+    }
+    
+    textarea.addEventListener('paste', handlePaste)
+    
+    // 触发粘贴操作
+    setTimeout(() => {
+      document.execCommand('paste')
+    }, 10)
+  })
+}
+
+// 方式3: 全局监听 (可选)
+const setupGlobalCtrlV = () => {
+  document.addEventListener('keydown', async (event) => {
+    if (event.ctrlKey && event.key.toLowerCase() === 'v') {
+      // 检查当前聚焦的元素是否是上传区域
+      const activeElement = document.activeElement
+      const uploadWrapper = activeElement?.closest('.upload-wrapper')
+      
+      if (uploadWrapper) {
+        const index = Array.from(document.querySelectorAll('.upload-wrapper')).indexOf(uploadWrapper)
+        if (index >= 0) {
+          console.log(`⌨️ 方式3: 全局监听检测到 Ctrl+V，区域 ${index + 1}`)
+          event.preventDefault()
+          
+          try {
+            if (navigator.clipboard?.read) {
+              const items = await navigator.clipboard.read()
+              // 处理文件...
+              for (const item of items) {
+                for (const type of item.types) {
+                  if (type.startsWith('image/') || type.startsWith('application/')) {
+                    const blob = await item.getType(type)
+                    const file = new File([blob], `global-clipboard-${Date.now()}.${type.split('/')[1]}`, { type })
+                    triggerFileUpload(file, index)
+                    return
+                  }
+                }
+              }
+            }
+          } catch (error) {
+            console.error('全局 Ctrl+V 处理失败:', error)
+          }
+        }
+      }
+    }
+  })
+}
+
+// 方式4: 使用 Vue 生命周期管理全局监听
+let globalKeydownHandler: ((event: KeyboardEvent) => void) | null = null
+
+onMounted(() => {
+  // 可以选择启用全局监听
+  // globalKeydownHandler = setupGlobalCtrlV()
+  console.log('🎯 上传组件已挂载，支持多种 Ctrl+V 方式')
+})
+
+onUnmounted(() => {
+  // 清理全局监听器
+  if (globalKeydownHandler) {
+    document.removeEventListener('keydown', globalKeydownHandler)
+  }
+})
 
 // 粘贴事件处理 - 支持指定区域
 const onPaste = (event: ClipboardEvent, uploaderIndex: number) => {

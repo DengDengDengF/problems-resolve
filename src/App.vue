@@ -62,7 +62,8 @@
 <!--  <ClipUpload/>-->
 <!--  <DialogFixed/>-->
 <!--  <VisualRouter/>-->
-  <WhatTimer/>
+<!--  <WhatTimer/>-->
+  <ScrollSelf/>
 </template>
 
 <script setup>
@@ -184,6 +185,8 @@ import DialogFixed from "./pages/4.动态表单以及表单封装/DialogFixed.vu
 import VisualRouter from "./pages/18.路由原理以及动态路由/VisualRouter.vue";
 //时间间隔联动
 import WhatTimer from "./pages/28.时间联动/WhatTimer.vue";
+//自定义横向滚动
+import ScrollSelf from "./pages/26.无限滚动分页/scrollSelf.vue";
 </script>
 
 <style>

@@ -60,6 +60,7 @@
 <!--  <ElSelectV2Page/>-->
 <!--  <ElSelectV2Page/>-->
 <!--  <ClipUpload/>-->
+<!--  <ColumnDrag/>-->
 <!--  <DialogFixed/>-->
 <!--  <VisualRouter/>-->
 <!--  <WhatTimer/>-->
@@ -179,6 +180,8 @@ import WrapperTable from "./pages/27.table/complex/WrapperTable.vue";
 import CssFuck from "./pages/27.table/css布局/css-fuck.vue";
 import ElSelectV2Page from "./pages/5.递归组件 和 树形控件/el-select-v2-page.vue";
 import ClipUpload from "./pages/25.读取剪切板/clipUpload.vue";
+//列拖拽
+import ColumnDrag from "./pages/8.拖拽排序/ColumnDrag.vue";
 //弹窗固定四周
 import DialogFixed from "./pages/4.动态表单以及表单封装/DialogFixed.vue";
 //可视路由

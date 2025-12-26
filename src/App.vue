@@ -64,7 +64,8 @@
 <!--  <DialogFixed/>-->
 <!--  <VisualRouter/>-->
 <!--  <WhatTimer/>-->
-  <ScrollSelf/>
+<!--  <ScrollSelf/>-->
+  <ImgCompress/>
 </template>
 
 <script setup>
@@ -190,6 +191,8 @@ import VisualRouter from "./pages/18.路由原理以及动态路由/VisualRouter
 import WhatTimer from "./pages/28.时间联动/WhatTimer.vue";
 //自定义横向滚动
 import ScrollSelf from "./pages/26.无限滚动分页/scrollSelf.vue";
+//图片压缩
+import ImgCompress from "./pages/29.图片压缩/imgCompress.vue";
 </script>
 
 <style>

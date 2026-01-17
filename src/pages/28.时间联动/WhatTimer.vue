@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import {ref, computed} from 'vue'
 
 interface DurationOption {
   label: string
@@ -81,15 +81,15 @@ interface DurationOption {
 }
 
 const durationList: DurationOption[] = [
-  { label: '0分钟', value: 0 },
-  { label: '1分钟', value: 1 },
-  { label: '3分钟', value: 3 },
-  { label: '5分钟', value: 5 },
-  { label: '10分钟', value: 10 },
-  { label: '15分钟', value: 15 },
-  { label: '30分钟', value: 30 },
-  { label: '45分钟', value: 45 },
-  { label: '60分钟', value: 60 }
+  {label: '0分钟', value: 0},
+  {label: '1分钟', value: 1},
+  {label: '3分钟', value: 3},
+  {label: '5分钟', value: 5},
+  {label: '10分钟', value: 10},
+  {label: '15分钟', value: 15},
+  {label: '30分钟', value: 30},
+  {label: '45分钟', value: 45},
+  {label: '60分钟', value: 60}
 ]
 
 // 数据
@@ -176,12 +176,14 @@ const clearDurations = () => {
   max-height: 180px;
   overflow-y: auto;
 }
+
 .dropdown-item {
   padding: 6px 10px;
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.15s ease;
 }
+
 .dropdown-item:hover {
   background-color: #ecf5ff;
   color: #409eff;

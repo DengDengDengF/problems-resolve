@@ -33,7 +33,7 @@ const workerCount = Math.max(1, logical >> 1) //真实并行
 const fileList = ref<any[]>([])
 let taskQueue: any[] = []
 let workPool: any[] = []
-const isUploaded:boolean=ref<boolean>(true)
+const isUploaded=ref<boolean>(true)
 const computedRes=ref<string>('')
 
 const initFile = (file: File) => ({progress: '', file,md5:''})

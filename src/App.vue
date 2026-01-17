@@ -65,7 +65,8 @@
 <!--  <VisualRouter/>-->
 <!--  <WhatTimer/>-->
 <!--  <ScrollSelf/>-->
-  <ImgCompress/>
+<!--  <ImgCompress/>-->
+  <CountMD5/>
 </template>
 
 <script setup>
@@ -193,6 +194,8 @@ import WhatTimer from "./pages/28.时间联动/WhatTimer.vue";
 import ScrollSelf from "./pages/26.无限滚动分页/scrollSelf.vue";
 //图片压缩
 import ImgCompress from "./pages/29.图片压缩/imgCompress.vue";
+//多线程MD5测试
+import CountMD5 from "./pages/30.多线程md5运算效率检测/CountMD5.vue";
 </script>
 
 <style>

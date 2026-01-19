@@ -16,7 +16,7 @@ import SparkMD5 from 'spark-md5'
 
 const CHUNK_SIZE = 6 * 1024 * 1024 // 每片大小
 let TARGET_BPS = 400 * 1024 * 1024 // 初始目标磁盘吞吐
-const TARGET_MBPS_MAX = 500 // 最大目标吞吐
+const TARGET_MBPS_MAX = 400 // 最大目标吞吐
 const TARGET_MBPS_MIN = 50  // 最小目标吞吐
 const EWMA_ALPHA = 0.2 // 平滑权重
 const ADJUST_INTERVAL = 600 // ms，多久调整一次吞吐
@@ -31,7 +31,7 @@ const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 const calcSleepRange = ({chunkSize, targetBps, minFloor = MIN_FLOOR, maxCeil = MAX_CEIL}) => {
     const idealChunkTime = (chunkSize / targetBps) * 1000
     const minSleep = Math.max(minFloor, Math.floor(idealChunkTime * 0.85))
-    const maxSleep = Math.min(maxCeil, Math.ceil(idealChunkTime * 1.7))
+    const maxSleep = Math.max(Math.min(maxCeil, Math.ceil(idealChunkTime * 1.8)),minSleep)
     return {minSleep, maxSleep, idealChunkTime}
 }
 onmessage = async (e: MessageEvent) => {

@@ -3,20 +3,21 @@
  * 设计目标：
  * - 以确定性方式计算 MD5（结果与全量顺序读取一致）
  * - 在大文件哈希过程中避免打满用户磁盘 I/O
- * - 通过动态 sleep 将磁盘吞吐稳定在 TARGET_MBPS 附近
+ * - 通过动态 sleep 将磁盘吞吐稳定在 TARGET_BPS 附近
  * - 保证运行稳定（不抖动）、对浏览器友好、可安全中断
  *
  * 实现策略：
  * - 按固定大小分片顺序读取文件
  * - 在时间窗口内统计真实磁盘读取速率
  * - 使用 EWMA（指数加权平均）平滑瞬时波动
- * - 通过负反馈控制动态调整分片之间的 sleep 时间
+ * - 通过负反馈控制动态调整分片之间的 sleep 时间，动态调整目标磁盘速率。
  */
 import SparkMD5 from 'spark-md5'
 
 const CHUNK_SIZE = 3 * 1024 * 1024//每一片大小
-const TARGET_MBPS = 400
-const TARGET_BPS = TARGET_MBPS * 1024 * 1024 //目标磁盘速率
+let TARGET_BPS = 400 * 1024 * 1024 //目标磁盘速率，会动态调整。
+const TARGET_MBPS_MAX = 500 // 最大目标吞吐
+const TARGET_MBPS_MIN = 50  // 最小目标吞吐(某些机械硬盘、垃圾硬盘)
 const EWMA_ALPHA = 0.2//平滑权重。越大，响应越快但越不稳；越小，越稳但响应慢
 const MIN_SLEEP = 40//最小间隔去算下一块。
 const MAX_SLEEP = 80//最大间隔去算下一块。
@@ -93,6 +94,16 @@ onmessage = async (e: MessageEvent) => {
                         MIN_SLEEP,
                         sleepTime - ACCELERATE_SPEED
                     )
+                }
+                /**
+                 * 动态调整目标吞吐 (自适应硬盘能力)
+                 * - 实际速度 低于 目标的 80%，说明磁盘受限，降低 targetBps 10%
+                 * - 实际速度 高于 目标的 110%，说明磁盘还有余量，提高 targetBps 10%
+                 */
+                if (avgBps < TARGET_BPS * 0.8) {
+                    TARGET_BPS = Math.max(TARGET_MBPS_MIN * 1024 * 1024, TARGET_BPS * 0.9)
+                } else if (avgBps > TARGET_BPS * 1.1) {
+                    TARGET_BPS = Math.min(TARGET_MBPS_MAX * 1024 * 1024, TARGET_BPS * 1.1)
                 }
                 windowBytes = 0
                 windowStart = now

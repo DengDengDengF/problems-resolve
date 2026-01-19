@@ -23,7 +23,24 @@
 </template>
 
 <script setup lang="ts">
-//TODO demo 设计思想：把cpu密集并行 和 接口并发分开。同时进行。同时磁盘速率？
+/**
+ * UI 层展示 MD5 计算进度，同时监控 CPU、内存和磁盘吞吐效率（需要额外工具）
+ *
+ * 设计目标：
+ * - 找到相对稳定的参数，提升计算稳定性，同时尽量降低对系统吞吐的影响
+ * - 实时进度反馈给 UI
+ * - 使用多线程计算 MD5，防止阻塞主线程
+ * - 保持同步：worker 并行计算与接口上传并发结合，提高整体效率
+ *   （接口并发实现参考云视频 uploadLib.ts）
+ *
+ * 实现策略：
+ * - 采用工作池 + 队列 + 单例模式分配线程，worker.ts 负责 MD5 计算和性能均衡
+ * - worker 通过消息通知更新单例中的进度状态
+ * - 采取保守策略：使用逻辑线程的一半进行 MD5 计算，尽量不影响用户其他操作
+ * - MD5 计算完成后，将结果交给上传库处理，上传库自身有并发控制机制
+ *   并同样通过单例模式管理任务状态
+ */
+
 import {ref} from 'vue'
 
 const logical = navigator.hardwareConcurrency || 4 //逻辑核心
@@ -59,13 +76,16 @@ const startWorker=(item:any)=>{
         item.progress=(data.progress * 100).toFixed(2) + '%'
         // console.log('进度', (data.progress * 100).toFixed(2) + '%')
       }
+      if(data.debugMessage){
+        console.log( data.debugMessage)
+      }
       if (data.done) {
         item.md5=data.md5
         item.progress='100%'
         // console.log('文件 MD5:', data.md5)
         worker.terminate()
         worker=null
-        resolve()
+        resolve('')
       }
     }
     worker.onerror = (e: ErrorEvent) => {

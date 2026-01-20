@@ -14,16 +14,16 @@
  */
 import SparkMD5 from 'spark-md5'
 
-const CHUNK_SIZE = 6 * 1024 * 1024 // 每片大小
-let TARGET_BPS = 400 * 1024 * 1024 // 初始目标磁盘吞吐
-const TARGET_MBPS_MAX = 400 // 最大目标吞吐
-const TARGET_MBPS_MIN = 50  // 最小目标吞吐
-const EWMA_ALPHA = 0.2 // 平滑权重
-const ADJUST_INTERVAL = 600 // ms，多久调整一次吞吐
-const BRAKE_SPEED = 25       // 超速刹车灵敏度
-const ACCELERATE_SPEED = 5   // 加速保守灵敏度
-const MIN_FLOOR = 40         // sleep 下限
-const MAX_CEIL = 200         // sleep 上限
+const CHUNK_SIZE = 4 * 1024 * 1024 // 每片大小
+let TARGET_BPS = 200 * 1024 * 1024 // 初始目标磁盘吞吐,后续动态调整
+const TARGET_MBPS_MAX = 600 // 最大目标吞吐
+const TARGET_MBPS_MIN = 80  // 最小目标吞吐
+const EWMA_ALPHA = 0.15 // 平滑权重
+const ADJUST_INTERVAL = 800 // ms，多久调整一次吞吐
+const BRAKE_SPEED = 30       // 超速刹车灵敏度
+const ACCELERATE_SPEED = 4   // 加速保守灵敏度
+const MIN_FLOOR = 30         // sleep 下限
+const MAX_CEIL = 180         // sleep 上限
 
 // 延迟
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))

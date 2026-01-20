@@ -14,7 +14,7 @@
  */
 import SparkMD5 from 'spark-md5'
 
-const CHUNK_SIZE = 4 * 1024 * 1024 // 每片大小
+const CHUNK_SIZE = 2 * 1024 * 1024 // 每片大小
 let TARGET_BPS = 200 * 1024 * 1024 // 初始目标磁盘吞吐,后续动态调整
 const TARGET_MBPS_MAX = 600 // 最大目标吞吐
 const TARGET_MBPS_MIN = 80  // 最小目标吞吐

@@ -1,6 +1,6 @@
 <template>
-  <h1>当前速度：{{averageSpeed}} mb/s </h1>
-  <h2>目标速度：{{currentSpeed}}mb/s</h2>
+  <h1>当前:{{ averageSpeed }}</h1>
+  <h2>目标:{{ currentSpeed }}</h2>
   <p>运算结果：{{ computedRes }}</p>
   <el-scrollbar :height="500" always>
     <div v-for="item in  fileList" class="lists">
@@ -51,6 +51,7 @@
  * - 通过负反馈控制动态调整分片之间的 sleep 时间 以及 上下限，动态调整目标磁盘速率,动态调整。
  */
 import {ref} from 'vue'
+
 const logical = navigator.hardwareConcurrency || 4 //逻辑核心
 // const net = 5//网络接口同时并发5
 // const workerCount = Math.min(net, Math.max(1, logical >> 1))
@@ -60,9 +61,13 @@ let taskQueue: any[] = []
 let workPool: any[] = []
 const isUploaded = ref<boolean>(true)
 const computedRes = ref<string>('')
-const averageSpeed=ref<number>(0)
-const currentSpeed=ref<number>(0)
-const initFile = (file: File) => ({progress: '', file, md5: '',bps:0,elap:0})
+const averageSpeed = ref<string>('')
+const currentSpeed = ref<string>('')
+const INIT_BPS = 60 * 10 * 1024 * 1024 / workerCount //分片默认速率上限
+
+//初始化文件实例
+const initFile = (file: File) => ({progress: '', file, md5: '', bps: 0, elap: 0})
+//返回正确的单位
 const getSizeSum = () => {
   const totalBytes = fileList.value.reduce((total, item) => total + (item.file?.size || 0), 0)
   if (totalBytes < 1024) {
@@ -75,14 +80,20 @@ const getSizeSum = () => {
     return +(totalBytes / 1024 / 1024 / 1024).toFixed(2) + ' GB'
   }
 }
-
-const calcSleepRange = ({chunkSize, targetBps, min=20, max=180}) => {
+/**
+ * @description 测量sleep区间
+ * @param chunkSize 分片大小
+ * @param targetBps 调整后的分片目标速率
+ * @param min sleep下限
+ * @param max sleep 上限*/
+const calcSleepRange = ({chunkSize, targetBps, min = 20, max = 180}) => {
   const idealChunkTime = (chunkSize / targetBps) * 1000
   const min_sleep = Math.max(min, Math.floor(idealChunkTime * 0.6))
   const max_sleep = Math.max(Math.min(max, Math.ceil(idealChunkTime * 1.6)), min)
   return {min_sleep, max_sleep, idealChunkTime}
 }
-
+/**@description 多线程自适应节流
+ * @param item 文件实例*/
 const startWorker = (item: any) => {
   return new Promise((resolve, reject) => {
     const file = item.file
@@ -92,7 +103,7 @@ const startWorker = (item: any) => {
     if (!window.__ioCoordinator) {
       //分片大小
       const CHUNK_SIZE = 4 * 1024 * 1024, //分片大小
-          targetBps =60 * 1024 * 1024//分片的目标速率
+          targetBps = INIT_BPS//分片的目标速率
       //动态计算sleep区间
       const {min_sleep, max_sleep} = calcSleepRange({
         chunkSize: CHUNK_SIZE,
@@ -104,7 +115,7 @@ const startWorker = (item: any) => {
         sleepMs: min_sleep,//初始化
         min_sleep,//sleep区间，会动态改变
         max_sleep,
-        target_bps_max: 60,//最大速率
+        target_bps_max: INIT_BPS,//最大速率
         target_bps_min: 20,//最小速率
         EWMA_ALPHA: 0.15,//系数
         CHUNK_SIZE,//每一片
@@ -124,7 +135,7 @@ const startWorker = (item: any) => {
       if (data.stat) {
         const {bytes, elapsed} = data.stat
         item.bps = bytes
-        item.elap=elapsed
+        item.elap = elapsed
         //总吞吐
         const totalBps = workPool.reduce((sum, w) => {
           return sum + (w.bps || 0)
@@ -139,8 +150,9 @@ const startWorker = (item: any) => {
         coord.avgBps = coord.avgBps
             ? coord.avgBps * (1 - coord.EWMA_ALPHA) + instantBps * coord.EWMA_ALPHA
             : instantBps
-        averageSpeed.value = coord.avgBps * workPool.length / (1024 * 1024)
-        currentSpeed.value=coord.targetBps * workPool.length  / (1024 * 1024)
+        averageSpeed.value = (coord.avgBps * workPool.length / (1024 * 1024)).toFixed(1) + 'MB/s'
+        currentSpeed.value = (coord.targetBps * workPool.length / (1024 * 1024)).toFixed(1) + 'MB/s'
+        document.title ='ave:' + averageSpeed.value +' cur:'+currentSpeed.value
         const ratio = coord.avgBps / coord.targetBps
         //超过5% 以及 低了10%，对应刹车以及提速。
         if (ratio > 1.05) {
@@ -175,10 +187,10 @@ const startWorker = (item: any) => {
           if (w._worker) {
             w._worker.postMessage({
               control: {
-                status:1,
+                status: 1,
                 sleepMs: coord.sleepMs,
-                CHUNK_SIZE:coord.CHUNK_SIZE,
-                ADJUST_INTERVAL:coord.ADJUST_INTERVAL
+                CHUNK_SIZE: coord.CHUNK_SIZE,
+                ADJUST_INTERVAL: coord.ADJUST_INTERVAL
               },
             })
           }
@@ -202,14 +214,14 @@ const startWorker = (item: any) => {
       file,
       control: {
         sleepMs: coord.sleepMs,
-        CHUNK_SIZE:coord.CHUNK_SIZE,
-        ADJUST_INTERVAL:coord.ADJUST_INTERVAL,
-        status:0 //0未运行 1运行中
+        CHUNK_SIZE: coord.CHUNK_SIZE,
+        ADJUST_INTERVAL: coord.ADJUST_INTERVAL,
+        status: 0 //0未运行 1运行中
       },
     })
   })
 }
-
+//并行算md5 以及 待开发并发文件进度.....一大堆
 const computedFile = () => {
   isUploaded.value = false
   const start = performance.now()
@@ -244,8 +256,7 @@ const computedFile = () => {
   }
   for (let i = 0; i < workerCount; i++) Promise.resolve().then(runTask)
 }
-
-
+//新加入的文件队列
 const fileChange = async (event: any) => {
   const lists: any[] = Array.from(event.target?.files || [])
   if (lists.length == 0) return
@@ -257,6 +268,16 @@ const fileChange = async (event: any) => {
   if (isUploaded.value) computedFile()
   event.target.value = ''
 }
+//浏览器调度原因，切到后台，再切回来限速解决方案
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    //TODO 后续可以初始化__ioCoordinator,然后通过节流算法自动调整。
+    if (window.__ioCoordinator) {
+      window.__ioCoordinator.targetBps = INIT_BPS
+      window.__ioCoordinator.avgBps = INIT_BPS
+    }
+  }
+})
 </script>
 
 <style scoped>

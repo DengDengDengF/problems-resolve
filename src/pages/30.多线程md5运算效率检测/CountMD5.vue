@@ -13,15 +13,18 @@
       </div>
     </div>
   </el-scrollbar>
-  <input
-      v-if="isUploaded"
-      type="file"
-      @change="fileChange"
-      ref="uploadRef"
-      :webkitdirectory="true"
-      :multiple="true"
-      accept="."
-  />
+  <div style="display: flex;gap:10px">
+    <input
+        v-if="isUploaded"
+        type="file"
+        @change="fileChange"
+        ref="uploadRef"
+        :webkitdirectory="true"
+        :multiple="true"
+        accept="."
+    />
+    <el-button type="primary" @click="clear">终止线程</el-button>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -203,6 +206,11 @@ const startWorker = (item: any) => {
         item._worker = null
         resolve('')
       }
+      if(data.stop){
+        worker.terminate()
+        item._worker = null
+        reject(`${file.name} 线程 被终止`)
+      }
     }
     worker.onerror = (e: ErrorEvent) => {
       console.error('Worker 出错:', e.message, '行号:', e.lineno, '列号:', e.colno)
@@ -216,7 +224,7 @@ const startWorker = (item: any) => {
         sleepMs: coord.sleepMs,
         CHUNK_SIZE: coord.CHUNK_SIZE,
         ADJUST_INTERVAL: coord.ADJUST_INTERVAL,
-        status: 0 //0未运行 1运行中
+        status: 0 //0未运行 1运行中 2停止运行
       },
     })
   })
@@ -267,6 +275,21 @@ const fileChange = async (event: any) => {
   }
   if (isUploaded.value) computedFile()
   event.target.value = ''
+}
+//测试线程突然终止
+const clear=()=>{
+  fileList.value.length = 0
+  taskQueue.length = 0
+  workPool.forEach(w => {
+      if (w._worker) {
+        w._worker.postMessage({
+          control: {
+            status: 2,
+          },
+        })
+      }
+  })
+  workPool.length=0
 }
 //浏览器调度原因，切到后台，再切回来限速解决方案
 document.addEventListener('visibilitychange', () => {

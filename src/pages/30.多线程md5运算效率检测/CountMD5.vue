@@ -251,9 +251,14 @@ const computedFile = () => {
     }
     while (taskQueue.length > 0 && workPool.length < workerCount) {
       const item = taskQueue.shift()
-      workPool.push(item)
       try {
-        await startWorker(item)
+        //TODO 4MB以下串行 以上并行，或者待确定，等待测试。
+        if(item.file.size < 4 * 1024 * 1024){
+          item.progress = '100%'
+        }else{
+          workPool.push(item)
+          await startWorker(item)
+        }
         //准备根据协议不通http1.1 5个接口并发上传
       } finally {
         const poolIndex = workPool.findIndex((data) => data.file == item.file)

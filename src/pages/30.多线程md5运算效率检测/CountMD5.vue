@@ -24,6 +24,7 @@
         accept="."
     />
     <el-button type="primary" @click="clear">终止线程</el-button>
+    <el-button type="primary" @click="test"> test</el-button>
   </div>
 </template>
 
@@ -96,12 +97,12 @@ const calcSleepRange = ({chunkSize, targetBps, min = 20, max = 180}) => {
   return {min_sleep, max_sleep, idealChunkTime}
 }
 /**@description 多线程自适应节流
- * @param item 文件实例*/
-const startWorker = (item: any) => {
+ * @param poolItem worker线程实例*/
+const startWorker = (poolItem: any) => {
   return new Promise((resolve, reject) => {
-    const file = item.file
-    const worker = new Worker(new URL('./worker.ts', import.meta.url), {type: 'module'})
-    item._worker = worker
+    const task = poolItem.task
+    const worker = poolItem._worker
+    const file = task.file
     //注册全局实例
     if (!window.__ioCoordinator) {
       //分片大小
@@ -132,20 +133,20 @@ const startWorker = (item: any) => {
       const data = e.data
       //同步进度
       if (data.progress !== undefined) {
-        item.progress = (data.progress * 100).toFixed(2) + '%'
+        task.progress = (data.progress * 100).toFixed(2) + '%'
       }
       //同步磁盘吞吐参数
       if (data.stat) {
         const {bytes, elapsed} = data.stat
-        item.bps = bytes
-        item.elap = elapsed
+        task.bps = bytes
+        task.elap = elapsed
         //总吞吐
         const totalBps = workPool.reduce((sum, w) => {
-          return sum + (w.bps || 0)
+          return sum + (w?.task?.bps || 0)
         }, 0)
         //总持续
         const totalElap = workPool.reduce((sum, w) => {
-          return sum + (w.elap || 0)
+          return sum + (w?.task?.elap || 0)
         }, 0)
         //平均速率
         const instantBps = totalBps / (totalElap / 1000)
@@ -153,9 +154,10 @@ const startWorker = (item: any) => {
         coord.avgBps = coord.avgBps
             ? coord.avgBps * (1 - coord.EWMA_ALPHA) + instantBps * coord.EWMA_ALPHA
             : instantBps
+        // console.log('coord.avgBps', coord.avgBps)
         averageSpeed.value = (coord.avgBps * workPool.length / (1024 * 1024)).toFixed(1) + 'MB/s'
         currentSpeed.value = (coord.targetBps * workPool.length / (1024 * 1024)).toFixed(1) + 'MB/s'
-        document.title ='ave:' + averageSpeed.value +' cur:'+currentSpeed.value
+        document.title = 'ave:' + averageSpeed.value + ' cur:' + currentSpeed.value
         const ratio = coord.avgBps / coord.targetBps
         //超过5% 以及 低了10%，对应刹车以及提速。
         if (ratio > 1.05) {
@@ -186,46 +188,48 @@ const startWorker = (item: any) => {
         })
         coord.min_sleep = min_sleep
         coord.max_sleep = max_sleep
-        workPool.forEach(w => {
+        const hasItemPool = workPool.filter((v)=>v.task)
+        hasItemPool.forEach(w => {
           if (w._worker) {
+            w.control = {
+              status: 1,
+              sleepMs: coord.sleepMs,
+              CHUNK_SIZE: coord.CHUNK_SIZE,
+              ADJUST_INTERVAL: coord.ADJUST_INTERVAL
+            }
             w._worker.postMessage({
-              control: {
-                status: 1,
-                sleepMs: coord.sleepMs,
-                CHUNK_SIZE: coord.CHUNK_SIZE,
-                ADJUST_INTERVAL: coord.ADJUST_INTERVAL
-              },
+              control: w.control,
             })
           }
         })
       }
       if (data.done) {
-        item.md5 = data.md5
-        item.progress = '100%'
-        worker.terminate()
-        item._worker = null
+        task.md5 = data.md5
+        task.progress = '100%'
+        poolItem.control.status =0
         resolve('')
       }
-      if(data.stop){
-        worker.terminate()
-        item._worker = null
+      if (data.stop) {
+        poolItem.control.status = 2
         reject(`${file.name} 线程 被终止`)
       }
     }
     worker.onerror = (e: ErrorEvent) => {
       console.error('Worker 出错:', e.message, '行号:', e.lineno, '列号:', e.colno)
-      worker.terminate()
-      item._worker = null
+      poolItem.control.status = 2
+      // worker.terminate()
+      // item._worker = null
       reject()
+    }
+    poolItem.control = {
+      sleepMs: coord.sleepMs,
+      CHUNK_SIZE: coord.CHUNK_SIZE,
+      ADJUST_INTERVAL: coord.ADJUST_INTERVAL,
+      status: 0 //0未运行 1运行中 2停止运行
     }
     worker.postMessage({
       file,
-      control: {
-        sleepMs: coord.sleepMs,
-        CHUNK_SIZE: coord.CHUNK_SIZE,
-        ADJUST_INTERVAL: coord.ADJUST_INTERVAL,
-        status: 0 //0未运行 1运行中 2停止运行
-      },
+      control: poolItem.control
     })
   })
 }
@@ -234,46 +238,42 @@ const computedFile = () => {
   isUploaded.value = false
   const start = performance.now()
   computedRes.value = '...'
-  if (taskQueue.length == 0) {
+  const synComputed = () => {
     isUploaded.value = true
     const duration = (performance.now() - start) / 1000
     const size = getSizeSum()
     computedRes.value = fileList.value.length + '个文件,' + size + ',' + workerCount + '线程，执行 ' + duration + ' 秒'
-    return
   }
-  const runTask = async () => {
-    if (taskQueue.length == 0 && workPool.length == 0) {
-      isUploaded.value = true
-      const duration = (performance.now() - start) / 1000
-      const size = getSizeSum()
-      computedRes.value = fileList.value.length + '个文件,' + size + ',' + workerCount + '线程，执行 ' + duration + ' 秒'
-      return
-    }
-    while (taskQueue.length > 0 && workPool.length < workerCount) {
+  const runningNum=()=>workPool.filter((v)=>v.control.status == 1).length
+  if (taskQueue.length == 0) return synComputed()
+  const runTask = async (poolItem: any) => {
+    while (taskQueue.length > 0) {
       const item = taskQueue.shift()
       try {
-        //TODO 4MB以下串行 以上并行，或者待确定，等待测试。
-        if(item.file.size < 4 * 1024 * 1024){
-          item.progress = '100%'
-        }else{
-          workPool.push(item)
-          await startWorker(item)
-        }
+        poolItem.task = item
+        await startWorker(poolItem)
         //准备根据协议不通http1.1 5个接口并发上传
       } finally {
-        const poolIndex = workPool.findIndex((data) => data.file == item.file)
-        if (poolIndex > -1) workPool.splice(poolIndex, 1)
-        Promise.resolve().then(runTask)
+        poolItem.task = null
+        // Promise.resolve().then(() => {
+        //   runTask(poolItem)
+        // })
       }
     }
+    if (taskQueue.length == 0 && runningNum() == 0) return synComputed()
   }
-  for (let i = 0; i < workerCount; i++) Promise.resolve().then(runTask)
+  for (let i = 0; i < workPool.length; i++) {
+    const poolItem = workPool[i]
+    Promise.resolve().then(() => {
+      runTask(poolItem)
+    })
+  }
 }
 //新加入的文件队列
 const fileChange = async (event: any) => {
   const lists: any[] = Array.from(event.target?.files || [])
   if (lists.length == 0) return
-  if (fileList.value.length > 0) fileList.value.length = 0
+  if (fileList.value.length > 0) clear()
   for (let file of lists) {
     fileList.value.push(initFile(file))
     taskQueue.push(fileList.value[fileList.value.length - 1])
@@ -282,20 +282,42 @@ const fileChange = async (event: any) => {
   event.target.value = ''
 }
 //测试线程突然终止
-const clear=()=>{
+const clear = () => {
   fileList.value.length = 0
   taskQueue.length = 0
   workPool.forEach(w => {
-      if (w._worker) {
-        w._worker.postMessage({
-          control: {
-            status: 2,
-          },
-        })
-      }
+    if (w._worker) {
+      w._worker.postMessage({
+        control: {
+          status: 2,
+        },
+      })
+    }
   })
-  workPool.length=0
 }
+const initWorker = () => {
+  clear()
+  let i = 0
+  while (i < workerCount) {
+    const v = {
+      _worker: new Worker(new URL('./worker.ts', import.meta.url), {type: 'module'}),
+      _workerId: crypto.randomUUID(),
+      task: null,
+      control: {
+        status: 0,//0未运行 1运行中 2停止运行
+        sleepMs: 0,
+        CHUNK_SIZE: 0,
+        ADJUST_INTERVAL: 0
+      },
+    }
+    workPool.push(v)
+    i++
+  }
+}
+const test=()=>{
+   console.log(fileList.value.filter((v)=>!v.progress))
+}
+initWorker()
 //浏览器调度原因，切到后台，再切回来限速解决方案
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {

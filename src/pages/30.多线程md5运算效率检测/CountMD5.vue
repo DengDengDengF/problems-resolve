@@ -217,11 +217,10 @@ const startWorker = (poolItem: any) => {
       }
     }
     worker.onerror = (e: ErrorEvent) => {
-      console.error('Worker 出错:', e.message, '行号:', e.lineno, '列号:', e.colno)
       poolItem.control.status = 2
       // worker.terminate()
       // item._worker = null
-      reject()
+      reject(`${file.name} 线程 onerror: ${e}`)
     }
     poolItem.control = {
       sleepMs: coord.sleepMs,
@@ -257,18 +256,8 @@ const computedFile = () => {
         //准备根据协议不通http1.1 5个接口并发上传
       } finally {
         poolItem.task = null
-        // Promise.resolve().then(() => {
-        //   runTask(poolItem)
-        // })
+        if (taskQueue.length == 0 && runningNum() == 0)  synComputed()
       }
-    }
-    if (taskQueue.length == 0 && runningNum() == 0) {
-      // const arr = []
-      //  for(let item of poolItem){
-      //     arr.push({'worker-id':item._workerId,'status':item.control.status})
-      //  }
-      // console.log('runningNum',JSON.stringify(runningNum))
-      return synComputed()
     }
   }
   for (let i = 0; i < workPool.length; i++) {

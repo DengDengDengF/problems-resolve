@@ -3,8 +3,8 @@ import SparkMD5 from 'spark-md5'
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 let sleepMs = 0
 onmessage = async (e: MessageEvent) => {
+    const {file, control} = e.data
     try {
-        const {file, control} = e.data
         if (control.sleepMs) sleepMs = control.sleepMs
         if (control.status == 1) return
         if (control.status == 2) return postMessage({stop: true})
@@ -27,9 +27,9 @@ onmessage = async (e: MessageEvent) => {
             spark.append(buffer)
             offset += buffer.byteLength
             windowBytes += buffer.byteLength
+            if (control.status == 2) return postMessage({stop: true})
             //通知主线程同步进度
             if (Date.now() - lastNotify > 200) {
-                if (control.status == 2) return postMessage({stop: true})
                 postMessage({
                     progress: Math.min(1, offset / file.size)
                 })
@@ -37,9 +37,9 @@ onmessage = async (e: MessageEvent) => {
             }
             const now = performance.now()
             const elapsed = now - windowStart
+            if (control.status == 2) return postMessage({stop: true})
             //通知主线程同步磁盘吞吐数据
             if (elapsed >= ADJUST_INTERVAL) {
-                if (control.status == 2) return postMessage({stop: true})
                 postMessage({
                     stat: {
                         bytes: windowBytes,
@@ -54,8 +54,10 @@ onmessage = async (e: MessageEvent) => {
             }
         }
         const md5 = spark.end()
+        if (control.status == 2) return postMessage({stop: true})
         postMessage({md5, done: true})
     } catch (err) {
+        if (control.status == 2) return postMessage({stop: true})
         postMessage({error: (err as Error).message})
     }
 }

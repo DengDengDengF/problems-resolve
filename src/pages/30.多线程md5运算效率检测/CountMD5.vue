@@ -178,10 +178,12 @@ const startWorker = (poolItem: any) => {
          * - 实际速度 低于 目标的 80%，说明磁盘受限，降低 targetBps 10%
          * - 实际速度 高于 目标的 110%，说明磁盘还有余量，提高 targetBps 10%
          */
-        if (coord.avgBps < coord.targetBps * 0.8) {
-          coord.targetBps = Math.max(coord.target_bps_min * 1024 * 1024, coord.targetBps * 0.9)
-        } else if (coord.avgBps > coord.targetBps * 1.1) {
-          coord.targetBps = Math.min(coord.target_bps_max * 1024 * 1024, coord.targetBps * 1.1)
+        if(coord.avgBps > coord.targetBps * 0.3){
+          if (coord.avgBps < coord.targetBps * 0.8) {
+            coord.targetBps = Math.max(coord.target_bps_min * 1024 * 1024, coord.targetBps * 0.9)
+          } else if (coord.avgBps > coord.targetBps * 1.1) {
+            coord.targetBps = Math.min(coord.target_bps_max * 1024 * 1024, coord.targetBps * 1.1)
+          }
         }
         //动态调整sleep区间
         const {min_sleep, max_sleep} = calcSleepRange({

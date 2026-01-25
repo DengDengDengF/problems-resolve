@@ -54,7 +54,7 @@
  * - 使用 EWMA（指数加权平均）平滑瞬时波动
  * - 通过负反馈控制动态调整分片之间的 sleep 时间 以及 上下限，动态调整目标磁盘速率,动态调整。
  */
-import {ref} from 'vue'
+import {onUnmounted, ref} from 'vue'
 
 const logical = navigator.hardwareConcurrency || 4 //逻辑核心
 // const net = 5//网络接口同时并发5
@@ -190,7 +190,7 @@ const startWorker = (poolItem: any) => {
         })
         coord.min_sleep = min_sleep
         coord.max_sleep = max_sleep
-        const hasItemPool = workPool.filter((v)=>v.task)
+        const hasItemPool = workPool.filter((v) => v.task)
         hasItemPool.forEach(w => {
           if (w._worker) {
             w.control = {
@@ -208,16 +208,13 @@ const startWorker = (poolItem: any) => {
       if (data.done) {
         task.md5 = data.md5
         task.progress = '100%'
-        poolItem.control.status =0
         resolve('')
       }
       if (data.stop) {
-        poolItem.control.status = 2
         reject(`${file.name} 线程 被终止`)
       }
     }
     worker.onerror = (e: ErrorEvent) => {
-      poolItem.control.status = 2
       // worker.terminate()
       // item._worker = null
       reject(`${file.name} 线程 onerror: ${e}`)
@@ -226,7 +223,7 @@ const startWorker = (poolItem: any) => {
       sleepMs: coord.sleepMs,
       CHUNK_SIZE: coord.CHUNK_SIZE,
       ADJUST_INTERVAL: coord.ADJUST_INTERVAL,
-      status: 0 //0未运行 1运行中 2停止运行
+      status: 0 //0准备运行  1运行中  2停止运行
     }
     worker.postMessage({
       file,
@@ -245,18 +242,23 @@ const computedFile = () => {
     const size = getSizeSum()
     computedRes.value = fileList.value.length + '个文件,' + size + ',' + workerCount + '线程，执行 ' + duration + ' 秒'
   }
-  const runningNum=()=>workPool.filter((v)=>v.control.status == 1).length
+  const runningNum = () => workPool.filter((v) => v.control.status == 1).length
   const runTask = async (poolItem: any) => {
-    if(poolItem.control.status == 1) return
-    while (taskQueue.length > 0) {
-      const item = taskQueue.shift()
-      try {
-        poolItem.task = item
-        await startWorker(poolItem)
-        //准备根据协议不通http1.1 5个接口并发上传
-      } finally {
-        poolItem.task = null
-        if (taskQueue.length == 0 && runningNum() == 0)  synComputed()
+    //针对该线程。准备运行，但是没任务。
+    if(poolItem.control.status == 0 && !poolItem.task) {
+      while (taskQueue.length > 0) {
+        const item = taskQueue.shift()
+        try {
+          poolItem.task = item
+          await startWorker(poolItem)
+          //准备根据协议不通http1.1 5个接口并发上传
+        } finally {
+          poolItem.task = null
+          if (taskQueue.length == 0) {
+            poolItem.control.status = 0
+            if (runningNum() == 0) synComputed()
+          }
+        }
       }
     }
   }
@@ -302,7 +304,7 @@ const initWorker = () => {
       _workerId: crypto.randomUUID(),
       task: null,
       control: {
-        status: 0,//0未运行 1运行中 2停止运行
+        status: 0,//0准备运行 1运行中 2停止运行
         sleepMs: 0,
         CHUNK_SIZE: 0,
         ADJUST_INTERVAL: 0
@@ -312,10 +314,20 @@ const initWorker = () => {
     i++
   }
 }
-const test=()=>{
-   console.log(fileList.value.filter((v)=>!v.progress))
-  console.log( taskQueue)
-  console.log( workPool)
+const cleanupWorkers = () => {
+  workPool.forEach(w => {
+    if (w._worker) {
+      w._worker.postMessage({control: {status: 2}}) // 告诉 Worker 停止
+      w._worker.terminate() // 强制终止
+      w._worker = null
+    }
+  })
+  workPool.length = 0
+}
+const test = () => {
+  console.log(fileList.value.filter((v) => !v.progress))
+  console.log(taskQueue)
+  console.log(workPool)
 }
 initWorker()
 //浏览器调度原因，切到后台，再切回来限速解决方案
@@ -327,6 +339,13 @@ document.addEventListener('visibilitychange', () => {
       window.__ioCoordinator.avgBps = INIT_BPS
     }
   }
+})
+// 页面刷新/关闭时
+window.addEventListener('beforeunload', () => {
+  cleanupWorkers()
+})
+onUnmounted(() => {
+  cleanupWorkers()
 })
 </script>
 

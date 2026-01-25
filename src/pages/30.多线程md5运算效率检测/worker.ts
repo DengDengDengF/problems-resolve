@@ -1,7 +1,8 @@
 import SparkMD5 from 'spark-md5'
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
-let sleepMs = 0, lockBoolean = false
+let sleepMs:number = 0, lockBoolean:boolean = false
+let oldErrorMessage:string = ''
 onmessage = async (e: MessageEvent) => {
     const {file, control} = e.data
     try {
@@ -32,7 +33,13 @@ onmessage = async (e: MessageEvent) => {
                 return
             }
             const slice = file.slice(offset, offset + CHUNK_SIZE)
+            //解决读取被锁的文件，直接线程停止问题。
+            oldErrorMessage=''
+            let timeout = setTimeout(() => {
+                throw new Error(`${oldErrorMessage} _ ${file.name} 读取超时`)
+            }, 5000)
             const buffer = await slice.arrayBuffer()
+            clearTimeout(timeout)
             spark.append(buffer)
             offset += buffer.byteLength
             windowBytes += buffer.byteLength
@@ -79,6 +86,8 @@ onmessage = async (e: MessageEvent) => {
         postMessage({md5, done: true})
         lockBoolean = false
     } catch (err) {
+        //文件被锁的情况下，worker线程直接挂起，上面的定时器发挥作用，打印报错信息。
+        oldErrorMessage =err.name + ' ' + err.message
         if (control.status == 2) {
             postMessage({stop: true})
             lockBoolean = false

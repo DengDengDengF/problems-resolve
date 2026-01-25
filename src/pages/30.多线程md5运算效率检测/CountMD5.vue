@@ -8,7 +8,8 @@
         <div class="left">{{ item.file.name }}</div>
         <div class="right">
           <span>{{ item.md5 }}</span>
-          <span>{{ item.progress }}</span>
+          <span v-if="item.errorMsg" style="color: red">{{item.errorMsg}}</span>
+          <span v-else>{{ item.progress }}</span>
         </div>
       </div>
     </div>
@@ -70,7 +71,7 @@ const currentSpeed = ref<string>('')
 const INIT_BPS = 60 * 10 * 1024 * 1024 / workerCount //分片默认速率上限
 
 //初始化文件实例
-const initFile = (file: File) => ({progress: '', file, md5: '', bps: 0, elap: 0})
+const initFile = (file: File) => ({progress: '', file, md5: '', bps: 0, elap: 0,errorMsg:''})
 //返回正确的单位
 const getSizeSum = () => {
   const totalBytes = fileList.value.reduce((total, item) => total + (item.file?.size || 0), 0)
@@ -217,9 +218,7 @@ const startWorker = (poolItem: any) => {
       }
     }
     worker.onerror = (e: ErrorEvent) => {
-      // worker.terminate()
-      // item._worker = null
-      reject(`${file.name} 线程 onerror: ${e}`)
+      reject(e)
     }
     poolItem.control = {
       sleepMs: coord.sleepMs,
@@ -254,6 +253,8 @@ const computedFile = () => {
           poolItem.task = item
           await startWorker(poolItem)
           //准备根据协议不通http1.1 5个接口并发上传
+        }catch(error){
+          item.errorMsg=error.message
         } finally {
           poolItem.task = null
           if (taskQueue.length == 0) {

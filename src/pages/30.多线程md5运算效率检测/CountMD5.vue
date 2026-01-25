@@ -150,14 +150,19 @@ const startWorker = (poolItem: any) => {
         }, 0)
         //平均速率
         const instantBps = totalBps / (totalElap / 1000)
-        //平滑平均速率 0.8的过去 0.2的现在
+        //平滑系数，防止小文件吞吐少 持续短破坏曲线
+        let weight = elapsed / coord.ADJUST_INTERVAL
+        if (weight > 1) weight = 1
+        const alpha = coord.EWMA_ALPHA * weight
+        //平滑平均速率 1-alpha的过去 alpha的现在
         coord.avgBps = coord.avgBps
-            ? coord.avgBps * (1 - coord.EWMA_ALPHA) + instantBps * coord.EWMA_ALPHA
+            ? coord.avgBps * (1 - alpha) + instantBps * alpha
             : instantBps
         // console.log('coord.avgBps', coord.avgBps)
         averageSpeed.value = (coord.avgBps * workPool.length / (1024 * 1024)).toFixed(1) + 'MB/s'
         currentSpeed.value = (coord.targetBps * workPool.length / (1024 * 1024)).toFixed(1) + 'MB/s'
         document.title = 'ave:' + averageSpeed.value + ' cur:' + currentSpeed.value
+
         const ratio = coord.avgBps / coord.targetBps
         //超过5% 以及 低了10%，对应刹车以及提速。
         if (ratio > 1.05) {
@@ -316,6 +321,8 @@ const initWorker = () => {
 }
 const test=()=>{
    console.log(fileList.value.filter((v)=>!v.progress))
+  console.log( taskQueue)
+  console.log( workPool)
 }
 initWorker()
 //浏览器调度原因，切到后台，再切回来限速解决方案

@@ -150,10 +150,7 @@ const startWorker = (poolItem: any) => {
         }, 0)
         //平均速率
         const instantBps = totalBps / (totalElap / 1000)
-        //平滑系数，防止小文件吞吐少 持续短破坏曲线
-        let weight = elapsed / coord.ADJUST_INTERVAL
-        if (weight > 1) weight = 1
-        const alpha = coord.EWMA_ALPHA * weight
+        const alpha = coord.EWMA_ALPHA
         //平滑平均速率 1-alpha的过去 alpha的现在
         coord.avgBps = coord.avgBps
             ? coord.avgBps * (1 - alpha) + instantBps * alpha
@@ -250,8 +247,8 @@ const computedFile = () => {
     computedRes.value = fileList.value.length + '个文件,' + size + ',' + workerCount + '线程，执行 ' + duration + ' 秒'
   }
   const runningNum=()=>workPool.filter((v)=>v.control.status == 1).length
-  if (taskQueue.length == 0) return synComputed()
   const runTask = async (poolItem: any) => {
+    if(poolItem.control.status == 1) return
     while (taskQueue.length > 0) {
       const item = taskQueue.shift()
       try {
@@ -265,7 +262,14 @@ const computedFile = () => {
         // })
       }
     }
-    if (taskQueue.length == 0 && runningNum() == 0) return synComputed()
+    if (taskQueue.length == 0 && runningNum() == 0) {
+      // const arr = []
+      //  for(let item of poolItem){
+      //     arr.push({'worker-id':item._workerId,'status':item.control.status})
+      //  }
+      // console.log('runningNum',JSON.stringify(runningNum))
+      return synComputed()
+    }
   }
   for (let i = 0; i < workPool.length; i++) {
     const poolItem = workPool[i]

@@ -37,8 +37,8 @@ onmessage = async (e: MessageEvent) => {
             }
             const now = performance.now()
             const elapsed = now - windowStart
-            //窗口内或者临近末尾,通知主线程同步磁盘吞吐数据
-            if (elapsed >= ADJUST_INTERVAL || offset >= file.size) {
+            //通知主线程同步磁盘吞吐数据
+            if (elapsed >= ADJUST_INTERVAL) {
                 if (control.status == 2) return postMessage({stop: true})
                 postMessage({
                     stat: {

@@ -225,7 +225,7 @@ const startWorker = (poolItem: any) => {
       sleepMs: coord.sleepMs,
       CHUNK_SIZE: coord.CHUNK_SIZE,
       ADJUST_INTERVAL: coord.ADJUST_INTERVAL,
-      status: 0 //0准备运行  1运行中  2停止运行
+      status: 1 //0未运行  1运行中  2停止运行
     }
     worker.postMessage({
       file,

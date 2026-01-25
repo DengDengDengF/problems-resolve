@@ -1,15 +1,21 @@
 import SparkMD5 from 'spark-md5'
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
-let sleepMs = 0
+let sleepMs = 0,lockBoolean=false
 onmessage = async (e: MessageEvent) => {
     const {file, control} = e.data
     try {
         if (control.sleepMs) sleepMs = control.sleepMs
-        if (control.status == 1) return
-        if (control.status == 2) return postMessage({stop: true})
+        if (control.status == 1 && lockBoolean) return
+        lockBoolean=true
+        if (control.status == 2) {
+             postMessage({stop: true})
+            lockBoolean=false
+            return
+        }
         if (!file) {
             postMessage({error: 'Worker: 未接收到文件'})
+            lockBoolean=false
             return
         }
         const spark = new SparkMD5.ArrayBuffer()
@@ -19,7 +25,6 @@ onmessage = async (e: MessageEvent) => {
         let windowStart = performance.now()
         const CHUNK_SIZE = control.CHUNK_SIZE || 2 * 1024 * 1024
         const ADJUST_INTERVAL = control.ADJUST_INTERVAL || 800
-
         while (offset < file.size) {
             if (control.status == 2) return postMessage({stop: true})
             const slice = file.slice(offset, offset + CHUNK_SIZE)
@@ -54,10 +59,20 @@ onmessage = async (e: MessageEvent) => {
             }
         }
         const md5 = spark.end()
-        if (control.status == 2) return postMessage({stop: true})
+        if (control.status == 2) {
+            postMessage({stop: true})
+            lockBoolean=false
+            return
+        }
         postMessage({md5, done: true})
+        lockBoolean=false
     } catch (err) {
-        if (control.status == 2) return postMessage({stop: true})
+        if (control.status == 2) {
+            postMessage({stop: true})
+            lockBoolean=false
+            return
+        }
         postMessage({error: (err as Error).message})
+        lockBoolean=false
     }
 }

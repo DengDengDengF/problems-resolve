@@ -1,4 +1,4 @@
-import SparkMD5 from 'spark-md5'
+import { createMD5 } from 'hash-wasm'
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 let sleepMs:number = 0, lockBoolean:boolean = false
@@ -19,7 +19,7 @@ onmessage = async (e: MessageEvent) => {
             lockBoolean = false
             return
         }
-        const spark = new SparkMD5.ArrayBuffer()
+        const md5Hasher = await createMD5()
         let offset = 0
         let lastNotify = 0
         let windowBytes = 0
@@ -40,7 +40,7 @@ onmessage = async (e: MessageEvent) => {
             }, 5000)
             const buffer = await slice.arrayBuffer()
             clearTimeout(timeout)
-            spark.append(buffer)
+            md5Hasher.update(new Uint8Array(buffer))
             offset += buffer.byteLength
             windowBytes += buffer.byteLength
             if (control.status == 2) {
@@ -77,7 +77,7 @@ onmessage = async (e: MessageEvent) => {
                 await sleep(sleepMs)
             }
         }
-        const md5 = spark.end()
+        const md5 = md5Hasher.digest()
         if (control.status == 2) {
             postMessage({stop: true})
             lockBoolean = false

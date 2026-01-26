@@ -71,7 +71,8 @@ const isUploaded = ref<boolean>(true)
 const computedRes = ref<string>('')
 const averageSpeed = ref<string>('')
 const currentSpeed = ref<string>('')
-const INIT_BPS = 60 * 10 * 1024 * 1024 / workerCount //分片默认速率上限
+const MB=1024*1024
+const INIT_BPS = 60 * 10 * MB / workerCount //分片默认速率上限 600MB/S 整个吞吐
 
 //初始化文件实例
 const initFile = (file: File) => ({progress: '', file, md5: '', bps: 0, elap: 0,errorMsg:''})
@@ -94,10 +95,10 @@ const getSizeSum = () => {
  * @param targetBps 调整后的分片目标速率
  * @param min sleep下限
  * @param max sleep 上限*/
-const calcSleepRange = ({chunkSize, targetBps, min = 20, max = 180}) => {
+const calcSleepRange = ({chunkSize, targetBps, min = 0, max = 5000}) => {
   const idealChunkTime = (chunkSize / targetBps) * 1000
-  const min_sleep = Math.max(min, Math.floor(idealChunkTime * 0.6))
-  const max_sleep = Math.max(Math.min(max, Math.ceil(idealChunkTime * 1.6)), min)
+  const min_sleep = Math.max(min, Math.floor(idealChunkTime * 0.2))
+  const max_sleep = Math.max(Math.min(max, Math.ceil(idealChunkTime * 1.2)), min)
   return {min_sleep, max_sleep, idealChunkTime}
 }
 /**@description 多线程自适应节流调度器
@@ -110,8 +111,8 @@ const startWorker = (poolItem: any) => {
     //注册全局实例
     if (!window.__ioCoordinator) {
       //分片大小
-      const CHUNK_SIZE = 4 * 1024 * 1024, //分片大小
-          targetBps = INIT_BPS//分片的目标速率
+      const CHUNK_SIZE = 4 * MB, //分片大小
+          targetBps = 10 * MB//分片的目标速率
       //动态计算sleep区间
       const {min_sleep, max_sleep} = calcSleepRange({
         chunkSize: CHUNK_SIZE,
@@ -124,7 +125,7 @@ const startWorker = (poolItem: any) => {
         min_sleep,//sleep区间，会动态改变
         max_sleep,
         target_bps_max: INIT_BPS,//理想最大速率，动态增加的参照
-        target_bps_min: 20,//理想最小速率，动态减小的参照
+        target_bps_min: 4 * MB,//理想最小速率，动态减小的参照
         EWMA_ALPHA: 0.15,//系数
         CHUNK_SIZE,//每一片
         ADJUST_INTERVAL: 600,//多少ms postMessage给主线程一次
@@ -161,8 +162,8 @@ const startWorker = (poolItem: any) => {
         coord.avgBps = coord.avgBps
             ? coord.avgBps * (1 - alpha) + instantBps * alpha
             : instantBps
-        averageSpeed.value = (coord.avgBps  / (1024 * 1024)).toFixed(1) + 'MB/s'
-        currentSpeed.value = (coord.targetBps  / (1024 * 1024)).toFixed(1) + 'MB/s'
+        averageSpeed.value = (coord.avgBps  / (MB)).toFixed(1) + 'MB/s'
+        currentSpeed.value = (coord.targetBps * workPool.length  / (MB)).toFixed(1) + 'MB/s'
         document.title = 'ave:' + averageSpeed.value + ' cur:' + currentSpeed.value
         const ratio = coord.avgBps / coord.targetBps
         /**
@@ -187,13 +188,15 @@ const startWorker = (poolItem: any) => {
          * - 再低不能低过下限，再高要比上限高
          * - 保证 targetBps 在 min/max 范围内，动态适配磁盘性能波动
          */
-        if(coord.avgBps > coord.targetBps * 0.3){
+
           if (coord.avgBps < coord.targetBps * 0.8) {
-            coord.targetBps = Math.max(coord.target_bps_min * 1024 * 1024, coord.targetBps * 0.9)
-          } else if (coord.avgBps > coord.targetBps * 1.1) {
-            coord.targetBps = Math.min(coord.target_bps_max * 1024 * 1024, coord.targetBps * 1.1)
+            coord.targetBps = Math.max(coord.target_bps_min, coord.targetBps * 0.95)
+            // console.log('targetBps ='+coord.targetBps+' avgBps = '+coord.avgBps  +'target_bps_min =' + coord.target_bps_min + ' targetBps* 0.9 = '+ coord.targetBps * 0.9)
+          } else if (coord.avgBps > coord.targetBps) {
+            coord.targetBps = Math.min(coord.target_bps_max, coord.targetBps * 1.1)
+            // console.log('targetBps ='+coord.targetBps+' avgBps = '+coord.avgBps +'target_bps_max =' + coord.target_bps_max + ' targetBps* 1.1 = '+ coord.targetBps *1.1)
           }
-        }
+
         /**
          * 动态调整sleep区间：
          * -根据分片大小 以及 收到动态吞吐调整下的targetBps(目标速率)*/
@@ -203,6 +206,7 @@ const startWorker = (poolItem: any) => {
         })
         coord.min_sleep = min_sleep
         coord.max_sleep = max_sleep
+        console.log([min_sleep, max_sleep])
         /**
          * 通知在执行任务的线程*/
         const hasItemPool = workPool.filter((v) => v.task)

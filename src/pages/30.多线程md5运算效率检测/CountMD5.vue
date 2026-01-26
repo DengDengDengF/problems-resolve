@@ -54,6 +54,9 @@
  * - 在时间窗口内统计真实磁盘读取速率
  * - 使用 EWMA（指数加权平均）平滑瞬时波动
  * - 通过负反馈控制动态调整分片之间的 sleep 时间 以及 上下限，动态调整目标磁盘速率,动态调整。
+ *
+ * tips: 适配本次算法的是 瞬时速率 instanceBps=  Σbps / max(elap)
+ * 还有一种是 保守方式，刻意压低速率 instanceBps=  Σbps / Σelap
  */
 import {onUnmounted, ref} from 'vue'
 
@@ -97,7 +100,7 @@ const calcSleepRange = ({chunkSize, targetBps, min = 20, max = 180}) => {
   const max_sleep = Math.max(Math.min(max, Math.ceil(idealChunkTime * 1.6)), min)
   return {min_sleep, max_sleep, idealChunkTime}
 }
-/**@description 多线程自适应节流
+/**@description 多线程自适应节流调度器
  * @param poolItem worker线程实例*/
 const startWorker = (poolItem: any) => {
   return new Promise((resolve, reject) => {
@@ -120,8 +123,8 @@ const startWorker = (poolItem: any) => {
         sleepMs: min_sleep,//初始化
         min_sleep,//sleep区间，会动态改变
         max_sleep,
-        target_bps_max: INIT_BPS,//最大速率
-        target_bps_min: 20,//最小速率
+        target_bps_max: INIT_BPS,//理想最大速率，动态增加的参照
+        target_bps_min: 20,//理想最小速率，动态减小的参照
         EWMA_ALPHA: 0.15,//系数
         CHUNK_SIZE,//每一片
         ADJUST_INTERVAL: 600,//多少ms postMessage给主线程一次
@@ -141,28 +144,31 @@ const startWorker = (poolItem: any) => {
         const {bytes, elapsed} = data.stat
         task.bps = bytes
         task.elap = elapsed
-        //总吞吐
+        /**
+         * 求瞬时平均速率
+         * -instanceBps= Σbps / max(elap)*/
         const totalBps = workPool.reduce((sum, w) => {
           return sum + (w?.task?.bps || 0)
         }, 0)
-        //总持续
-        const totalElap = workPool.reduce((sum, w) => {
-          return sum + (w?.task?.elap || 0)
-        }, 0)
-        //平均速率
-        const instantBps = totalBps / (totalElap / 1000)
+        const maxElap = Math.max(
+            ...workPool.map(w => w?.task?.elap || 0)
+        )
+        const instantBps = totalBps / (maxElap / 1000)
         const alpha = coord.EWMA_ALPHA
-        //平滑平均速率 1-alpha的过去 alpha的现在
+        /**
+         * 平滑平均速率
+         * -avgBps = (1-alpha)的过去+alpha的现在*/
         coord.avgBps = coord.avgBps
             ? coord.avgBps * (1 - alpha) + instantBps * alpha
             : instantBps
-        // console.log('coord.avgBps', coord.avgBps)
-        averageSpeed.value = (coord.avgBps * workPool.length / (1024 * 1024)).toFixed(1) + 'MB/s'
-        currentSpeed.value = (coord.targetBps * workPool.length / (1024 * 1024)).toFixed(1) + 'MB/s'
+        averageSpeed.value = (coord.avgBps  / (1024 * 1024)).toFixed(1) + 'MB/s'
+        currentSpeed.value = (coord.targetBps  / (1024 * 1024)).toFixed(1) + 'MB/s'
         document.title = 'ave:' + averageSpeed.value + ' cur:' + currentSpeed.value
-
         const ratio = coord.avgBps / coord.targetBps
-        //超过5% 以及 低了10%，对应刹车以及提速。
+        /**
+         * 刹车或提速
+         * -超过5%刹车
+         * -慢了10%提速*/
         if (ratio > 1.05) {
           coord.sleepMs = Math.min(
               coord.max_sleep,
@@ -175,9 +181,11 @@ const startWorker = (poolItem: any) => {
           )
         }
         /**
-         * 动态调整目标吞吐 (自适应硬盘能力)
-         * - 实际速度 低于 目标的 80%，说明磁盘受限，降低 targetBps 10%
-         * - 实际速度 高于 目标的 110%，说明磁盘还有余量，提高 targetBps 10%
+         * 动态调整目标吞吐 (自适应硬盘能力，尽量最大化磁盘利用)：
+         * - 如果实际速度 < 目标的 80%，说明磁盘受限，降低 targetBps 10% 以防堵塞
+         * - 如果实际速度 > 目标的 110%，说明磁盘还有余量，提高 targetBps 10% 利用更多带宽
+         * - 再低不能低过下限，再高要比上限高
+         * - 保证 targetBps 在 min/max 范围内，动态适配磁盘性能波动
          */
         if(coord.avgBps > coord.targetBps * 0.3){
           if (coord.avgBps < coord.targetBps * 0.8) {
@@ -186,13 +194,17 @@ const startWorker = (poolItem: any) => {
             coord.targetBps = Math.min(coord.target_bps_max * 1024 * 1024, coord.targetBps * 1.1)
           }
         }
-        //动态调整sleep区间
+        /**
+         * 动态调整sleep区间：
+         * -根据分片大小 以及 收到动态吞吐调整下的targetBps(目标速率)*/
         const {min_sleep, max_sleep} = calcSleepRange({
           chunkSize: coord.CHUNK_SIZE,
           targetBps: coord.targetBps,
         })
         coord.min_sleep = min_sleep
         coord.max_sleep = max_sleep
+        /**
+         * 通知在执行任务的线程*/
         const hasItemPool = workPool.filter((v) => v.task)
         hasItemPool.forEach(w => {
           if (w._worker) {
@@ -232,7 +244,8 @@ const startWorker = (poolItem: any) => {
     })
   })
 }
-//并行算md5 以及 待开发并发文件进度.....一大堆
+/**@description 多线程执行并行任务
+ * -待开发兼容并发*/
 const computedFile = () => {
   isUploaded.value = false
   const start = performance.now()
@@ -272,7 +285,7 @@ const computedFile = () => {
     })
   }
 }
-//新加入的文件队列
+/**@description 文件入队列*/
 const fileChange = async (event: any) => {
   const lists: any[] = Array.from(event.target?.files || [])
   if (lists.length == 0) return
@@ -284,7 +297,7 @@ const fileChange = async (event: any) => {
   if (isUploaded.value) computedFile()
   event.target.value = ''
 }
-//测试线程突然终止
+/**@description 线程打断测试*/
 const clear = () => {
   fileList.value.length = 0
   taskQueue.length = 0
@@ -298,6 +311,7 @@ const clear = () => {
     }
   })
 }
+/**@description 初始化线程池*/
 const initWorker = () => {
   clear()
   let i = 0
@@ -317,6 +331,7 @@ const initWorker = () => {
     i++
   }
 }
+/**@description 刷页面/组件卸载 终止线程*/
 const cleanupWorkers = () => {
   workPool.forEach(w => {
     if (w._worker) {

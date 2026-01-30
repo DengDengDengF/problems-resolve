@@ -66,7 +66,8 @@
 <!--  <WhatTimer/>-->
 <!--  <ScrollSelf/>-->
 <!--  <ImgCompress/>-->
-  <CountMD5/>
+<!--  <CountMD5/>-->
+  <ThreadMain/>
 </template>
 
 <script setup>
@@ -196,6 +197,9 @@ import ScrollSelf from "./pages/26.无限滚动分页/scrollSelf.vue";
 import ImgCompress from "./pages/29.图片压缩/imgCompress.vue";
 //多线程MD5测试
 import CountMD5 from "./pages/30.多线程md5运算效率检测/CountMD5.vue";
+//多线程md5极限测试
+import ThreadMain from "./pages/31.多线程md5-监控线程调度-令牌桶/thread-main.vue";
+//
 </script>
 
 <style>

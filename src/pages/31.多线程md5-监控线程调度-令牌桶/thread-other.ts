@@ -64,10 +64,11 @@ onmessage = async (e: MessageEvent) => {
             while (offset < size) {
                 chunk_size = atomicSubIfEnough(Math.min(size - offset, max_chunk_size))
                 const slice = file.slice(offset, offset + chunk_size)
-                const buffer = await slice.arrayBuffer()
+                let buffer = await slice.arrayBuffer()
                 //TODO 可在此处加定时器，模拟地设备情况。
                 md5Hasher.update(new Uint8Array(buffer))
                 offset += chunk_size
+                buffer = null
             }
             // console.log(`thread${_index}-${file.name}`, 'done')
             de(size)

@@ -57,18 +57,18 @@ const initFile = (file: File) => ({file, md5: '', errorMsg: ''})
 
 //二次分配，确保list是排过序的，为了均匀
 const rangeArray = (list: any[]) => {
-  let tempStorage = [], res = []
+  let sizeMixed = [], res = []
   for (let i = 0; i < _CURRENT_IO_BUCKET.length; i++) {
-    tempStorage.push(Atomics.load(_GT_IO_STORAGE, i))
+    sizeMixed.push(Atomics.load(_GT_IO_STORAGE, i))
     res[i] = []
   }
   for (let i = 0; i < list.length; i++) {
     const {file} = list[i]
     let index = 0
-    for (let j = 1; j < tempStorage.length; j++)
-      if (tempStorage[j] < tempStorage[index]) index = j;
+    for (let j = 1; j < sizeMixed.length; j++)
+      if (sizeMixed[j] < sizeMixed[index]) index = j;
     res[index].push({file})
-    tempStorage[index] += file.size
+    sizeMixed[index] += file.size
   }
   return res
 }

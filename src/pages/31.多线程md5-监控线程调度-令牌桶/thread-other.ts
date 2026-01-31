@@ -1,4 +1,5 @@
 import {createMD5} from 'hash-wasm'
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 onmessage = async (e: MessageEvent) => {
     const {_workerId, _CURRENT_IO_BUCKET, _index, list, _GT_IO_STORAGE,_RUNNING_IO_STATUS} = e.data
     if (list.length == 0) return
@@ -61,6 +62,7 @@ onmessage = async (e: MessageEvent) => {
             const md5Hasher = await createMD5()
             let offset = 0
             let chunk_size = 0
+            let iterationCount = 0
             while (offset < size) {
                 chunk_size = atomicSubIfEnough(Math.min(size - offset, max_chunk_size))
                 const slice = file.slice(offset, offset + chunk_size)
@@ -69,6 +71,7 @@ onmessage = async (e: MessageEvent) => {
                 md5Hasher.update(new Uint8Array(buffer))
                 offset += chunk_size
                 buffer = null
+                if(iterationCount++ % 4 ===0) await sleep(0)
             }
             // console.log(`thread${_index}-${file.name}`, 'done')
             de(size)

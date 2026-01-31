@@ -67,5 +67,6 @@ onmessage = (e: MessageEvent) => {
     setInterval(() => {
         tuneSpeed()
         tuneBucket()
+        console.log(_RUNNING_IO_STATUS)
     }, interval)
 }

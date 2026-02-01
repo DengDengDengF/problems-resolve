@@ -1,4 +1,5 @@
 import {createMD5} from 'hash-wasm'
+const md5HasherPromise = createMD5();
 //const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 onmessage = async (e: MessageEvent) => {
     const {_workerId, _CURRENT_IO_BUCKET, _index, list, _GT_IO_STORAGE,_RUNNING_IO_STATUS} = e.data
@@ -49,6 +50,7 @@ onmessage = async (e: MessageEvent) => {
      * -确保当前线程剩余量正确
      * -*/
     const compute = async () => {
+        const md5Hasher = await md5HasherPromise
         Atomics.compareExchange(
             _RUNNING_IO_STATUS,
             _index,
@@ -59,10 +61,10 @@ onmessage = async (e: MessageEvent) => {
             const item = list[i]
             const file = item.file
             const size =file.size
-            const md5Hasher = await createMD5()
             let offset = 0
             let chunk_size = 0
             let iterationCount = 0
+            md5Hasher.init()
             while (offset < size) {
                 chunk_size = atomicSubIfEnough(Math.min(size - offset, max_chunk_size))
                 const slice = file.slice(offset, offset + chunk_size)
@@ -74,6 +76,7 @@ onmessage = async (e: MessageEvent) => {
                 if(iterationCount++ % 4 ===0) await Promise.resolve()
             }
             // console.log(`thread${_index}-${file.name}`, 'done')
+            md5Hasher.digest()
             de(size)
             postMessage({
                 done: true

@@ -60,11 +60,16 @@ onmessage = async (e: MessageEvent) => {
         )
         for (let i = 0; i < list.length; i++) {
             const item = list[i]
+            const uid=item.uid
             const file = item.file
             const size =file.size
             let offset = 0
             let chunk_size = 0
             md5Hasher.init()
+            postMessage({
+                md5Status: 1,
+                uid
+            })
             while (offset < size) {
                 chunk_size = atomicSubIfEnough(Math.min(size - offset, max_chunk_size))
                 const slice = file.slice(offset, offset + chunk_size)
@@ -79,7 +84,8 @@ onmessage = async (e: MessageEvent) => {
             md5Hasher.digest()
             de(size)
             postMessage({
-                done: true
+                md5Status: 2,
+                uid
             })
         }
         Atomics.compareExchange(

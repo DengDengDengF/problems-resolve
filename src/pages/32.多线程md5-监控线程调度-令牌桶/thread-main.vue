@@ -1,5 +1,14 @@
 <template>
-
+  <el-scrollbar :height="500" always>
+    <div v-for="item in  fileList" class="lists">
+      <div class="lists-item">
+        <div class="left">{{ item.file.name }}</div>
+        <div class="right">
+          <span :style="{color:md5StatusHash[item.md5Status].color}">{{ md5StatusHash[item.md5Status].value }}</span>
+        </div>
+      </div>
+    </div>
+  </el-scrollbar>
   <input
       v-if="demoTest"
       type="file"
@@ -45,14 +54,20 @@ import {onUnmounted, ref} from 'vue'
 const logical = navigator.hardwareConcurrency || 4 //逻辑核心
 const workerCount = Math.max(1, logical >> 1)
 const fileList = ref<any[]>([])
+const fileMapList = ref<Map<string, any>>(new Map())
 const demoTest = ref<boolean>(true)//test
 const workerPool: any[] = []
 const monitorPool: any[] = []
+const md5StatusHash = {
+  0: {value: '未计算', color: '#999999'},
+  1: {value: '计算中', color: '#FFA500'},
+  2: {value: '计算完成', color: '#28a745'},
+  3: {value: '计算失败', color: '#dc3545'},
+}
 const _CURRENT_IO_BUCKET = new Int32Array(new SharedArrayBuffer(workerCount * 4))//共享线程工作桶单位字节
 const _GT_IO_STORAGE = new Int32Array(new SharedArrayBuffer(workerCount * 4))//共享线程剩余没处理单位mb
-const _RUNNING_IO_STATUS=new Int32Array(new SharedArrayBuffer(workerCount * 4))//WORKER是否在处理任务，没在处理0，在处理1
-
-const initFile = (file: File) => ({file, md5: '', errorMsg: ''})
+const _RUNNING_IO_STATUS = new Int32Array(new SharedArrayBuffer(workerCount * 4))//WORKER是否在处理任务，没在处理0，在处理1
+const initFile = (file: File) => ({file, md5: '', errorMsg: '', uid: crypto.randomUUID(), md5Status: 0})//md5Status:0未计算 1计算中 2计算完成 3计算失败
 
 //二次分配，确保list是排过序的，为了均匀
 const rangeArray = (list: any[]) => {
@@ -62,11 +77,12 @@ const rangeArray = (list: any[]) => {
     res[i] = []
   }
   for (let i = 0; i < list.length; i++) {
-    const {file} = list[i]
+    const {file, uid} = list[i]
+    fileMapList[uid] = list[i]
     let index = 0
     for (let j = 1; j < sizeMixed.length; j++)
       if (sizeMixed[j] < sizeMixed[index]) index = j;
-    res[index].push({file})
+    res[index].push({file, uid})
     sizeMixed[index] += file.size
   }
   return res
@@ -89,10 +105,17 @@ const arrangeFile = (list: any[]) => {
     })
     _worker.onmessage = (e: MessageEvent) => {
       const data = e.data
-      if (data.done) {
-        rest--
-        // console.log('thread-main', rest)
-        if (rest == 0) console.log('done', (Date.now() - last) / 1000)
+      const md5Status = data.md5Status
+      switch (md5Status) {
+        case 1:
+          fileMapList[data.uid].md5Status = md5Status
+          break
+        case 2:
+          fileMapList[data.uid].md5Status = md5Status
+          rest--
+          // console.log('thread-main', rest)
+          if (rest == 0) console.log('done', (Date.now() - last) / 1000)
+          break
       }
     }
   }
@@ -136,5 +159,22 @@ initThread()
 </script>
 
 <style scoped>
+.lists {
+  display: flex;
+  flex-direction: column;
 
+  .lists-item {
+    display: flex;
+
+    .left {
+      width: 50%;
+    }
+
+    .right {
+      width: 50%;
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+}
 </style>

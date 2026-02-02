@@ -44,7 +44,6 @@ import {onUnmounted, ref} from 'vue'
 
 const logical = navigator.hardwareConcurrency || 4 //逻辑核心
 const workerCount = Math.max(1, logical >> 1)
-// const workerCount = 1
 const fileList = ref<any[]>([])
 const demoTest = ref<boolean>(true)//test
 const workerPool: any[] = []

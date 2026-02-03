@@ -67,8 +67,8 @@
 <!--  <ScrollSelf/>-->
 <!--  <ImgCompress/>-->
 <!--  <CountMD5/>-->
-  <MainTest/>
-<!--  <ThreadMain/>-->
+<!--  <MainTest/>-->
+  <ThreadMain/>
 </template>
 
 <script setup>

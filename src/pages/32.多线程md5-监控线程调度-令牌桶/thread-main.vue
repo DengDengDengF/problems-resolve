@@ -30,7 +30,7 @@
         accept="."
     />
   </div>
-  <el-scrollbar :height="500" always>
+  <el-scrollbar :height="500" always style="padding-right:20px">
     <div v-for="item in  fileList" class="lists">
       <div class="lists-item">
         <div class="left">

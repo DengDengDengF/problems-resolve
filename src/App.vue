@@ -68,7 +68,7 @@
 <!--  <ImgCompress/>-->
 <!--  <CountMD5/>-->
 <!--  <MainTest/>-->
-  <ThreadMain/>
+<!--  <ThreadMain/>-->
 </template>
 
 <script setup>

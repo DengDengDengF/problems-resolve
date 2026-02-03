@@ -1,10 +1,21 @@
 import {createMD5} from 'hash-wasm'
+
 const md5HasherPromise = createMD5();
 let iterationCount = 0
+let fileList = []
+let running =null
 // const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 onmessage = async (e: MessageEvent) => {
-    const {_workerId, _CURRENT_IO_BUCKET, _index, list, _GT_IO_STORAGE,_RUNNING_IO_STATUS} = e.data
-    if (list.length == 0) return
+    const {
+        _workerId,
+        _CURRENT_IO_BUCKET,
+        _index,
+        list,
+        del_list,
+        _GT_IO_STORAGE,
+        _RUNNING_IO_STATUS,
+        _WORKER_STATUS
+    } = e.data
     const MB = 1024 * 1024
     const max_chunk_size = 4 * MB
     /**从共享桶中获取余量
@@ -30,12 +41,6 @@ onmessage = async (e: MessageEvent) => {
             if (prev === cur) return take
         }
     }
-    /**当前线程加入要处理的MB,只能操作自己的槽
-     * -确保主线程能知道每个线程正在处理的数据规模*/
-    const add = () => {
-        const sum = list.reduce((acc: any, item: any) => acc + item.file.size, 0)
-        Atomics.add(_GT_IO_STORAGE, _index, Math.ceil(sum / MB))
-    }
     /**当前线程某任务已经算完了，削减槽中的数据
      * */
     const de = (size: number) => {
@@ -51,6 +56,7 @@ onmessage = async (e: MessageEvent) => {
      * -确保当前线程剩余量正确
      * -*/
     const compute = async () => {
+        if (running) return
         const md5Hasher = await md5HasherPromise
         Atomics.compareExchange(
             _RUNNING_IO_STATUS,
@@ -58,19 +64,23 @@ onmessage = async (e: MessageEvent) => {
             0,
             1
         )
-        for (let i = 0; i < list.length; i++) {
-            const item = list[i]
-            const uid=item.uid
+        while (fileList.length > 0) {
+            const item = fileList.shift()
+            running = item
+            const uid = item.uid
             const file = item.file
-            const size =file.size
+            const size = file.size
             let offset = 0
             let chunk_size = 0
             md5Hasher.init()
-            postMessage({
-                md5Status: 1,
-                uid
-            })
+            if (!item.aborted) {
+                postMessage({
+                    md5Status: 1,
+                    uid
+                })
+            }
             while (offset < size) {
+                if (item.aborted) break
                 chunk_size = atomicSubIfEnough(Math.min(size - offset, max_chunk_size))
                 const slice = file.slice(offset, offset + chunk_size)
                 let buffer = await slice.arrayBuffer()
@@ -78,15 +88,17 @@ onmessage = async (e: MessageEvent) => {
                 md5Hasher.update(new Uint8Array(buffer))
                 offset += chunk_size
                 buffer = null
-                if(iterationCount++ % 4 ===0) await Promise.resolve()
+                if (iterationCount++ % 4 === 0) await Promise.resolve()
             }
             // console.log(`thread${_index}-${file.name}`, 'done')
             md5Hasher.digest()
             de(size)
-            postMessage({
-                md5Status: 2,
-                uid
-            })
+            if (!item.aborted) {
+                postMessage({
+                    md5Status: 2,
+                    uid
+                })
+            }
         }
         Atomics.compareExchange(
             _RUNNING_IO_STATUS,
@@ -94,7 +106,58 @@ onmessage = async (e: MessageEvent) => {
             1,
             0
         )
+        running = null
     }
-    add()
-    await compute()
+    /**当前线程加入要处理的MB,只能操作自己的槽
+     * -确保主线程能知道每个线程正在处理的数据规模
+     * -开始计算*/
+    const add = async () => {
+        if (!list?.length) return
+        let sum = 0
+        for (let item of list) {
+            fileList.push(item)
+            sum += item.file.size
+        }
+        Atomics.add(_GT_IO_STORAGE, _index, Math.ceil(sum / MB))
+        await compute()
+    }
+    /*批量删除
+    * -针对正在运行 以及 未运行的数据
+    * -原子修改走computed逻辑
+    * */
+    const del = () => {
+        if (!del_list?.length) return
+        const set = new Set(del_list)
+        for (let item of fileList) {
+            if (set.has(item.uid)){
+                item.aborted = true
+            }
+        }
+        if(running && set.has(running.uid))running.aborted = true
+    }
+    /**清空
+     * -根批量删除逻辑类似
+     * -考虑到时差、二次添加.....统统走computed逻辑*/
+    const clear = () => {
+        for (let item of fileList) item.aborted = true
+        if(running) running.aborted = true
+    }
+    /**初始化
+     * 0启动线程 1加入任务 2删除 3清空*/
+    const init = () => {
+        switch (_WORKER_STATUS) {
+            case 0:
+                break
+            case 1:
+                add()
+                break
+            case 2:
+                del()
+                break
+            case 3:
+                clear()
+                break
+        }
+    }
+    init()
 }

@@ -1,3 +1,5 @@
+![c6b88169b1bec25c5eb4fbac5775dc78.jpg](https://s2.loli.net/2026/02/04/pdECs6QmMeyJ327.jpg)
+
 # 一、加速曲线：严格推导
 
 ## 1️⃣ 从代码出发（原始定义）
@@ -12,12 +14,10 @@ now_speed += (MAX_SPEED - now_speed) * accelerate_sensor;
   s_n = \text{now\_speed}(n)
   $$
 
-  
 - $$
   M = \text{MAX\_SPEED}
   $$
 
-  
 - $$
   a = \text{accelerate\_sensor}
   $$
@@ -100,12 +100,10 @@ $$
   x_1 = (1 - a)x_0
   $$
 
-  
 - $$
   x_2 = (1 - a)^2 x_0
   $$
 
-  
 - $$
   x_3 = (1 - a)^3 x_0
   $$
@@ -203,12 +201,10 @@ $$
   s_1 = c r
   $$
 
-  
 - $$
   s_2 = c r^2
   $$
 
-  
 - $$
   s_3 = c r^3
   $$

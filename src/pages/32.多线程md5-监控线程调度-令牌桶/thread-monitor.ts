@@ -40,6 +40,7 @@ onmessage = (e: MessageEvent) => {
         const diff = TARGET_REMAINING - remainingRate;
         const accelerate_sensor = 0.15 //加速灵敏度
         const slow_sensor = 0.2//减速灵敏度
+        //证明过程可以看同级目录下prove.md,可以使得
         if (diff > 0) {
             const boost = (MAX_SPEED - now_speed) * accelerate_sensor;
             now_speed += boost;

@@ -26,11 +26,10 @@
  * -主线程，从共享内存，工作线程中拿到余量，均匀分配给每个线程。进度等等
  * -工作线程，维护队列，确保余量正确，结束后通知主线程等
  * **/
-import {onUnmounted} from "vue";
 
 const logical = navigator.hardwareConcurrency || 4 //逻辑核心
 const workerCount = Math.max(1, logical >> 1)//开几个工作线程
-const fileRegistry = {}
+const fileRegistry:Record<string, any> = {}
 let rest = 0
 const workerPool: any[] = []
 const monitorPool: any[] = []
@@ -52,12 +51,21 @@ const cleanUpWorkers = () => {
             w._worker = null
         }
     })
+    for(let uid in fileRegistry)delete fileRegistry[uid]
+    const length = _CURRENT_IO_BUCKET.length
+    //这些共享内存，均在worker/monitor线程中修改的。先关闭线程，确保没有原子争抢。
+    for(let i=0;i<length;i++){
+        Atomics.store(_CURRENT_IO_BUCKET, i, 0)
+        Atomics.store(_GT_IO_STORAGE, i, 0)
+        Atomics.store(_RUNNING_IO_STATUS, i, 0)
+    }
     workerPool.length = 0
     monitorPool.length = 0
+    rest = 0
 }
 //二次分配，确保list是排过序的，为了均匀
 const rangeArray = (list: any[]) => {
-    let sizeMixed = [], res = []
+    let sizeMixed = [], res:any[] = []
     for (let i = 0; i < _CURRENT_IO_BUCKET.length; i++) {
         sizeMixed.push(Atomics.load(_GT_IO_STORAGE, i))
         res[i] = []
@@ -142,6 +150,7 @@ const batchClear = (del_list: any[]) => {
 }
 //初始化并启动工作线程、监测线程
 const initThread = () => {
+    console.log('initThread',fileRegistry)
     workerPool.length = 0
     monitorPool.length = 0
     let index = 0

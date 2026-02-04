@@ -121,7 +121,6 @@ const devTest=()=>{
   hot.accept() //让模块变成 accepted module
   hot.dispose(() => {//安全用dispose
     cleanUpWorkers()
-    console.log('[HMR] Worker terminated on dispose')
   })
 }
 devTest()

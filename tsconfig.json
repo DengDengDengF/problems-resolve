@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "esnext", // 或 "es2020"
+    "target": "esnext", // 建议和 module 匹配
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true
+  }
+}

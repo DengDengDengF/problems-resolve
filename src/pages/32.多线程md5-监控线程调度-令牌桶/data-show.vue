@@ -58,8 +58,8 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed} from 'vue'
-import {arrangeFile,clearAll,batchClear,} from './thread-main'
+import {ref, computed, onMounted, onBeforeUnmount} from 'vue'
+import {arrangeFile,clearAll,batchClear,cleanUpWorkers,initThread} from './thread-main'
 
 const fileList = ref<any[]>([])
 const demoTest = ref<boolean>(true)//test
@@ -113,6 +113,32 @@ const fileChange = async (event: any) => {
   event.target.value = ''
   demoTest.value = true
 }
+//测试环境热更新，防止线程多次创建
+const devTest=()=>{
+  const hot = (import.meta as any).hot
+  const env = (import.meta as any).env
+  if (!(env.DEV && hot)) return
+  hot.accept() //让模块变成 accepted module
+  hot.dispose(() => {//安全用dispose
+    cleanUpWorkers()
+    console.log('[HMR] Worker terminated on dispose')
+  })
+}
+devTest()
+onMounted(()=>{
+  //清除副作用
+  cleanUpWorkers()
+  //初始化线程
+  initThread()
+  //刷新页面自动关闭所有线程
+  window.addEventListener('beforeunload', cleanUpWorkers)
+})
+//组件卸载前，趁着引用没有丢，自动关闭所有线程
+onBeforeUnmount(() => {
+  cleanUpWorkers()
+  window.removeEventListener('beforeunload', cleanUpWorkers)
+})
+
 </script>
 
 <style scoped>

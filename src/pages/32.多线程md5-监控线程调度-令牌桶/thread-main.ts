@@ -163,14 +163,4 @@ const initThread = () => {
         index++
     }
 }
-initThread()
-//刷新页面自动关闭所有线程
-window.addEventListener('beforeunload', () => {
-    cleanUpWorkers()
-})
-//组件卸载自动关闭所有线程
-onUnmounted(() => {
-    cleanUpWorkers()
-})
-
-export {arrangeFile, clearAll, batchClear}
+export {arrangeFile, clearAll, batchClear,cleanUpWorkers,initThread}

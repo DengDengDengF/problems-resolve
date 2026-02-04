@@ -68,10 +68,13 @@
 <!--  <ImgCompress/>-->
 <!--  <CountMD5/>-->
 <!--  <MainTest/>-->
-  <DataShow/>
+  <el-button @click="test = !test">test</el-button>
+  <DataShow v-if="test"/>
 </template>
 
 <script setup>
+import {ref} from 'vue'
+const test = ref(true)
 //封装弹窗
 import DialogDemo from "./pages/1.弹窗分页组件/DialogDemo.vue";
 //pdf  传入的方式不是二进制流，比较模糊  参考掘金 https://juejin.cn/post/7105933034771185701

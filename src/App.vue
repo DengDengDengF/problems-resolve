@@ -68,7 +68,7 @@
 <!--  <ImgCompress/>-->
 <!--  <CountMD5/>-->
 <!--  <MainTest/>-->
-  <ThreadMain/>
+  <DataShow/>
 </template>
 
 <script setup>
@@ -201,7 +201,7 @@ import CountMD5 from "./pages/30.多线程md5运算效率检测-垃圾/CountMD5.
 //单线程md5极限测试
 import MainTest from "./pages/31.单线程md5测试/main-test.vue";
 //多线程md5极限测试
-import ThreadMain from "./pages/32.多线程md5-监控线程调度-令牌桶/thread-main.vue";
+import DataShow from "./pages/32.多线程md5-监控线程调度-令牌桶/data-show.vue";
 
 </script>
 

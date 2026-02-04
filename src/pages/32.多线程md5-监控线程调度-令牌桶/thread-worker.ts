@@ -48,7 +48,7 @@ onmessage = async (e: MessageEvent) => {
         const oldVal = Atomics.sub(_GT_IO_STORAGE, _index, mb)
         const newVal = oldVal - mb
         if (newVal < 0) Atomics.add(_GT_IO_STORAGE, _index, -newVal)
-        // console.log('thread-other',_GT_IO_STORAGE)
+        // console.log('thread-worker',_GT_IO_STORAGE)
     }
     /**计算MD5
      * -同步当前线程状态 0未工作 1工作

@@ -3,7 +3,7 @@ import {createMD5} from 'hash-wasm'
 const md5HasherPromise = createMD5();
 let iterationCount = 0
 let fileList = []
-let running =null
+let running = null
 // const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 onmessage = async (e: MessageEvent) => {
     const {
@@ -81,22 +81,31 @@ onmessage = async (e: MessageEvent) => {
             }
             while (offset < size) {
                 if (item.aborted) break
-                chunk_size = atomicSubIfEnough(Math.min(size - offset, max_chunk_size))
-                const slice = file.slice(offset, offset + chunk_size)
-                let buffer = await slice.arrayBuffer()
-                //TODO 可在此处加定时器，模拟地设备情况。
-                md5Hasher.update(new Uint8Array(buffer))
-                offset += chunk_size
-                buffer = null
-                if (iterationCount++ % 4 === 0) await Promise.resolve()
+                try{
+                    chunk_size = atomicSubIfEnough(Math.min(size - offset, max_chunk_size))
+                    const slice = file.slice(offset, offset + chunk_size)
+                    let buffer = await slice.arrayBuffer()
+                    //TODO 可在此处加定时器，模拟地设备情况。
+                    md5Hasher.update(new Uint8Array(buffer))
+                    offset += chunk_size
+                    buffer = null
+                    if (iterationCount++ % 4 === 0) await Promise.resolve()
+                }catch(errorMsg){
+                    postMessage({
+                        md5Status: 3,
+                        uid,
+                        errorMsg
+                    })
+                    break
+                }
             }
             // console.log(`thread${_index}-${file.name}`, 'done')
-            md5Hasher.digest()
             de(size)
-            if (!item.aborted) {
+            if (!item.aborted && offset >= size) {
                 postMessage({
                     md5Status: 2,
-                    uid
+                    uid,
+                    md5: md5Hasher.digest()
                 })
             }
         }
@@ -129,18 +138,18 @@ onmessage = async (e: MessageEvent) => {
         if (!del_list?.length) return
         const set = new Set(del_list)
         for (let item of fileList) {
-            if (set.has(item.uid)){
+            if (set.has(item.uid)) {
                 item.aborted = true
             }
         }
-        if(running && set.has(running.uid))running.aborted = true
+        if (running && set.has(running.uid)) running.aborted = true
     }
     /**清空
      * -根批量删除逻辑类似
      * -考虑到时差、二次添加.....统统走computed逻辑*/
     const clear = () => {
         for (let item of fileList) item.aborted = true
-        if(running) running.aborted = true
+        if (running) running.aborted = true
     }
     /**初始化
      * 0启动线程 1加入任务 2删除 3清空*/

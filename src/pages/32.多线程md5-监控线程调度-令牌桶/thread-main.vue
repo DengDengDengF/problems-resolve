@@ -43,7 +43,8 @@
           <span>{{ item.file.name }}</span>
         </div>
         <div class="right">
-          <span :style="{color:md5StatusHash[item.md5Status].color}">{{ md5StatusHash[item.md5Status].value }}</span>
+          <span :style="{color:md5StatusHash[item.md5Status].color}">{{ md5StatusHash[item.md5Status].value }}-{{item.md5}}</span>
+          <span v-if="item.errorMsg" style="color: red">{{item.errorMsg}}</span>
           <span
               @click="del(item.uid)"
               class="upload_delete"
@@ -204,17 +205,20 @@ const arrangeFile = (list: any[]) => {
     })
     _worker.onmessage = (e: MessageEvent) => {
       const data = e.data
-      const md5Status = data.md5Status
+      const {md5Status,uid,md5,errorMsg} = data
+      fileMapList[uid].md5Status = md5Status
       switch (md5Status) {
         case 1:
-          fileMapList[data.uid].md5Status = md5Status
           break
         case 2:
-          fileMapList[data.uid].md5Status = md5Status
+          fileMapList[uid].md5 = md5
           rest--
-          // console.log('thread-main', rest)
           if (rest == 0) console.log('done', (Date.now() - last) / 1000)
           break
+        case 3:
+          fileMapList[uid].errorMsg = errorMsg
+          rest--
+          if (rest == 0) console.log('done-but-wrong', (Date.now() - last) / 1000)
       }
     }
   }

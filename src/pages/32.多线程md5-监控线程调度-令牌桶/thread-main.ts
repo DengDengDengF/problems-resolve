@@ -37,8 +37,8 @@ const _CURRENT_IO_BUCKET = new Int32Array(new SharedArrayBuffer(workerCount * 4)
 const _GT_IO_STORAGE = new Int32Array(new SharedArrayBuffer(workerCount * 4))//共享线程剩余没处理单位mb
 const _RUNNING_IO_STATUS = new Int32Array(new SharedArrayBuffer(workerCount * 4))//WORKER是否在处理任务，没在处理0，在处理1
 
-//线程关闭
-const cleanUpWorkers = () => {
+//终止线程以及 解决副作用
+const terminateThreads = () => {
     workerPool.forEach(w => {
         if (w._worker) {
             w._worker.terminate()
@@ -82,7 +82,7 @@ const rangeArray = (list: any[]) => {
     return res
 }
 //文件分配到工作线程
-const arrangeFile = (list: any[]) => {
+const arrangeFileToWorkers = (list: any[]) => {
     const res = rangeArray(list)
     rest += list.length
     const last = Date.now()
@@ -118,7 +118,7 @@ const arrangeFile = (list: any[]) => {
     }
 }
 //清空工作线程中任务
-const clearAll = () => {
+const clearAllInWorkers = () => {
     for (let uid in fileRegistry) delete fileRegistry[uid]
     for (let item of workerPool) {
         const {_worker, _index, _workerId} = item
@@ -133,7 +133,7 @@ const clearAll = () => {
     }
 }
 //批量删除工作线程任务
-const batchClear = (del_list: any[]) => {
+const batchClearInWorkers = (del_list: any[]) => {
     for (let uid of del_list) delete fileRegistry[uid]
     for (let item of workerPool) {
         const {_worker, _index, _workerId} = item
@@ -149,8 +149,7 @@ const batchClear = (del_list: any[]) => {
     }
 }
 //初始化并启动工作线程、监测线程
-const initThread = () => {
-    console.log('initThread',fileRegistry)
+const initThreads = () => {
     workerPool.length = 0
     monitorPool.length = 0
     let index = 0
@@ -172,4 +171,4 @@ const initThread = () => {
         index++
     }
 }
-export {arrangeFile, clearAll, batchClear,cleanUpWorkers,initThread}
+export {arrangeFileToWorkers, clearAllInWorkers, batchClearInWorkers,terminateThreads,initThreads}

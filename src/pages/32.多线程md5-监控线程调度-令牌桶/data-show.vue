@@ -21,7 +21,6 @@
     </div>
     <el-button type="danger" size="small" style="width: 120px" @click="clear">清空</el-button>
     <input
-        v-if="demoTest"
         type="file"
         @change="fileChange"
         ref="uploadRef"
@@ -58,11 +57,11 @@
 </template>
 
 <script setup lang="ts">
+//主线程，该组件，仅仅用作ui展示，并确保不会对线程有副作用。
 import {ref, computed, onMounted, onBeforeUnmount} from 'vue'
-import {arrangeFile,clearAll,batchClear,cleanUpWorkers,initThread} from './thread-main'
+import {arrangeFileToWorkers,clearAllInWorkers,batchClearInWorkers,terminateThreads,initThreads} from './thread-main'
 
 const fileList = ref<any[]>([])
-const demoTest = ref<boolean>(true)//test
 const md5StatusHash = {
   0: {value: '未计算', color: '#999999'},
   1: {value: '计算中', color: '#FFA500'},
@@ -75,7 +74,7 @@ const someSelected = computed(() => selectedUIds.value.length > 0 && !allSelecte
 
 //单个删除
 const del=(uid:string)=>{
-  batchClear([uid])
+  batchClearInWorkers([uid])
   fileList.value= fileList.value.filter((v)=>v.uid != uid)
 }
 //批量删除
@@ -85,21 +84,22 @@ const batchDelete = () => {
       del_list.push(uid)
       uidSetList.add(uid)
   }
-  batchClear(del_list)
+  batchClearInWorkers(del_list)
   fileList.value=fileList.value.filter((v)=>!uidSetList.has(v.uid))
 }
 /**初始化文件
  * md5Status:0未计算 1计算中 2计算完成 3计算失败*/
 const initFile = (file: File) => ({file, md5: '', errorMsg: '', uid: crypto.randomUUID(), md5Status: 0})
+//全部选中
 const toggleAll = (flag: boolean) => {
   selectedUIds.value = flag ? fileList.value.map((i) => i.uid) : []
 }
+//清空
 const clear = () => {
   fileList.value.length = 0
-  clearAll()
+  clearAllInWorkers()
 }
 const fileChange = async (event: any) => {
-  demoTest.value = false
   const lists: any[] = Array.from(event.target?.files || [])
   if (lists.length == 0) return
   lists.sort((a, b) => a.size - b.size)
@@ -109,9 +109,8 @@ const fileChange = async (event: any) => {
     fileList.value.push(item)
     myLists.push(fileList.value[fileList.value.length - 1])
   }
-  arrangeFile(myLists)
+  arrangeFileToWorkers(myLists)
   event.target.value = ''
-  demoTest.value = true
 }
 //测试环境热更新，防止线程多次创建
 const devTest=()=>{
@@ -120,24 +119,23 @@ const devTest=()=>{
   if (!(env.DEV && hot)) return
   hot.accept() //让模块变成 accepted module
   hot.dispose(() => {//安全用dispose
-    cleanUpWorkers()
+    terminateThreads()
   })
 }
 devTest()
 onMounted(()=>{
   //清除副作用
-  cleanUpWorkers()
+  terminateThreads()
   //初始化线程
-  initThread()
+  initThreads()
   //刷新页面自动关闭所有线程
-  window.addEventListener('beforeunload', cleanUpWorkers)
+  window.addEventListener('beforeunload', terminateThreads)
 })
 //组件卸载前，趁着引用没有丢，自动关闭所有线程
 onBeforeUnmount(() => {
-  cleanUpWorkers()
-  window.removeEventListener('beforeunload', cleanUpWorkers)
+  terminateThreads()
+  window.removeEventListener('beforeunload', terminateThreads)
 })
-
 </script>
 
 <style scoped>

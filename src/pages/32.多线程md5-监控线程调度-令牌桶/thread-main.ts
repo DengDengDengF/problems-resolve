@@ -26,7 +26,7 @@
  * -主线程，从共享内存，工作线程中拿到余量，均匀分配给每个线程。进度等等
  * -工作线程，维护队列，确保余量正确，结束后通知主线程等
  * **/
-
+import {ref} from 'vue'
 const logical = navigator.hardwareConcurrency || 4 //逻辑核心
 const workerCount = Math.max(1, logical >> 1)//开几个工作线程
 const fileRegistry:Record<string, any> = {}
@@ -36,6 +36,7 @@ const monitorPool: any[] = []
 const _CURRENT_IO_BUCKET = new Int32Array(new SharedArrayBuffer(workerCount * 4))//共享线程工作桶单位字节
 const _GT_IO_STORAGE = new Int32Array(new SharedArrayBuffer(workerCount * 4))//共享线程剩余没处理单位mb
 const _RUNNING_IO_STATUS = new Int32Array(new SharedArrayBuffer(workerCount * 4))//WORKER是否在处理任务，没在处理0，在处理1
+const md5ErrorList=ref<any[]>([])
 
 //终止线程以及 解决副作用
 const terminateThreads = () => {
@@ -61,6 +62,7 @@ const terminateThreads = () => {
     }
     workerPool.length = 0
     monitorPool.length = 0
+    md5ErrorList.value.length = 0
     rest = 0
 }
 //二次分配，确保list是排过序的，为了均匀
@@ -73,6 +75,13 @@ const rangeArray = (list: any[]) => {
     for (let i = 0; i < list.length; i++) {
         const {file, uid} = list[i]
         fileRegistry[uid] = list[i]
+        const errorIndex = md5ErrorList.value.findIndex((v)=>v.uid === uid)
+        if(errorIndex > -1){
+            fileRegistry[uid].md5Status = 0
+            fileRegistry[uid].md5= ''
+            fileRegistry[uid].errorMsg =''
+            md5ErrorList.value.splice(errorIndex, 1)
+        }
         let index = 0
         for (let j = 1; j < sizeMixed.length; j++)
             if (sizeMixed[j] < sizeMixed[index]) index = j;
@@ -101,16 +110,19 @@ const arrangeFileToWorkers = (list: any[]) => {
             const data = e.data
             const {md5Status, uid, md5, errorMsg} = data
             fileRegistry[uid].md5Status = md5Status
+            const errorIndex= md5ErrorList.value.findIndex((v)=>v.uid === uid)
             switch (md5Status) {
                 case 1:
                     break
                 case 2:
                     fileRegistry[uid].md5 = md5
+                    if(errorIndex > -1)md5ErrorList.value.splice(errorIndex,1)
                     rest--
                     if (rest == 0) console.log('done', (Date.now() - last) / 1000)
                     break
                 case 3:
                     fileRegistry[uid].errorMsg = errorMsg
+                    if(errorIndex == -1)md5ErrorList.value.push(fileRegistry[uid])
                     rest--
                     if (rest == 0) console.log('done-but-wrong', (Date.now() - last) / 1000)
             }
@@ -119,7 +131,10 @@ const arrangeFileToWorkers = (list: any[]) => {
 }
 //清空工作线程中任务
 const clearAllInWorkers = () => {
-    for (let uid in fileRegistry) delete fileRegistry[uid]
+    for (let uid in fileRegistry){
+        delete fileRegistry[uid]
+    }
+    md5ErrorList.value.length = 0
     for (let item of workerPool) {
         const {_worker, _index, _workerId} = item
         _worker.postMessage({
@@ -134,7 +149,11 @@ const clearAllInWorkers = () => {
 }
 //批量删除工作线程任务
 const batchClearInWorkers = (del_list: any[]) => {
-    for (let uid of del_list) delete fileRegistry[uid]
+    for (let uid of del_list){
+        const errorIndex = md5ErrorList.value.findIndex((v)=>v.uid === uid)
+        if(errorIndex > -1)md5ErrorList.value.splice(errorIndex,1)
+        delete fileRegistry[uid]
+    }
     for (let item of workerPool) {
         const {_worker, _index, _workerId} = item
         _worker.postMessage({
@@ -171,4 +190,4 @@ const initThreads = () => {
         index++
     }
 }
-export {arrangeFileToWorkers, clearAllInWorkers, batchClearInWorkers,terminateThreads,initThreads}
+export {arrangeFileToWorkers, clearAllInWorkers, batchClearInWorkers,terminateThreads,initThreads,md5ErrorList}

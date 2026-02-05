@@ -53,13 +53,13 @@
       </div>
     </div>
   </el-scrollbar>
-
+  <span style="color: red;cursor:pointer" v-if="md5ErrorList.length" @click="retry">重试</span>
 </template>
 
 <script setup lang="ts">
 //主线程，该组件，仅仅用作ui展示，并确保不会对线程有副作用。
 import {ref, computed, onMounted, onBeforeUnmount} from 'vue'
-import {arrangeFileToWorkers,clearAllInWorkers,batchClearInWorkers,terminateThreads,initThreads} from './thread-main'
+import {arrangeFileToWorkers,clearAllInWorkers,batchClearInWorkers,terminateThreads,initThreads,md5ErrorList} from './thread-main'
 
 const fileList = ref<any[]>([])
 const md5StatusHash = {
@@ -98,6 +98,13 @@ const toggleAll = (flag: boolean) => {
 const clear = () => {
   fileList.value.length = 0
   clearAllInWorkers()
+}
+//重试
+const retry = ()=>{
+   //TODO 后续区分是MD5 错误 还是 上传错误
+    const lists = [...md5ErrorList.value]
+    lists.sort((a, b) => a.file.size - b.file.size)
+    arrangeFileToWorkers(lists)
 }
 const fileChange = async (event: any) => {
   const lists: any[] = Array.from(event.target?.files || [])

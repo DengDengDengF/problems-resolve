@@ -2,8 +2,8 @@ import {createMD5} from 'hash-wasm'
 
 const md5HasherPromise = createMD5();
 let iterationCount = 0
-let fileList = []
-let running = null
+let fileList:any = []
+let running:any = null
 // const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 onmessage = async (e: MessageEvent) => {
     const {

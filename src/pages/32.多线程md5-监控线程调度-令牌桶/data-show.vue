@@ -128,17 +128,6 @@ const fileChange = async (event: any) => {
   arrangeFileToWorkers(myLists)
   event.target.value = ''
 }
-//测试环境热更新，防止线程多次创建
-const devTest = () => {
-  const hot = (import.meta as any).hot
-  const env = (import.meta as any).env
-  if (!(env.DEV && hot)) return
-  hot.accept() //让模块变成 accepted module
-  hot.dispose(async () => {//安全用dispose
-    await terminateThreads()
-  })
-}
-devTest()
 onMounted(async () => {
   //清除副作用
   await terminateThreads()

@@ -37,7 +37,6 @@ const _CURRENT_IO_BUCKET = new Int32Array(new SharedArrayBuffer(workerCount * 4)
 const _GT_IO_STORAGE = new Int32Array(new SharedArrayBuffer(workerCount * 4))//共享线程剩余没处理单位mb
 const _RUNNING_IO_STATUS = new Int32Array(new SharedArrayBuffer(workerCount * 4))//WORKER是否在处理任务，没在处理0，在处理1
 const md5ErrorList=ref<any[]>([])
-console.log('sss')
 //终止线程以及 解决副作用
 const terminateThreads = async() => {
     workerPool.forEach(w => {

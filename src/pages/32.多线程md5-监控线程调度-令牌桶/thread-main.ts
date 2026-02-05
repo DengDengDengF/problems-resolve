@@ -64,7 +64,7 @@ const terminateThreads = async() => {
     monitorPool.length = 0
     md5ErrorList.value.length = 0
     rest = 0
-    await Promise.resolve()//热更新兼容
+    await Promise.resolve()//热更新兼容,保证顺序可预测
 }
 //二次分配，确保list是排过序的，为了均匀
 const rangeArray = (list: any[]) => {

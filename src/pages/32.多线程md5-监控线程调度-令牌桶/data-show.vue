@@ -42,12 +42,14 @@
           <span>{{ item.file.name }}</span>
         </div>
         <div class="right">
-          <span :style="{color:md5StatusHash[item.md5Status].color}">{{ md5StatusHash[item.md5Status].value }}-{{item.md5}}</span>
-          <span v-if="item.errorMsg" style="color: red">{{item.errorMsg}}</span>
+          <span :style="{color:md5StatusHash[item.md5Status].color}">{{
+              md5StatusHash[item.md5Status].value
+            }}-{{ item.md5 }}</span>
+          <span v-if="item.errorMsg" style="color: red">{{ item.errorMsg }}</span>
           <span
               @click="del(item.uid)"
               class="upload_delete"
-          ><el-icon> <Delete /> </el-icon
+          ><el-icon> <Delete/> </el-icon
           ></span>
         </div>
       </div>
@@ -59,7 +61,14 @@
 <script setup lang="ts">
 //主线程，该组件，仅仅用作ui展示，并确保不会对线程有副作用。
 import {ref, computed, onMounted, onBeforeUnmount} from 'vue'
-import {arrangeFileToWorkers,clearAllInWorkers,batchClearInWorkers,terminateThreads,initThreads,md5ErrorList} from './thread-main'
+import {
+  arrangeFileToWorkers,
+  clearAllInWorkers,
+  batchClearInWorkers,
+  terminateThreads,
+  initThreads,
+  md5ErrorList
+} from './thread-main'
 
 const fileList = ref<any[]>([])
 const md5StatusHash = {
@@ -73,19 +82,19 @@ const allSelected = computed(() => selectedUIds.value.length > 0 && selectedUIds
 const someSelected = computed(() => selectedUIds.value.length > 0 && !allSelected.value)
 
 //单个删除
-const del=(uid:string)=>{
+const del = (uid: string) => {
   batchClearInWorkers([uid])
-  fileList.value= fileList.value.filter((v)=>v.uid != uid)
+  fileList.value = fileList.value.filter((v) => v.uid != uid)
 }
 //批量删除
 const batchDelete = () => {
-  const del_list = [],uidSetList=new Set()
-  for(let uid of selectedUIds.value) {
-      del_list.push(uid)
-      uidSetList.add(uid)
+  const del_list = [], uidSetList = new Set()
+  for (let uid of selectedUIds.value) {
+    del_list.push(uid)
+    uidSetList.add(uid)
   }
   batchClearInWorkers(del_list)
-  fileList.value=fileList.value.filter((v)=>!uidSetList.has(v.uid))
+  fileList.value = fileList.value.filter((v) => !uidSetList.has(v.uid))
 }
 /**初始化文件
  * md5Status:0未计算 1计算中 2计算完成 3计算失败*/
@@ -100,11 +109,11 @@ const clear = () => {
   clearAllInWorkers()
 }
 //重试
-const retry = ()=>{
-   //TODO 后续区分是MD5 错误 还是 上传错误
-    const lists = [...md5ErrorList.value]
-    lists.sort((a, b) => a.file.size - b.file.size)
-    arrangeFileToWorkers(lists)
+const retry = () => {
+  //TODO 后续区分是MD5 错误 还是 上传错误
+  const lists = [...md5ErrorList.value]
+  lists.sort((a, b) => a.file.size - b.file.size)
+  arrangeFileToWorkers(lists)
 }
 const fileChange = async (event: any) => {
   const lists: any[] = Array.from(event.target?.files || [])
@@ -120,27 +129,27 @@ const fileChange = async (event: any) => {
   event.target.value = ''
 }
 //测试环境热更新，防止线程多次创建
-const devTest=()=>{
+const devTest = () => {
   const hot = (import.meta as any).hot
   const env = (import.meta as any).env
   if (!(env.DEV && hot)) return
   hot.accept() //让模块变成 accepted module
-  hot.dispose(() => {//安全用dispose
-    terminateThreads()
+  hot.dispose(async () => {//安全用dispose
+    await terminateThreads()
   })
 }
 devTest()
-onMounted(()=>{
+onMounted(async () => {
   //清除副作用
-  terminateThreads()
+  await terminateThreads()
   //初始化线程
-  initThreads()
+  await initThreads()
   //刷新页面自动关闭所有线程
   window.addEventListener('beforeunload', terminateThreads)
 })
 //组件卸载前，趁着引用没有丢，自动关闭所有线程
-onBeforeUnmount(() => {
-  terminateThreads()
+onBeforeUnmount(async () => {
+  await terminateThreads()
   window.removeEventListener('beforeunload', terminateThreads)
 })
 </script>
@@ -164,8 +173,9 @@ onBeforeUnmount(() => {
     }
   }
 }
-.top{
+
+.top {
   display: flex;
-  gap:20px
+  gap: 20px
 }
 </style>

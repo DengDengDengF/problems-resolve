@@ -37,9 +37,8 @@ const _CURRENT_IO_BUCKET = new Int32Array(new SharedArrayBuffer(workerCount * 4)
 const _GT_IO_STORAGE = new Int32Array(new SharedArrayBuffer(workerCount * 4))//共享线程剩余没处理单位mb
 const _RUNNING_IO_STATUS = new Int32Array(new SharedArrayBuffer(workerCount * 4))//WORKER是否在处理任务，没在处理0，在处理1
 const md5ErrorList=ref<any[]>([])
-
 //终止线程以及 解决副作用
-const terminateThreads = () => {
+const terminateThreads = async() => {
     workerPool.forEach(w => {
         if (w._worker) {
             w._worker.terminate()
@@ -64,6 +63,7 @@ const terminateThreads = () => {
     monitorPool.length = 0
     md5ErrorList.value.length = 0
     rest = 0
+    await Promise.resolve()//热更新兼容
 }
 //二次分配，确保list是排过序的，为了均匀
 const rangeArray = (list: any[]) => {
@@ -168,7 +168,7 @@ const batchClearInWorkers = (del_list: any[]) => {
     }
 }
 //初始化并启动工作线程、监测线程
-const initThreads = () => {
+const initThreads = async() => {
     workerPool.length = 0
     monitorPool.length = 0
     let index = 0
@@ -189,5 +189,6 @@ const initThreads = () => {
         _worker.postMessage(v)
         index++
     }
+    await Promise.resolve()
 }
 export {arrangeFileToWorkers, clearAllInWorkers, batchClearInWorkers,terminateThreads,initThreads,md5ErrorList}

@@ -117,6 +117,7 @@ const arrangeFileToWorkers = (list: any[]) => {
                 case 2:
                     fileRegistry[uid].md5 = md5
                     if(errorIndex > -1)md5ErrorList.value.splice(errorIndex,1)
+                    //TODO 主线程uploadLib.ts 上传
                     rest--
                     if (rest == 0) console.log('done', (Date.now() - last) / 1000)
                     break

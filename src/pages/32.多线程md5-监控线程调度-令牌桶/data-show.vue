@@ -85,6 +85,7 @@ const someSelected = computed(() => selectedUIds.value.length > 0 && !allSelecte
 const del = (uid: string) => {
   batchClearInWorkers([uid])
   fileList.value = fileList.value.filter((v) => v.uid != uid)
+  //TODO 主线程uploadLib.ts 单个删除
 }
 //批量删除
 const batchDelete = () => {
@@ -95,6 +96,7 @@ const batchDelete = () => {
   }
   batchClearInWorkers(del_list)
   fileList.value = fileList.value.filter((v) => !uidSetList.has(v.uid))
+  //TODO 主线程uploadLib.ts 批量删除
 }
 /**初始化文件
  * md5Status:0未计算 1计算中 2计算完成 3计算失败*/
@@ -107,13 +109,15 @@ const toggleAll = (flag: boolean) => {
 const clear = () => {
   fileList.value.length = 0
   clearAllInWorkers()
+  //TODO 主线程uploadLib.ts 清空
 }
 //重试
 const retry = () => {
-  //TODO 后续区分是MD5 错误 还是 上传错误
+  //TODO 做区分md5算错的、上传过程报错的
   const lists = [...md5ErrorList.value]
   lists.sort((a, b) => a.file.size - b.file.size)
   arrangeFileToWorkers(lists)
+  //TODO 某个函数支持重试上传过程报错的
 }
 const fileChange = async (event: any) => {
   const lists: any[] = Array.from(event.target?.files || [])
@@ -133,12 +137,14 @@ onMounted(async () => {
   await terminateThreads()
   //初始化线程
   await initThreads()
+  //TODO 主线程uploadLib.ts 清空
   //刷新页面自动关闭所有线程
   window.addEventListener('beforeunload', terminateThreads)
 })
 //组件卸载前，趁着引用没有丢，自动关闭所有线程
 onBeforeUnmount(async () => {
   await terminateThreads()
+  //TODO 主线程uploadLib.ts 清空
   window.removeEventListener('beforeunload', terminateThreads)
 })
 </script>

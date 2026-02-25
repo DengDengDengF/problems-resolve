@@ -1,5 +1,5 @@
 onmessage = (e: MessageEvent) => {
-    const {_workerId, _CURRENT_IO_BUCKET, _RUNNING_IO_STATUS} = e.data
+    const {_workerId, _CURRENT_IO_BUCKET, _RUNNING_IO_STATUS,_log} = e.data
     const MB = 1024 * 1024
     const interval = 1000
     /**
@@ -52,8 +52,10 @@ onmessage = (e: MessageEvent) => {
         // for (let i = 0; i < _CURRENT_IO_BUCKET.length; i++) {
         //     arr.push(_CURRENT_IO_BUCKET[i] / MB + 'MB')
         // }
-        // console.log('thread-monitor', arr)
-        // console.log('thread-monitor-rate = ', remainingRate, ' now_speed = ', now_speed / MB)
+        // if(_log){
+        //     console.log('thread-monitor', arr)
+        //     console.log('thread-monitor-rate = ', remainingRate, ' now_speed = ', now_speed / MB)
+        // }
     }
     /**令牌桶分配数据
      * -只能在线程任务跑的槽分配数据
@@ -85,6 +87,6 @@ onmessage = (e: MessageEvent) => {
     setInterval(() => {
         tuneSpeed()
         tuneBucket()
-        console.log(_RUNNING_IO_STATUS)
+        if(_log)console.log(_RUNNING_IO_STATUS)
     }, interval)
 }

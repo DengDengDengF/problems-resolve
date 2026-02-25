@@ -14,7 +14,8 @@ onmessage = async (e: MessageEvent) => {
         del_list,
         _GT_IO_STORAGE,
         _RUNNING_IO_STATUS,
-        _WORKER_STATUS
+        _WORKER_STATUS,
+        _log
     } = e.data
     const MB = 1024 * 1024
     const max_chunk_size = 4 * MB
@@ -48,7 +49,7 @@ onmessage = async (e: MessageEvent) => {
         const oldVal = Atomics.sub(_GT_IO_STORAGE, _index, mb)
         const newVal = oldVal - mb
         if (newVal < 0) Atomics.add(_GT_IO_STORAGE, _index, -newVal)
-        // console.log('thread-worker',_GT_IO_STORAGE)
+        // if(_log)console.log('thread-worker',_GT_IO_STORAGE)
     }
     /**计算MD5
      * -同步当前线程状态 0未工作 1工作
@@ -99,7 +100,7 @@ onmessage = async (e: MessageEvent) => {
                     break
                 }
             }
-            // console.log(`thread${_index}-${file.name}`, 'done')
+            // if(_log)console.log(`thread${_index}-${file.name}`, 'done')
             de(size)
             if (!item.aborted && offset >= size) {
                 postMessage({

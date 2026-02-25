@@ -33,6 +33,8 @@ const fileRegistry:Record<string, any> = {}
 let rest = 0
 const workerPool: any[] = []
 const monitorPool: any[] = []
+const params = new URLSearchParams(location.search || '')
+const _log = (params.get('threadLog') === '1') || import.meta.env.DEV
 const _CURRENT_IO_BUCKET = new Int32Array(new SharedArrayBuffer(workerCount * 4))//共享线程工作桶单位字节
 const _GT_IO_STORAGE = new Int32Array(new SharedArrayBuffer(workerCount * 4))//共享线程剩余没处理单位mb
 const _RUNNING_IO_STATUS = new Int32Array(new SharedArrayBuffer(workerCount * 4))//WORKER是否在处理任务，没在处理0，在处理1
@@ -104,7 +106,8 @@ const arrangeFileToWorkers = (list: any[]) => {
             _GT_IO_STORAGE,
             _RUNNING_IO_STATUS,
             _WORKER_STATUS: 1,
-            list: res[_index]
+            list: res[_index],
+            _log
         })
         _worker.onmessage = (e: MessageEvent) => {
             const data = e.data
@@ -145,6 +148,7 @@ const clearAllInWorkers = () => {
             _GT_IO_STORAGE,
             _RUNNING_IO_STATUS,
             _WORKER_STATUS: 3,
+            _log
         })
     }
 }
@@ -165,6 +169,7 @@ const batchClearInWorkers = (del_list: any[]) => {
             _RUNNING_IO_STATUS,
             _WORKER_STATUS: 2,
             del_list,
+            _log
         })
     }
 }
@@ -183,7 +188,8 @@ const initThreads = async() => {
             _GT_IO_STORAGE,
             _RUNNING_IO_STATUS,
             _WORKER_STATUS: 0,//0启动 1添加 2删除 3清空
-            list: []
+            list: [],
+            _log
         }
         const c = {...v, _worker}
         index < workerCount ? workerPool.push(c) : monitorPool.push(c)

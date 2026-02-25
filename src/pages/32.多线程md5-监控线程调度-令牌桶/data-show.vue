@@ -124,6 +124,7 @@ const fileChange = async (event: any) => {
   if (lists.length == 0) return
   lists.sort((a, b) => a.size - b.size)
   const myLists = []
+  //TODO 是否加入抽样MD5校验重复？等等校验逻辑，必须轻量级
   for (let file of lists) {
     const item = initFile(file)
     fileList.value.push(item)

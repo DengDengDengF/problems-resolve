@@ -68,7 +68,7 @@ import {
   terminateThreads,
   initThreads,
   md5ErrorList
-} from './thread-main'
+} from './parallel-full-md5/thread-main'
 
 const fileList = ref<any[]>([])
 const md5StatusHash = {

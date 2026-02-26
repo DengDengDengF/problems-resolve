@@ -65,6 +65,7 @@ const terminateThreads = async() => {
     monitorPool.length = 0
     md5ErrorList.value.length = 0
     rest = 0
+    //TODO 主线程uploadLib.ts 清空
     await Promise.resolve()//热更新兼容,保证顺序可预测
 }
 //二次分配，确保list是排过序的，为了均匀
@@ -151,6 +152,7 @@ const clearAllInWorkers = () => {
             _log
         })
     }
+    //TODO 主线程uploadLib.ts 清空
 }
 //批量删除工作线程任务
 const batchClearInWorkers = (del_list: any[]) => {

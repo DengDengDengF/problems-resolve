@@ -8,15 +8,15 @@ onmessage = (e: MessageEvent) => {
      * */
     const Limit_hash = {
         0: 0,
-        1: 280 * MB,
+        1: 300 * MB,
         2: 420 * MB,
-        3: 360 * MB,
-        4: 420 * MB,
-        5: 480 * MB,
-        6: 540 * MB,
-        7: 600 * MB,
-        8: 660 * MB,
-        9: 730 * MB,
+        3: 520 * MB,
+        4: 600 * MB,
+        5: 660 * MB,
+        6: 700 * MB,
+        7: 720 * MB,
+        8: 740 * MB,
+        9: 760 * MB,
         10: 800 * MB,
     }
     const MAX_SPEED = Limit_hash[_CURRENT_IO_BUCKET.length] ||  Limit_hash[10]

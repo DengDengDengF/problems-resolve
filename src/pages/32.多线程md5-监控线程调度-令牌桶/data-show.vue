@@ -109,7 +109,6 @@ const toggleAll = (flag: boolean) => {
 const clear = () => {
   fileList.value.length = 0
   clearAllInWorkers()
-  //TODO 主线程uploadLib.ts 清空
 }
 //重试
 const retry = () => {
@@ -138,14 +137,12 @@ onMounted(async () => {
   await terminateThreads()
   //初始化线程
   await initThreads()
-  //TODO 主线程uploadLib.ts 清空
   //刷新页面自动关闭所有线程
   window.addEventListener('beforeunload', terminateThreads)
 })
 //组件卸载前，趁着引用没有丢，自动关闭所有线程
 onBeforeUnmount(async () => {
   await terminateThreads()
-  //TODO 主线程uploadLib.ts 清空
   window.removeEventListener('beforeunload', terminateThreads)
 })
 </script>

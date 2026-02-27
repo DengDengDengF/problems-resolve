@@ -28,7 +28,7 @@
  * **/
 import {ref} from 'vue'
 const logical = navigator.hardwareConcurrency || 4 //逻辑核心
-const workerCount = Math.max(1, logical >> 1)//开几个工作线程
+const workerCount = Math.min(4, logical >> 1)//开几个工作线程
 const fileRegistry:Record<string, any> = {}
 let rest = 0
 const workerPool: any[] = []

@@ -3,24 +3,14 @@ onmessage = (e: MessageEvent) => {
     const MB = 1024 * 1024
     const interval = 1000
     /**
-     * 50gb测试：
-     * 1:
+     * 经过测试，受到浏览器端，gc内存回收限制、防止标签页崩溃等限制
+     * -该工具目的是为了算md5后上传，而非将浏览器当作计算平台，算的再快，也受上传带宽限制
+     * -线程开的越多，MAX_SPEED越高，受浏览器gc影响，内存就越难降
+     * -固态硬盘顺序读,下限是500MB
+     * -机械硬盘顺序读，下限是80MB
      * */
-    const Limit_hash = {
-        0: 0,
-        1: 300 * MB,
-        2: 420 * MB,
-        3: 520 * MB,
-        4: 600 * MB,
-        5: 660 * MB,
-        6: 700 * MB,
-        7: 720 * MB,
-        8: 740 * MB,
-        9: 760 * MB,
-        10: 800 * MB,
-    }
-    const MAX_SPEED = Limit_hash[_CURRENT_IO_BUCKET.length] ||  Limit_hash[10]
-    const MIN_SPEED = Limit_hash[1]
+    const MAX_SPEED = 500*MB
+    const MIN_SPEED = 80*MB
     let bucket_index = [], bucket_index_not = []
     let now_speed = MIN_SPEED
     /**

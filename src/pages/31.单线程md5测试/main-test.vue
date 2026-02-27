@@ -10,83 +10,96 @@
 </template>
 
 <script setup lang="ts">
-import { ref} from 'vue'
-import {createMD5} from 'hash-wasm'
-const md5HasherPromise = createMD5();
-const flag =ref<boolean>(true)
-function concatUint8Arrays(a: Uint8Array, b: Uint8Array) {
-  const c = new Uint8Array(a.length + b.length);
-  c.set(a, 0);
-  c.set(b, a.length);
-  return c;
-}
+import { ref } from 'vue'
+import { createMD5 } from 'hash-wasm'
 
-/**
- * 单线程顶多跑300mb/s*/
-const fileChange = async (event: any) => {
-  flag.value =false
-  const list: any[] = Array.from(event.target?.files || [])
-  if (list.length == 0) return
+const md5HasherPromise = createMD5()
+const flag = ref<boolean>(true)
+
+const fileChange = async (event: Event) => {
+  flag.value = false
+  const files = Array.from((event.target as HTMLInputElement)?.files || [])
+  if (files.length === 0) return
+
   const md5Hasher = await md5HasherPromise
   const startTime = performance.now()
-  //直接算就完事了
-  for (let i = 0; i < list.length; i++) {
-    const file = list[i]
-    const size =file.size
-    const MB = 1024*1024
-    let offset = 0
-    const  chunk_size = 4 *MB
+
+  for (const file of files) {
+    const size = file.size
+    const MB = 1024 * 1024
+    const chunkSize = 4 * MB  // 可调：2MB~8MB 测试甜点
+
     md5Hasher.init()
 
-    //之所以流块，是因为浏览器，底层做了优化，有提前读取。也导致了cpu 内存双双升高。
-    const stream = file.stream();
-    const reader = stream.getReader();
+    // ───────────────────────────────────────────────
+    // 推荐：纯 stream 方式（内存更可控、无大 concat）
+    // ───────────────────────────────────────────────
+    const stream = file.stream()
+    const reader = stream.getReader()
 
-    let bufferChunk = new Uint8Array(0);
+    let processedBytes = 0
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+    try {
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
 
-      // 合并 value 到 bufferChunk
-      bufferChunk = concatUint8Arrays(bufferChunk, value);
+        if (value && value.byteLength > 0) {
+          // 直接 update（value 已是 Uint8Array）
+          // 如果报错“不允许”，改成 new Uint8Array(value) 即可
+          md5Hasher.update(value)
+          // md5Hasher.update(new Uint8Array(value))  // 强制包装，防类型问题
 
-      // 每当 bufferChunk 达到 chunk_size，就处理一次
-      while (bufferChunk.length >= chunk_size) {
-        const chunk = bufferChunk.subarray(0, chunk_size);
-        md5Hasher.update(chunk);
+          processedBytes += value.byteLength
 
-        // 剩余的保留到 bufferChunk
-        bufferChunk = bufferChunk.subarray(chunk_size);
-
-        // 可插入延迟，模拟设备情况
-        // await sleep(10);
+          // 每处理 32MB 让出一下（帮 GC + 避免浏览器卡顿/限流）
+          if (processedBytes % (32 * MB) === 0) {
+            await new Promise(r => setTimeout(r, 0))
+            // 或 await new Promise(r => requestIdleCallback(r)) 如果支持
+          }
+        }
       }
+
+      const digest = md5Hasher.digest()  // 默认返回 hex string
+      console.log(`MD5 (${file.name}): ${digest}`)
+    } finally {
+      reader.releaseLock()
     }
 
-    // 处理最后剩余不足 chunk_size 的部分
-    if (bufferChunk.length > 0) {
-      md5Hasher.update(bufferChunk);
-    }
+    // ───────────────────────────────────────────────
+    // 备选：如果你想对比测试 arrayBuffer 方式，可注掉上面，启用下面
+    // ───────────────────────────────────────────────
+    /*
+    let offset = 0
+    md5Hasher.init()
 
     while (offset < size) {
-      const slice = file.slice(offset, offset + chunk_size)
-      let buffer = await slice.arrayBuffer()
-      //TODO 可在此处加定时器，模拟地设备情况。
+      const sliceEnd = Math.min(offset + chunkSize, size)
+      const slice = file.slice(offset, sliceEnd)
+      const buffer = await slice.arrayBuffer()
       md5Hasher.update(new Uint8Array(buffer))
-      offset += chunk_size
-      buffer = null
+
+      offset = sliceEnd
+
+      // 显式释放引用 + 让出
+      // buffer = null  // 现代浏览器 GC 友好，可省
+      await new Promise(r => setTimeout(r, 0))
     }
-    // console.log(`thread${_index}-${file.name}`, 'done')
-    md5Hasher.digest()
+
+    const digest = md5Hasher.digest()
+    console.log(`MD5 (${file.name}): ${digest}`)
+    */
   }
-  const duration = performance.now() - startTime; // 也可用 performance.now()
-  console.log('耗时秒:', (duration / 1000).toFixed(3), 's');
-  event.target.value = ''
-  flag.value=true
+
+  const duration = performance.now() - startTime
+  console.log('总耗时:', (duration / 1000).toFixed(3), 's')
+
+  // 重置 input，避免重复触发
+  ;(event.target as HTMLInputElement).value = ''
+  flag.value = true
 }
 </script>
 
 <style scoped>
-
+/* ... */
 </style>

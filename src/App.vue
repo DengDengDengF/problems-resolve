@@ -67,9 +67,9 @@
 <!--  <ScrollSelf/>-->
 <!--  <ImgCompress/>-->
 <!--  <CountMD5/>-->
-<!--  <MainTest/>-->
-  <el-button @click="test = !test">test</el-button>
-  <DataShow v-if="test"/>
+  <MainTest/>
+<!--  <el-button @click="test = !test">test</el-button>-->
+<!--  <DataShow v-if="test"/>-->
 </template>
 
 <script setup>

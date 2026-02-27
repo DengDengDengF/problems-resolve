@@ -127,6 +127,7 @@ const fileChange = async (event: any) => {
   for (let file of lists) {
     const item = initFile(file)
     fileList.value.push(item)
+    //TODO 只有通过校验（非重复、资源信息可取....）的 才有资格进入全量MD5计算
     myLists.push(fileList.value[fileList.value.length - 1])
   }
   arrangeFileToWorkers(myLists)

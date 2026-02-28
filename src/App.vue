@@ -67,9 +67,10 @@
 <!--  <ScrollSelf/>-->
 <!--  <ImgCompress/>-->
 <!--  <CountMD5/>-->
-  <MainTest/>
-<!--  <el-button @click="test = !test">test</el-button>-->
+<!--  <MainTest/>-->
+  <el-button @click="test = !test">test</el-button>
 <!--  <DataShow v-if="test"/>-->
+  <DataShow2 v-if="test"/>
 </template>
 
 <script setup>
@@ -203,9 +204,10 @@ import ImgCompress from "./pages/29.图片压缩/imgCompress.vue";
 import CountMD5 from "./pages/30.多线程md5运算效率检测-垃圾/CountMD5.vue";
 //单线程md5极限测试
 import MainTest from "./pages/31.单线程md5测试/main-test.vue";
-//多线程md5极限测试
-import DataShow from "./pages/32.多线程md5-监控线程调度-令牌桶/data-show.vue";
-
+//多线程md5极限测试,必须开那两个响应头
+// import DataShow from "./pages/32.多线程md5-监控线程调度-令牌桶/data-show.vue";
+//单线程MD5流
+import DataShow2 from "./pages/33.单线程md5-stream/DataShow2.vue";
 </script>
 
 <style>

@@ -98,6 +98,16 @@ const batchClearInWorkers = (del_list: any[]) => {
         })
     }
 }
+const threadSpeed=(netSpeed:number)=>{
+   const item=workerPool?.[0]
+   const _worker=item._worker
+   if(_worker){
+       _worker.postMessage({
+           _WORKER_STATUS: 4,
+           netSpeed
+       })
+   }
+}
 //初始化并启动工作线程、监测线程
 const initThreads = async () => {
     workerPool.length = 0
@@ -111,4 +121,4 @@ const initThreads = async () => {
     _worker.postMessage(v)
     await Promise.resolve()
 }
-export {arrangeFileToWorkers, clearAllInWorkers, batchClearInWorkers, terminateThreads, initThreads, md5ErrorList}
+export {arrangeFileToWorkers, clearAllInWorkers, batchClearInWorkers, terminateThreads, initThreads, md5ErrorList,threadSpeed}

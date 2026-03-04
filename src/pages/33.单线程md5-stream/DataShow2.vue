@@ -56,6 +56,7 @@
     </div>
   </el-scrollbar>
   <span style="color: red;cursor:pointer" v-if="md5ErrorList.length" @click="retry">重试</span>
+  <el-input v-model="netSpeed" type="number" style="width: 200px" placeholder="请输入网速" @blur="threadSpeed(netSpeed * 1024 * 1024)"/> MB/S
 </template>
 
 <script setup lang="ts">
@@ -67,7 +68,8 @@ import {
   batchClearInWorkers,
   terminateThreads,
   initThreads,
-  md5ErrorList
+  md5ErrorList,
+  threadSpeed
 } from './thread-main-md5'
 
 const fileList = ref<any[]>([])
@@ -80,6 +82,7 @@ const md5StatusHash = {
 const selectedUIds = ref<any>([])
 const allSelected = computed(() => selectedUIds.value.length > 0 && selectedUIds.value.length === fileList.value.length)
 const someSelected = computed(() => selectedUIds.value.length > 0 && !allSelected.value)
+const netSpeed=ref<number>(80)
 
 //单个删除
 const del = (uid: string) => {

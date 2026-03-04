@@ -5,11 +5,16 @@ const MB = 1024 * 1024
 let fileList: any = []
 let running:any = null
 let processedBytes = 0
+const defaultSpeed = 80 * MB
+let targetSpeed = defaultSpeed
+let netSpeedNew=0
+let curPromise:any = null
 onmessage = async (e: MessageEvent) => {
     const {
         list,
         del_list,
-        _WORKER_STATUS
+        _WORKER_STATUS,
+        netSpeed
     } = e.data
     //计算
     const compute=async()=>{
@@ -33,6 +38,11 @@ onmessage = async (e: MessageEvent) => {
             try {
                 while (true) {
                     if (item.aborted) break
+                    if(targetSpeed - processedBytes < 0){
+                        console.log('目标速度 = ' + targetSpeed/MB + ' 已经处理 = ' + processedBytes/MB)
+                        await new Promise(res=>curPromise = res)
+                        processedBytes = 0
+                    }
                     const { done, value } = await reader.read()
                     if (done){
                         fileDone=true
@@ -41,10 +51,6 @@ onmessage = async (e: MessageEvent) => {
                     if (value && value.byteLength > 0) {
                         md5Hasher.update(value)
                         processedBytes += value.byteLength
-                        if (processedBytes > 32*MB) {
-                            processedBytes = 0
-                            await new Promise(r => setTimeout(r, 0))
-                        }
                     }
                 }
                 if(!item.aborted && fileDone){
@@ -89,11 +95,23 @@ onmessage = async (e: MessageEvent) => {
         for (let item of fileList) item.aborted = true
         if (running) running.aborted = true
     }
+    //速度调整
+    const adjustSpeed=()=>{
+        setInterval(()=>{
+            targetSpeed= netSpeedNew > 0 ? netSpeedNew : defaultSpeed
+            curPromise?.()
+        },1000)
+    }
+    //同步网络速度
+    const adjustNetSpeed=()=>{
+        netSpeedNew = netSpeed
+    }
     /**初始化
-     * 0启动线程 1加入任务 2删除 3清空*/
+     * 0启动线程 1加入任务 2删除 3清空 4网络速度背压磁盘*/
     const init = () => {
         switch (_WORKER_STATUS) {
             case 0:
+                adjustSpeed()
                 break
             case 1:
                 add()
@@ -103,6 +121,9 @@ onmessage = async (e: MessageEvent) => {
                 break
             case 3:
                 clear()
+                break
+            case 4:
+                adjustNetSpeed()
                 break
         }
     }

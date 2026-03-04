@@ -70,7 +70,8 @@
 <!--  <MainTest/>-->
   <el-button @click="test = !test">test</el-button>
 <!--  <DataShow v-if="test"/>-->
-  <DataShow2 v-if="test"/>
+<!--  <DataShow2 v-if="test"/>-->
+  <DataShow3 v-if="test"/>
 </template>
 
 <script setup>
@@ -208,6 +209,8 @@ import MainTest from "./pages/31.单线程md5测试/main-test.vue";
 // import DataShow from "./pages/32.多线程md5-监控线程调度-令牌桶/data-show.vue";
 //单线程MD5流
 import DataShow2 from "./pages/33.单线程md5-stream/DataShow2.vue";
+//单线程MD5流-上传背压
+import DataShow3 from "./pages/34.单线程md5-stream-上传背压/DataShow3.vue";
 </script>
 
 <style>

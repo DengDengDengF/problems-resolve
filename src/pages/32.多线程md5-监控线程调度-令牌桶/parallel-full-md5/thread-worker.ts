@@ -88,6 +88,7 @@ onmessage = async (e: MessageEvent) => {
                     let buffer = await slice.arrayBuffer()
                     //TODO 可在此处加定时器，模拟地设备情况。
                     md5Hasher.update(new Uint8Array(buffer))
+                    //进行buffer上传
                     offset += chunk_size
                     buffer = null
                     if (iterationCount++ % 4 === 0) await Promise.resolve()

@@ -71,7 +71,8 @@
   <el-button @click="test = !test">test</el-button>
 <!--  <DataShow v-if="test"/>-->
 <!--  <DataShow2 v-if="test"/>-->
-  <DataShow3 v-if="test"/>
+<!--  <DataShow3 v-if="test"/>-->
+  <DataShow4 v-if="test"/>
 </template>
 
 <script setup>
@@ -210,7 +211,9 @@ import MainTest from "./pages/31.单线程md5测试/main-test.vue";
 //单线程MD5流
 import DataShow2 from "./pages/33.单线程md5-stream/DataShow2.vue";
 //单线程MD5流-上传背压
-import DataShow3 from "./pages/34.单线程md5-stream-上传背压/DataShow3.vue";
+import DataShow3 from "./pages/34.单线程md5-stream-估算网速背压磁盘/DataShow3.vue";
+//多线程MD5xhr上传自动背压
+import DataShow4 from "./pages/35.多线程md5上传-xhr自动背压/DataShow4.vue";
 </script>
 
 <style>

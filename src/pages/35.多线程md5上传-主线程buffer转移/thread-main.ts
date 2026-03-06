@@ -5,6 +5,8 @@ const workerCount = Math.min(3, logical >> 1)
 let taskQueue: any[] = []
 const workerPool: any[] = []
 const errorList = ref<any[]>([])
+const mb = 1024 * 1024
+const chunk_size = 8*mb
 
 //终止线程以及 解决副作用
 const terminate = async () => {
@@ -22,40 +24,58 @@ const terminate = async () => {
 }
 //分配文件去并行计算以及上传
 const arrangeFileToWorkers = () => {
-    const runTask = async (_worker: any) => {
+    const runTask = async (_worker: Worker) => {
         while (taskQueue.length > 0) {
-            await new Promise((resolve, reject) => {
-                const v = taskQueue.shift()
-                const list = [{file: v.file, uid: v.uid}]
-                _worker.postMessage({
-                    list,
-                    _WORKER_STATUS: 1,
-                })
-                _worker.onmessage = (e: MessageEvent) => {
-                    const data = e.data
-                    const {status, uid, md5, errorMsg} = data
-                    v.status = status
-                    const errorIndex = errorList.value.findIndex((v) => v.uid === uid)
-                    switch (status) {
-                        case 1:
+            const task = taskQueue.shift();
+            if (!task) break;
+            const file = task.file;
+            const size = file.size;
+            let offset = 0;
+            const toUpload=async()=>{
+                console.log('file.name = ',file.name)
+                 if(offset < size){
+                     const slice = file.slice(offset, offset + chunk_size)
+                     const buffer = await slice.arrayBuffer()
+                     _worker.postMessage(buffer, [buffer])
+                     await new Promise((res)=>setTimeout(()=>{res()},270))
+                     offset += chunk_size
+                 }else{
+                     _worker.postMessage('end')
+                 }
+            }
+            _worker.postMessage('init')
+            await new Promise((res,rej)=>{
+                _worker.onmessage = async(e: MessageEvent) =>{
+                    const data=e.data
+                    switch(data){
+                        case 'initialized':
+                            // console.log('initialized')
+                            await toUpload()
                             break
-                        case 2:
-                            v.md5 = md5
-                            if (errorIndex > -1) errorList.value.splice(errorIndex, 1)
-                            resolve('')
+                        case 'append':
+                            // console.log('append')
+                            await toUpload()
                             break
-                        case 3:
-                            v.errorMsg = errorMsg
-                            if (errorIndex == -1) errorList.value.push(uid)
-                            resolve('')
+                        default:
+                            task.md5=data
+                            console.log('done',file.name)
+                            res('')
+                            _worker.onmessage = null;
                             break
                     }
                 }
             })
+
         }
+    };
+
+    // 启动所有 Worker
+    for (const item of workerPool) {
+        runTask(item._worker).then(() => {
+            console.log('Worker 处理完任务队列');
+        });
     }
-    for (let item of workerPool)runTask(item._worker).then(()=>{})
-}
+};
 //工作池中任务是否都执行完毕
 const checkDone=()=>  workerPool.every((v)=>v.done)
 //加入队列
@@ -69,25 +89,12 @@ const add = (list: any[]) => {
 const clearAll = () => {
     taskQueue.length = 0
     errorList.value.length = 0
-    for (let item of workerPool) {
-        const {_worker} = item
-        _worker.postMessage({
-            _WORKER_STATUS: 3,
-        })
-    }
 }
 //批量删除工作线程任务
 const batchClear = (del_list: any[]) => {
     const delSet = new Set(del_list)
     taskQueue=taskQueue.filter((v)=>!delSet.has(v.uid))
     errorList.value = errorList.value.filter(v => !delSet.has(v.uid))
-    for (let item of workerPool) {
-        const {_worker} = item
-        _worker.postMessage({
-            _WORKER_STATUS: 2,
-            del_list,
-        })
-    }
 }
 //初始化并启动工作线程
 const init = async () => {
@@ -95,12 +102,8 @@ const init = async () => {
     for(let i=0;i < workerCount;i++){
         const path = './thread-worker.ts'
         const _worker = new Worker(new URL(path, import.meta.url), {type: 'module'})
-        const v = {
-            _WORKER_STATUS: 0,//0启动 1添加 2删除 3清空
-            list: [],
-        }
         workerPool.push({_worker,done:true})
-        _worker.postMessage(v)
+        _worker.postMessage('init')
     }
     await Promise.resolve()
 }

@@ -1,3 +1,9 @@
+/**
+ * md5计算线程
+ * -流式读取md5
+ * -自适应磁盘速度
+ * -添加、删除、清空
+ * */
 import {createMD5} from 'hash-wasm'
 
 const md5HasherPromise = createMD5();

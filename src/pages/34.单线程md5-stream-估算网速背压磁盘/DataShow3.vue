@@ -19,8 +19,6 @@
     >
       批量删除{{ selectedUIds.length > 0 ? '（已选中' + selectedUIds.length + '个）' : '' }}
     </div>
-    <el-button type="danger" size="small" style="width: 120px" @click="clear">清空</el-button>
-
     <input
         type="file"
         @change="fileChange"
@@ -29,6 +27,7 @@
         :multiple="true"
         accept="."
     />
+<!--    <span style="color: #409eff">还剩{{md5Uncalculated}}个没计算</span>-->
     <div><el-input v-model="netSpeed" type="number" style="width: 200px" placeholder="请输入网速" @blur="threadSpeed(netSpeed * 1024 * 1024)"/> MB/S</div>
   </div>
   <el-scrollbar :height="500" always style="padding-right:20px">
@@ -57,21 +56,28 @@
       </div>
     </div>
   </el-scrollbar>
-  <span style="color: red;cursor:pointer" v-if="md5ErrorList.length" @click="retry">重试</span>
-
+  <span style="color: red;cursor:pointer" v-if="md5ErrorList.length" @click="retry">重试 {{md5ErrorList.length > 0 ? md5ErrorList.length : ''}}</span>
 </template>
 
 <script setup lang="ts">
-//主线程，该组件，仅仅用作ui展示，并确保不会对线程有副作用。
+/**
+ * 主线程vue文件，
+ * -单worker负责md5计算 与 主线程并发上传 完全解耦
+ * -针对worker线程 以及 主线程上传队列，添加、修改、销毁、重试
+ * -ui展示交互,进度、结果
+ * -其他业务逻辑
+ * -获取worker线程 和 主线程上传队列的状态，成功列表、失败列表、是否运行结束等
+ * -获取上传的网速，对磁盘吞吐调速
+ * */
 import {ref, computed, onMounted, onBeforeUnmount} from 'vue'
 import {
   arrangeFileToWorkers,
-  clearAllInWorkers,
   batchClearInWorkers,
   terminateThreads,
   initThreads,
   md5ErrorList,
-  threadSpeed
+  threadSpeed,
+  md5Uncalculated
 } from './thread-main-md5'
 
 const fileList = ref<any[]>([])
@@ -84,7 +90,7 @@ const md5StatusHash = {
 const selectedUIds = ref<any>([])
 const allSelected = computed(() => selectedUIds.value.length > 0 && selectedUIds.value.length === fileList.value.length)
 const someSelected = computed(() => selectedUIds.value.length > 0 && !allSelected.value)
-const netSpeed=ref<number>(80)
+const netSpeed=ref<number>()
 
 //单个删除
 const del = (uid: string) => {
@@ -109,11 +115,6 @@ const initFile = (file: File) => ({file, md5: '', errorMsg: '', uid: crypto.rand
 //全部选中
 const toggleAll = (flag: boolean) => {
   selectedUIds.value = flag ? fileList.value.map((i) => i.uid) : []
-}
-//清空
-const clear = () => {
-  fileList.value.length = 0
-  clearAllInWorkers()
 }
 //重试
 const retry = () => {

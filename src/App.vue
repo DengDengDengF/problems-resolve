@@ -71,7 +71,7 @@
   <el-button @click="test = !test">test</el-button>
 <!--  <DataShow v-if="test"/>-->
 <!--  <DataShow2 v-if="test"/>-->
-<!--  <DataShow3 v-if="test"/>-->
+  <DataShow3 v-if="test"/>
 <!--  <DataShow4 v-if="test"/>-->
 </template>
 

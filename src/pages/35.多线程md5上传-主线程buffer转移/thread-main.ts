@@ -1,7 +1,7 @@
 import {ref} from 'vue'
 
 const logical = navigator.hardwareConcurrency || 3
-const workerCount = Math.min(1, logical >> 1)
+const workerCount = Math.min(3, logical >> 1)
 let taskQueue: any[] = []
 const workerPool: any[] = []
 const errorList = ref<any[]>([])

@@ -65,7 +65,7 @@
 <!--  <VisualRouter/>-->
 <!--  <WhatTimer/>-->
 <!--  <ScrollSelf/>-->
-  <ImgCompress/>
+<!--  <ImgCompress/>-->
 <!--  <CountMD5/>-->
 <!--  <MainTest/>-->
 <!--  <el-button @click="test = !test">test</el-button>-->
@@ -73,6 +73,7 @@
 <!--  <DataShow2 v-if="test"/>-->
 <!--  <DataShow3 v-if="test"/>-->
 <!--  <DataShow4 v-if="test"/>-->
+  <DomS/>
 </template>
 
 <script setup>
@@ -214,6 +215,8 @@ import DataShow2 from "./pages/33.单线程md5-stream/DataShow2.vue";
 import DataShow3 from "./pages/34.单线程md5-stream-估算网速背压磁盘/DataShow3.vue";
 //多线程MD5，主线程转移buffer到工作线程，工作线程负责计算
 import DataShow4 from "./pages/35.多线程md5上传-主线程buffer转移/DataShow4.vue";
+//虚拟dom
+import DomS from "./pages/36.dom解析/dom-s.vue";
 </script>
 
 <style>

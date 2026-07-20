@@ -74,6 +74,7 @@
 <!--  <DataShow3 v-if="test"/>-->
 <!--  <DataShow4 v-if="test"/>-->
   <VideoCut/>
+<!--  <DomS/>-->
 </template>
 
 <script setup>
@@ -217,6 +218,8 @@ import DataShow3 from "./pages/34.单线程md5-stream-估算网速背压磁盘/D
 import DataShow4 from "./pages/35.多线程md5上传-主线程buffer转移/DataShow4.vue";
 //视频截帧
 import VideoCut from "./pages/36.视频截帧/VideoCut.vue";
+//虚拟dom
+import DomS from "./pages/36.dom解析/dom-s.vue";
 </script>
 
 <style>

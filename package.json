@@ -19,6 +19,7 @@
     "hash-wasm": "^4.12.0",
     "less": "^4.2.0",
     "less-loader": "^12.2.0",
+    "mediainfo.js": "^0.3.7",
     "pdf-vue3": "^1.0.12",
     "pdfjs-dist": "^4.3.136",
     "qs": "^6.12.1",

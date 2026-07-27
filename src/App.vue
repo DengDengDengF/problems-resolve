@@ -73,8 +73,9 @@
 <!--  <DataShow2 v-if="test"/>-->
 <!--  <DataShow3 v-if="test"/>-->
 <!--  <DataShow4 v-if="test"/>-->
-  <VideoCut/>
+<!--  <VideoCut/>-->
 <!--  <DomS/>-->
+  <VideoCode/>
 </template>
 
 <script setup>
@@ -220,6 +221,8 @@ import DataShow4 from "./pages/35.多线程md5上传-主线程buffer转移/DataS
 import VideoCut from "./pages/36.视频截帧/VideoCut.vue";
 //虚拟dom
 import DomS from "./pages/36.dom解析/dom-s.vue";
+//获取编码格式
+import VideoCode from "./pages/37.获取视频编码/VideoCode.vue";
 </script>
 
 <style>

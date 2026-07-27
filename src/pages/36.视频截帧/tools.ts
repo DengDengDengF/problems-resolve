@@ -39,7 +39,7 @@ export async function captureVideoFrame(
             reject(new Error('无法生成图片Blob'));
           }
         },
-        'image/png',
+        'image/jpeg',
       );
       /**  有损压缩：
        *   'image/jpeg',

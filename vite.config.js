@@ -12,6 +12,7 @@ export default defineConfig({
         copy({
             targets: [
                 {src: 'node_modules/@liveqing/liveplayer-v3/dist/component/liveplayer-lib.min.js', dest: 'public/js'},
+                {src: 'node_modules/mediainfo.js/dist/MediaInfoModule.wasm', dest: 'public'},
             ]
         }),
 

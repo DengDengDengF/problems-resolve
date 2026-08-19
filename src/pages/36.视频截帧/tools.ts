@@ -26,8 +26,9 @@ export async function captureVideoFrame(
     };
 
     video.onseeked = () => {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      const scale = Math.min(1280 / Math.max(video.videoWidth, video.videoHeight), 1);
+      canvas.width = Math.round(video.videoWidth * scale);
+      canvas.height = Math.round(video.videoHeight * scale);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       canvas.toBlob(
@@ -40,6 +41,7 @@ export async function captureVideoFrame(
           }
         },
         'image/jpeg',
+        0.8
       );
       /**  有损压缩：
        *   'image/jpeg',

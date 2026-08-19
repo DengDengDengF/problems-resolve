@@ -100,7 +100,7 @@ const runPerformanceTest = async () => {
   error.value = '';
 
   const TEST_COUNT = 100;
-  const INTERVAL = 30; // 30ms间隔
+  const INTERVAL = 1000; // 30ms间隔
 
   try {
     for (let i = 0; i < TEST_COUNT; i++) {

@@ -73,7 +73,7 @@
 <!--  <DataShow2 v-if="test"/>-->
 <!--  <DataShow3 v-if="test"/>-->
 <!--  <DataShow4 v-if="test"/>-->
-  <VideoCut/>
+<!--  <VideoCut/>-->
 <!--  <DomS/>-->
 <!--  <VideoCode/>-->
 </template>
